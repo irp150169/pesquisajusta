@@ -112,6 +112,15 @@
             line-height: 1.1;
         }
 
+        .demographic-header-box {
+            background-color: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
         .screen-content {
             flex: 1;
             display: flex;
@@ -367,31 +376,63 @@
             border: 1px solid var(--border);
             font-size: 0.54rem;
             margin-bottom: 6px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .sub-filters {
+        .stacked-filters {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 4px;
             margin-top: 4px;
         }
-        .sub-filter-btn {
-            padding: 3px 6px;
+        .stacked-filter-btn {
+            width: 100%;
+            padding: 6px;
+            background-color: #1e293b;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.54rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 0;
+            box-sizing: border-box;
+        }
+        .stacked-filter-btn.active {
+            background-color: #0f766e;
+            color: #ffffff;
+            border-color: #14b8a6;
+        }
+
+        .sub-filters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .grid-filter-btn {
+            padding: 4px 2px;
             background: #1e293b;
             border: 1px solid var(--border);
             color: var(--text-muted);
-            font-size: 0.50rem;
+            font-size: 0.48rem;
             border-radius: 4px;
             cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .sub-filter-btn.active {
+        .grid-filter-btn.active {
             background-color: var(--accent);
             color: white;
             border-color: #14b8a6;
         }
 
         .section-divider {
-            margin: 4px 0;
+            margin: 6px 0 4px 0;
             border-top: 1px dashed var(--border);
             padding-top: 4px;
             font-size: 0.48rem;
@@ -586,6 +627,42 @@
 </head>
 <body>
 
+    <!-- Datalists Globais (Cadastro e Painel Analítico) -->
+    <datalist id="states-datalist">
+        <option value="Acre - AC"></option>
+        <option value="Alagoas - AL"></option>
+        <option value="Amapá - AP"></option>
+        <option value="Amazonas - AM"></option>
+        <option value="Bahia - BA"></option>
+        <option value="Ceará - CE"></option>
+        <option value="Distrito Federal - DF"></option>
+        <option value="Espírito Santo - ES"></option>
+        <option value="Goiás - GO"></option>
+        <option value="Maranhão - MA"></option>
+        <option value="Mato Grosso - MT"></option>
+        <option value="Mato Grosso do Sul - MS"></option>
+        <option value="Minas Gerais - MG"></option>
+        <option value="Pará - PA"></option>
+        <option value="Paraíba - PB"></option>
+        <option value="Paraná - PR"></option>
+        <option value="Pernambuco - PE"></option>
+        <option value="Piauí - PI"></option>
+        <option value="Rio de Janeiro - RJ"></option>
+        <option value="Rio Grande do Norte - RN"></option>
+        <option value="Rio Grande do Sul - RS"></option>
+        <option value="Rondônia - RO"></option>
+        <option value="Roraima - RR"></option>
+        <option value="Santa Catarina - SC"></option>
+        <option value="São Paulo - SP"></option>
+        <option value="Sergipe - SE"></option>
+        <option value="Tocantins - TO"></option>
+        <option value="Outros Países (Exterior)"></option>
+    </datalist>
+
+    <datalist id="cities-datalist"></datalist>
+    <datalist id="filter-cities-datalist"></datalist>
+    <datalist id="rep-cities-datalist"></datalist>
+
     <div class="phone-frame">
         <div id="toast-container">Mensagem</div>
 
@@ -606,75 +683,43 @@
             </div>
 
             <div class="screen-content">
-                <!-- TELA 1: CADASTRO DEMOGRÁFICO DO ELEITOR -->
+                <!-- TELA 1: CADASTRO DEMOGRÁFICO -->
                 <div id="screen-register" class="view">
-                    <div style="text-align: center; margin-bottom: 6px;">
+                    
+                    <div class="demographic-header-box">
                         <h1 class="header-title">Perfil Demográfico</h1>
                         <p class="subtitle">Dados obrigatórios para ponderação estatística oficial (IBGE / TSE).</p>
                     </div>
                     
-                    <!-- LINHA 1: WHATSAPP E NASCIMENTO -->
                     <div class="form-row">
                         <div class="form-group" style="flex: 1.1;">
                             <label>(DDD) WhatsApp</label>
-                            <input type="tel" id="whatsapp-input" placeholder="(92) 99999-9999" maxlength="15" inputmode="numeric" oninput="autoMaskPhone(this)" onblur="autoMaskPhone(this)">
+                            <input type="tel" id="whatsapp-input" placeholder="(92) 99999-9999" maxlength="15" inputmode="numeric" value="" oninput="autoMaskPhone(this)" onblur="autoMaskPhone(this)">
                         </div>
                         <div class="form-group" style="flex: 0.9;">
                             <label>Nascimento</label>
-                            <input type="tel" id="birthdate-input" placeholder="DD/MM/AAAA" maxlength="10" inputmode="numeric" oninput="autoMaskDate(this)" onblur="autoMaskDate(this)">
+                            <input type="tel" id="birthdate-input" placeholder="DD/MM/AAAA" maxlength="10" inputmode="numeric" value="" oninput="autoMaskDate(this)" onblur="autoMaskDate(this)">
                         </div>
                     </div>
 
-                    <!-- LINHA 2: ESTADO E MUNICÍPIO -->
                     <div class="form-row">
-                        <div class="form-group" style="flex: 0.9;">
+                        <div class="form-group" style="flex: 0.95;">
                             <label>Estado / UF</label>
-                            <select id="state-input" onchange="updateCitySuggestions()">
-                                <option value="">Selecione UF</option>
-                                <option value="AC">Acre - AC</option>
-                                <option value="AL">Alagoas - AL</option>
-                                <option value="AP">Amapá - AP</option>
-                                <option value="AM" selected>Amazonas - AM</option>
-                                <option value="BA">Bahia - BA</option>
-                                <option value="CE">Ceará - CE</option>
-                                <option value="DF">Distrito Federal - DF</option>
-                                <option value="ES">Espírito Santo - ES</option>
-                                <option value="GO">Goiás - GO</option>
-                                <option value="MA">Maranhão - MA</option>
-                                <option value="MT">Mato Grosso - MT</option>
-                                <option value="MS">Mato Grosso do Sul - MS</option>
-                                <option value="MG">Minas Gerais - MG</option>
-                                <option value="PA">Pará - PA</option>
-                                <option value="PB">Paraíba - PB</option>
-                                <option value="PR">Paraná - PR</option>
-                                <option value="PE">Pernambuco - PE</option>
-                                <option value="PI">Piauí - PI</option>
-                                <option value="RJ">Rio de Janeiro - RJ</option>
-                                <option value="RN">Rio Grande do Norte - RN</option>
-                                <option value="RS">Rio Grande do Sul - RS</option>
-                                <option value="RO">Rondônia - RO</option>
-                                <option value="RR">Roraima - RR</option>
-                                <option value="SC">Santa Catarina - SC</option>
-                                <option value="SP">São Paulo - SP</option>
-                                <option value="SE">Sergipe - SE</option>
-                                <option value="TO">Tocantins - TO</option>
-                                <option value="ZZ">🌎 Outros Países (Exterior)</option>
-                            </select>
+                            <input type="text" id="state-input" list="states-datalist" placeholder="Digite para buscar UF..." value="" oninput="handleStateTyped('register')" onchange="handleStateTyped('register')" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();">
                         </div>
-                        <div class="form-group" style="flex: 1.1;">
+                        <div class="form-group" style="flex: 1.05;">
                             <label id="city-label-text">Município / Capital</label>
-                            <input type="text" id="city-input" placeholder="Digite a cidade..." value="Manaus">
+                            <input type="text" id="city-input" list="cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="updateCityDatalist('register', this.value)" oninput="handleCityTyped('register', false)">
                         </div>
                     </div>
 
-                    <!-- LINHA 3: ZONA E ESCOLARIDADE -->
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
                             <label>Zona / Região</label>
                             <select id="zone-input">
-                                <option value="">Selecione...</option>
+                                <option value="" selected>Selecione...</option>
                                 <option value="Zona Norte">Zona Norte</option>
-                                <option value="Zona Sul" selected>Zona Sul</option>
+                                <option value="Zona Sul">Zona Sul</option>
                                 <option value="Zona Leste">Zona Leste</option>
                                 <option value="Zona Oeste">Zona Oeste</option>
                                 <option value="Zona Centro-Oeste">Zona Centro-Oeste</option>
@@ -688,7 +733,7 @@
                         <div class="form-group" style="flex: 1;">
                             <label>Escolaridade</label>
                             <select id="education-input">
-                                <option value="">Selecione...</option>
+                                <option value="" selected>Selecione...</option>
                                 <option value="Sem Instrução">Sem Instrução</option>
                                 <option value="Fund. Incompleto">Fund. Incompl.</option>
                                 <option value="Fund. Completo">Fund. Compl.</option>
@@ -696,51 +741,50 @@
                                 <option value="Médio Completo">Médio Compl.</option>
                                 <option value="Superior Incompleto">Superior Incompl.</option>
                                 <option value="Superior Completo">Superior Compl.</option>
-                                <option value="Pós-Graduação" selected>Pós-Graduação</option>
+                                <option value="Pós-Graduação">Pós-Graduação</option>
                                 <option value="Mestrado">Mestrado</option>
                                 <option value="Doutorado">Doutorado</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- LINHA 4: RENDA, GÊNERO E COR / RAÇA (IBGE) -->
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
                             <label>Renda Familiar</label>
                             <select id="income-input">
-                                <option value="">Salários Mínimos</option>
+                                <option value="" selected>Salários Mínimos</option>
                                 <option value="1">Até 1 S.M.</option>
                                 <option value="3">1 a 3 S.M.</option>
                                 <option value="5">3 a 5 S.M.</option>
-                                <option value="10" selected>5 a 10 S.M.</option>
+                                <option value="10">5 a 10 S.M.</option>
                                 <option value="11">Acima de 10 S.M.</option>
                             </select>
                         </div>
                         <div class="form-group" style="flex: 1;">
                             <label>Gênero</label>
                             <select id="gender-input">
-                                <option value="">Selecione...</option>
+                                <option value="" selected>Selecione...</option>
                                 <option value="Masculino">Masculino</option>
                                 <option value="Feminino">Feminino</option>
-                                <option value="LGBTQIA+" selected>LGBTQIA+</option>
+                                <option value="LGBTQIA+">LGBTQIA+</option>
                                 <option value="Outro">Outro</option>
                             </select>
                         </div>
                         <div class="form-group" style="flex: 1;">
                             <label>Cor / Raça (IBGE)</label>
                             <select id="race-input">
-                                <option value="">Selecione...</option>
+                                <option value="" selected>Selecione...</option>
                                 <option value="Branca">Branca</option>
                                 <option value="Preta">Preta</option>
                                 <option value="Parda">Parda</option>
                                 <option value="Amarela">Amarela</option>
-                                <option value="Indígena" selected>Indígena</option>
+                                <option value="Indígena">Indígena</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="checkbox-group">
-                        <input type="checkbox" id="lgpd-check" checked>
+                        <input type="checkbox" id="lgpd-check">
                         <label for="lgpd-check" style="color: var(--text-main); font-size: 0.50rem; cursor: pointer; text-align: left;">Autorizo o uso destes dados para fins estatísticos e anonimização conforme LGPD e TSE.</label>
                     </div>
 
@@ -853,7 +897,7 @@
                     <button onclick="goToResults()">Consultar Resultados e Ficha TSE</button>
                 </div>
 
-                <!-- TELA 5: RESULTADOS / PAINEL ANALÍTICO ADM -->
+                <!-- TELA 5: RESULTADOS / PAINEL ANALÍTICO -->
                 <div id="screen-results" class="view hidden">
                     <div style="display: flex; gap: 6px; margin-bottom: 6px;">
                         <div class="admin-stat-card" style="flex: 1;">
@@ -868,51 +912,25 @@
 
                     <div class="result-tabs" id="result-tabs-container"></div>
 
-                    <div class="filter-box">
-                        <div style="display: flex; gap: 6px; margin-bottom: 4px;">
-                            <label style="flex: 1; font-size: 0.52rem; color: var(--text-muted); font-weight: bold;">Estado / Países:</label>
-                            <label id="filter-second-label" style="flex: 1; font-size: 0.52rem; color: var(--text-muted); font-weight: bold;">Município / Países:</label>
+                    <div class="filter-box" id="main-filter-box">
+                        
+                        <div id="geo-search-block">
+                            <div style="display: flex; gap: 6px; margin-bottom: 2px;" id="geographic-labels-row">
+                                <label style="flex: 1; font-size: 0.50rem; color: var(--text-muted); font-weight: bold;">Estado / UF:</label>
+                                <label id="filter-second-label" style="flex: 1; font-size: 0.50rem; color: var(--text-muted); font-weight: bold;">Município / Capital:</label>
+                            </div>
+                            <div style="display: flex; gap: 6px; margin-bottom: 4px;" id="geographic-selectors-wrapper">
+                                <input type="text" id="filter-state-select" list="states-datalist" placeholder="Digite para buscar UF..." value="Amazonas - AM" oninput="handleStateTyped('results', true)" onchange="onStateFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; font-size: 0.52rem; padding: 5px;">
+                                <input type="text" id="filter-city-select" list="filter-cities-datalist" placeholder="Pesquise a cidade..." value="Manaus" onfocus="updateCityDatalist('results', this.value)" oninput="handleCityTyped('results', true)" onchange="onCityFilterChange()" style="flex: 1; font-size: 0.52rem; padding: 5px;">
+                            </div>
                         </div>
 
-                        <div style="display: flex; gap: 6px; margin-bottom: 6px;" id="geographic-selectors-wrapper">
-                            <select id="filter-state-select" onchange="onStateFilterChange()" style="flex: 1; font-size: 0.52rem; padding: 5px;">
-                                <option value="AM">Amazonas - AM</option>
-                                <option value="AC">Acre - AC</option>
-                                <option value="AL">Alagoas - AL</option>
-                                <option value="AP">Amapá - AP</option>
-                                <option value="BA">Bahia - BA</option>
-                                <option value="CE">Ceará - CE</option>
-                                <option value="DF">Distrito Federal - DF</option>
-                                <option value="ES">Espírito Santo - ES</option>
-                                <option value="GO">Goiás - GO</option>
-                                <option value="MA">Maranhão - MA</option>
-                                <option value="MT">Mato Grosso - MT</option>
-                                <option value="MS">Mato Grosso do Sul - MS</option>
-                                <option value="MG">Minas Gerais - MG</option>
-                                <option value="PA">Pará - PA</option>
-                                <option value="PB">Paraíba - PB</option>
-                                <option value="PR">Paraná - PR</option>
-                                <option value="PE">Pernambuco - PE</option>
-                                <option value="PI">Piauí - PI</option>
-                                <option value="RJ">Rio de Janeiro - RJ</option>
-                                <option value="RN">Rio Grande do Norte - RN</option>
-                                <option value="RS">Rio Grande do Sul - RS</option>
-                                <option value="RO">Rondônia - RO</option>
-                                <option value="RR">Roraima - RR</option>
-                                <option value="SC">Santa Catarina - SC</option>
-                                <option value="SP">São Paulo - SP</option>
-                                <option value="SE">Sergipe - SE</option>
-                                <option value="TO">Tocantins - TO</option>
-                                <option value="ZZ">🌎 Outros Países (Exterior)</option>
-                            </select>
-                            
-                            <input type="text" id="filter-city-select" oninput="onCityFilterChange()" placeholder="Digite a cidade..." value="Manaus" style="flex: 1; font-size: 0.52rem; padding: 5px;">
-                        </div>
+                        <label id="macro-label" style="margin-bottom: 2px; color: var(--text-main); font-weight: bold; font-size: 0.50rem;">Recorte Geográfico:</label>
+                        <div id="macro-filters-container"></div>
 
-                        <label id="macro-label" style="margin-bottom: 2px; color: var(--text-main); font-weight: bold; font-size: 0.52rem;">Recorte Geográfico:</label>
-                        <div id="macro-filters-container" class="sub-filters" style="margin-bottom: 4px;"></div>
-                        <div id="section-divider-elem" class="section-divider">📍 Zonas da Cidade Selecionada</div>
-                        <div id="micro-filters-container" class="sub-filters"></div>
+                        <!-- O TÍTULO DAS ZONAS NA TELA 5 É ATUALIZADO PELO JS AGORA -->
+                        <div id="section-divider-elem" class="section-divider">📍 ZONAS DA CIDADE SELECIONADA</div>
+                        <div id="micro-filters-container" class="sub-filters-grid"></div>
                     </div>
 
                     <div class="mode-toggle">
@@ -924,7 +942,7 @@
 
                     <button onclick="openExportReport()" style="background-color: #0f766e; border-color: #14b8a6; font-size: 0.60rem; margin-top: 8px;">📄 Gerar Relatório Oficial Segmentado</button>
 
-                    <div style="background-color: #090d16; padding: 6px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.50rem; color: var(--text-muted); line-height: 1.2; margin-top: 6px;">
+                    <div style="background-color: #090d16; padding: 6px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.48rem; color: var(--text-muted); line-height: 1.2; margin-top: 6px;">
                         <strong style="color: var(--text-main); display: block; margin-bottom: 2px;">Compliance (TSE):</strong>
                         • Protocolo PesqEle: BR-02849/2026 | Amostra: 4.500 Ponderados | Margem: ± 1.5%
                     </div>
@@ -947,7 +965,8 @@
                         <button class="tab-btn" onclick="switchReportCargo('Prefeito', this)">Prefeito</button>
                     </div>
 
-                    <div id="report-dynamic-filters" style="display: flex; gap: 6px; margin-bottom: 6px;"></div>
+                    <!-- CONTAINER DOS FILTROS EM CASCATA DA TELA 6 -->
+                    <div id="report-dynamic-filters" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; width: 100%;"></div>
 
                     <div class="report-preview-box" id="report-content-box"></div>
 
@@ -988,6 +1007,62 @@
         let lastLoadedKey = '';
         let selectedPattern = [];
         let activeMediaInfo = null;
+        let activeReportCargo = 'Presidente';
+
+        const capitalsByState = {
+            'AC': 'Rio Branco', 'AL': 'Maceió', 'AM': 'Manaus', 'AP': 'Macapá', 'BA': 'Salvador',
+            'CE': 'Fortaleza', 'DF': 'Brasília', 'ES': 'Vitória', 'GO': 'Goiânia', 'MA': 'São Luís',
+            'MG': 'Belo Horizonte', 'MS': 'Campo Grande', 'MT': 'Cuiabá', 'PA': 'Belém', 'PB': 'João Pessoa',
+            'PE': 'Recife', 'PI': 'Teresina', 'PR': 'Curitiba', 'RJ': 'Rio de Janeiro', 'RN': 'Natal',
+            'RO': 'Porto Velho', 'RR': 'Boa Vista', 'RS': 'Porto Alegre', 'SC': 'Florianópolis',
+            'SE': 'Aracaju', 'SP': 'São Paulo', 'TO': 'Palmas'
+        };
+
+        const citiesByStateCode = {
+            'AC': ['Acrelândia', 'Assis Brasil', 'Brasiléia', 'Bujari', 'Capixaba', 'Cruzeiro do Sul', 'Epitaciolândia', 'Feijó', 'Jordão', 'Mâncio Lima', 'Manoel Urbano', 'Marechal Thaumaturgo', 'Plácido de Castro', 'Porto Acre', 'Porto Walter', 'Rio Branco', 'Rodrigues Alves', 'Santa Rosa do Purus', 'Sena Madureira', 'Senador Guiomard', 'Tarauacá', 'Xapuri'],
+            'AL': ['Anadia', 'Arapiraca', 'Atalaia', 'Barra de Santo Antônio', 'Barra de São Miguel', 'Batalha', 'Belo Monte', 'Boca da Mata', 'Branquinha', 'Cacimbinhas', 'Cajueiro', 'Campestre', 'Campo Alegre', 'Campo Grande', 'Canapi', 'Capela', 'Carneiros', 'Chã Preta', 'Coité do Nóia', 'Colônia Leopoldina', 'Coqueiro Seco', 'Coruripe', 'Craíbas', 'Delmiro Gouveia', 'Dois Riachos', 'Japaratinga', 'Jaramataia', 'Jequiá da Praia', 'Joaquim Gomes', 'Jundiá', 'Junqueiro', 'Lagoa da Canoa', 'Limoeiro de Anadia', 'Maceió', 'Major Izidoro', 'Maragogi', 'Maravilha', 'Marechal Deodoro', 'Maribondo', 'Mar Vermelho', 'Mata Grande', 'Matriz de Camaragibe', 'Messias', 'Minador do Negrão', 'Monteirópolis', 'Murici', 'Novo Lino', 'Olho d\'Água das Flores', 'Olho d\'Água do Casado', 'Olho d\'Água Grande', 'Olivença', 'Ouro Branco', 'Palestina', 'Palmeira dos Índios', 'Pão de Açúcar', 'Pariconha', 'Paripueira', 'Passo de Camaragibe', 'Paulo Jacinto', 'Penedo', 'Piaçabuçu', 'Pilar', 'Pindoba', 'Piranhas', 'Poço das Trincheiras', 'Porto Calvo', 'Porto de Pedras', 'Porto Real do Colégio', 'Quebrangulo', 'Rio Largo', 'Roteiro', 'Santa Luzia do Norte', 'Santana do Ipanema', 'Santana do Mundaú', 'São Brás', 'São José da Tapera', 'São José da Laje', 'São Luís do Quitunde', 'São Miguel dos Campos', 'São Miguel dos Milagres', 'São Sebastião', 'Satuba', 'Senador Rui Palmeira', 'Tanque d\'Arca', 'Taquarana', 'Teotônio Vilela', 'Traipu', 'União dos Palmares', 'Viçosa'],
+            'AM': ['Alvarães', 'Amaturá', 'Anamã', 'Anori', 'Apuí', 'Atalaia do Norte', 'Autazes', 'Barcelos', 'Barreirinha', 'Benjamin Constant', 'Beruri', 'Boa Vista do Ramos', 'Boca do Acre', 'Borba', 'Caapiranga', 'Canutama', 'Carauari', 'Careiro', 'Careiro da Várzea', 'Coari', 'Codajás', 'Eirunepé', 'Envira', 'Fonte Boa', 'Guajará', 'Humaitá', 'Ipixuna', 'Iranduba', 'Itacoatiara', 'Itamarati', 'Itapiranga', 'Japurá', 'Juruá', 'Jutaí', 'Lábrea', 'Manacapuru', 'Manaquiri', 'Manaus', 'Manicoré', 'Maraã', 'Maués', 'Nhamundá', 'Nova Olinda do Norte', 'Novo Airão', 'Novo Aripuanã', 'Parintins', 'Pauini', 'Presidente Figueiredo', 'Rio Preto da Eva', 'Santa Isabel do Rio Negro', 'Santo Antônio do Içá', 'São Gabriel da Cachoeira', 'São Paulo de Olivença', 'São Sebastião do Uatumã', 'Silves', 'Tabatinga', 'Tapauá', 'Tefé', 'Tonantins', 'Uarini', 'Urucará', 'Urucurituba'],
+            'AP': ['Amapá', 'Calçoene', 'Cutias', 'Ferreira Gomes', 'Itaubal', 'Laranjal do Jari', 'Macapá', 'Mazagão', 'Oiapoque', 'Pedra Branca do Amapari', 'Pracuúba', 'Santana', 'Serra do Navio', 'Tartarugalzinho', 'Vitória do Jari'],
+            'BA': ['Alcobaca', 'Barreiras', 'Bom Jesus da Lapa', 'Brumado', 'Camaçari', 'Eunápolis', 'Feira de Santana', 'Guanambi', 'Ilhéus', 'Irecê', 'Itabuna', 'Itapetinga', 'Jacobina', 'Jequié', 'Juazeiro', 'Lauro de Freitas', 'Luís Eduardo Magalhães', 'Paulo Afonso', 'Porto Seguro', 'Salvador', 'Santo Antônio de Jesus', 'Seabra', 'Teixeira de Freitas', 'Valença', 'Vitória da Conquista'],
+            'CE': ['Aracati', 'Barbalha', 'Baturité', 'Camocim', 'Caucaia', 'Crateús', 'Crato', 'Eusébio', 'Fortaleza', 'Iguatu', 'Itapipoca', 'Juazeiro do Norte', 'Limoeiro do Norte', 'Maracanaú', 'Maranguape', 'Quixadá', 'Quixeramobim', 'Sobral', 'Tianguá', 'Tauá'],
+            'DF': ['Águas Claras', 'Brasília', 'Ceilândia', 'Gama', 'Guará', 'Planaltina', 'Plano Piloto', 'Recanto das Antas', 'Samambaia', 'Santa Maria', 'Sobradinho', 'Taguatinga', 'Vicente Pires'],
+            'ES': ['Aracruz', 'Cachoeiro de Itapemirim', 'Cariacica', 'Colatina', 'Guarapari', 'Linhares', 'Marataízes', 'Nova Venécia', 'São Mateus', 'Serra', 'Vila Velha', 'Vitória'],
+            'GO': ['Águas Lindas de Goiás', 'Anápolis', 'Aparecida de Goiânia', 'Caldas Novas', 'Catalão', 'Formosa', 'Goiânia', 'Itumbiara', 'Jataí', 'Luziânia', 'Rio Verde', 'Senador Canedo', 'Trindade', 'Uruaçu', 'Valparaíso de Goiás'],
+            'MA': ['Açailândia', 'Bacabal', 'Balsas', 'Bar Barra do Corda', 'Caxias', 'Codó', 'Imperatriz', 'Itapecuru Mirim', 'Paço do Lumiar', 'Pinheiro', 'Santa Inês', 'São José de Ribamar', 'São Luís', 'Timon'],
+            'MG': ['Araguari', 'Barbacena', 'Belo Horizonte', 'Betim', 'Caratinga', 'Conselheiro Lafaiete', 'Contagem', 'Coronel Fabriciano', 'Divinópolis', 'Governador Valadares', 'Ibiritė', 'Ipatinga', 'Itabira', 'Itajubá', 'Itaúna', 'Juiz de Fora', 'Lavras', 'Manhuaçu', 'Montes Claros', 'Muriae', 'Nova Lima', 'Passos', 'Patos de Minas', 'Poços de Caldas', 'Pouso Alegre', 'Ribeirão das Neves', 'Sabará', 'Santa Luzia', 'São João del-Rei', 'Seven Lagoas', 'Tófilo Otoni', 'Ubá', 'Uberaba', 'Uberlândia', 'Varginha', 'Viçosa'],
+            'MS': ['Aquidauana', 'Campo Grande', 'Corumbá', 'Coxim', 'Dourados', 'Maracaju', 'Naviraí', 'Nova Andradina', 'Paranaíba', 'Ponta Porã', 'Sidrolândia', 'Três Lagoas'],
+            'MT': ['Alta Floresta', 'Barra do Garças', 'Cáceres', 'Cuiabá', 'Juína', 'Lucas do Rio Verde', 'Pontes e Lacerda', 'Primavera do Leste', 'Rondonópolis', 'Sinop', 'Sorriso', 'Tangará da Serra', 'Várzea Grande'],
+            'PA': ['Abaetetuba', 'Altamira', 'Ananindeua', 'Barcarena', 'Belém', 'Bragança', 'Breves', 'Cametá', 'Castanhal', 'Itaituba', 'Marabá', 'Marituba', 'Paragominas', 'Parauapebas', 'Redenção', 'Santarém', 'Tucuruí'],
+            'PB': ['Bayeux', 'Cabedelo', 'Cajazeiras', 'Campina Grande', 'Guarabira', 'João Pessoa', 'Mamanguape', 'Monteiro', 'Patos', 'Santa Rita', 'Sousa'],
+            'PE': ['Abreu e Lima', 'Araripina', 'Cabo de Santo Agostinho', 'Camaragibe', 'Caruaru', 'Garanhuns', 'Goiana', 'Igarassu', 'Ipojuca', 'Jaboatão dos Guararapes', 'Olinda', 'Ouricuri', 'Paulista', 'Petrolina', 'Recife', 'Salgueiro', 'Serra Talhada', 'Timbaúba', 'Vitória de Santo Antão'],
+            'PI': ['Altos', 'Barras', 'Bom Jesus', 'Campo Maior', 'Esperantina', 'Floriano', 'José de Freitas', 'Parnaíba', 'Picos', 'Piripiri', 'São Raimundo Nonato', 'Teresina', 'União'],
+            'PR': ['Apucarana', 'Arapongas', 'Araucária', 'Campo Largo', 'Cascavel', 'Castro', 'Cianorte', 'Colombo', 'Curitiba', 'Fazenda Rio Grande', 'Foz do Iguaçu', 'Francisco Beltrão', 'Guarapuava', 'Londrina', 'Marechal Cândido Rondon', 'Maringá', 'Paranaguá', 'Paranavaí', 'Pato Branco', 'Pinhais', 'Piraquara', 'Ponta Grossa', 'São José dos Pinhais', 'Toledo', 'Umuarama'],
+            'RJ': ['Angra dos Reis', 'Araruama', 'Barra Mansa', 'Belford Roxo', 'Cabo Frio', 'Campos dos Goytacazes', 'Duque de Caxias', 'Itaboraí', 'Itaguaí', 'Macaé', 'Magé', 'Maricá', 'Mesquita', 'Nilópolis', 'Niterói', 'Nova Friburgo', 'Nova Iguaçu', 'Petrópolis', 'Resende', 'Rio das Ostras', 'Rio de Janeiro', 'São Gonçalo', 'São João de Meriti', 'Teresópolis', 'Volta Redonda'],
+            'RN': ['Açu', 'Apodi', 'Caicó', 'Ceará-Mirim', 'Currais Novos', 'João Câmara', 'Macaíba', 'Mossoró', 'Natal', 'Nova Cruz', 'Parnamirim', 'Santa Cruz', 'São Gonçalo do Amarante', 'São José de Mipibu'],
+            'RO': ['Ariquemes', 'Cacoal', 'Guajará-Mirim', 'Jaru', 'Ji-Paraná', 'Porto Velho', 'Rolim de Moura', 'Vilhena'],
+            'RR': ['Alto Alegre', 'Amajari', 'Boa Vista', 'Bonfim', 'Cantá', 'Caracaraí', 'Caroebe', 'Iracema', 'Mucajaí', 'Normandia', 'Pacaraima', 'Rorainópolis', 'Uiramutã'],
+            'RS': ['Alvorada', 'Bagé', 'Bento Gonçalves', 'Cachoeirinha', 'Camaquã', 'Canoas', 'Caxias do Sul', 'Erechim', 'Gravataí', 'Guaíba', 'Ijuí', 'Lajeado', 'Novo Hamburgo', 'Passo Fundo', 'Pelotas', 'Porto Alegre', 'Rio Grande', 'Santa Cruz do Sul', 'Santa Maria', 'Sant\'Ana do Livramento', 'São Leopoldo', 'Sapucaia do Sul', 'Uruguaiana', 'Viamão'],
+            'SC': ['Balneário Camboriú', 'Blumenau', 'Chapecó', 'Criciúma', 'Florianópolis', 'Itajaí', 'Joinville', 'Lages', 'São José', 'Tubarão'],
+            'SE': ['Aracaju', 'Estância', 'Itabaiana', 'Lagarto', 'Nossa Senhora do Socorro', 'São Cristóvão', 'Simão Dias', 'Tobias Barreto'],
+            'SP': ['Americana', 'Araçatuba', 'Araraquara', 'Bauru', 'Campinas', 'Carapicuíba', 'Diadema', 'Franca', 'Guarulhos', 'Itaquaquecetuba', 'Jundiaí', 'Limeira', 'Mauá', 'Mogi das Cruzes', 'Osasco', 'Piracicaba', 'Praia Grande', 'Presidente Prudente', 'Ribeirão Preto', 'Santo André', 'Santos', 'São Bernardo do Campo', 'São José do Rio Preto', 'São José dos Campos', 'São Paulo', 'Sorocaba', 'Sumaré', 'Taubaté'],
+            'TO': ['Araguaína', 'Araguatins', 'Colinas do Tocantins', 'Guaraí', 'Gurupi', 'Miracema do Tocantins', 'Palmas', 'Paraíso do Tocantins', 'Porto Nacional', 'Tocantinópolis']
+        };
+
+        const cityZonesAlphabetical = [
+            "Centro / Central",
+            "Rural / Distritos",
+            "Zona Centro-Oeste",
+            "Zona Centro-Sul",
+            "Zona Leste",
+            "Zona Norte",
+            "Zona Oeste",
+            "Zona Sul",
+            "Zona Urbana"
+        ];
+
+        const internationalCountryList = [
+            "Todos os Países", "Alemanha", "Angola", "Argentina", "Austrália", "Áustria", "Bélgica", "Bolívia", "Canadá", "Chile", "China", "Colômbia", "Coreia do Sul", "Dinamarca", "Emirados Árabes Unidos", "Espanha", "Estados Unidos (EUA)", "França", "Holanda", "Irlanda", "Israel", "Itália", "Japão", "México", "Moçambique", "Noruega", "Nova Zelândia", "Paraguai", "Peru", "Portugal", "Reino Unido", "Suíça", "Uruguai", "Venezuela"
+        ];
 
         const demoMediaKeys = {
             'TV-AM-2026': { name: 'Rede Amazônica de Comunicação', type: 'Emissora de TV / Rádio', tier: 'Licenciamento Estadual' },
@@ -1033,30 +1108,6 @@
             }
         };
 
-        const statesOptionsHTML = `
-            <option value="AC">Acre - AC</option><option value="AL">Alagoas - AL</option><option value="AP">Amapá - AP</option>
-            <option value="AM" selected>Amazonas - AM</option><option value="BA">Bahia - BA</option><option value="CE">Ceará - CE</option>
-            <option value="DF">Distrito Federal - DF</option><option value="ES">Espírito Santo - ES</option><option value="GO">Goiás - GO</option>
-            <option value="MA">Maranhão - MA</option><option value="MT">Mato Grosso - MT</option><option value="MS">Mato Grosso do Sul - MS</option>
-            <option value="MG">Minas Gerais - MG</option><option value="PA">Pará - PA</option><option value="PB">Paraíba - PB</option>
-            <option value="PR">Paraná - PR</option><option value="PE">Pernambuco - PE</option><option value="PI">Piauí - PI</option>
-            <option value="RJ">Rio de Janeiro - RJ</option><option value="RN">Rio Grande do Norte - RN</option><option value="RS">Rio Grande do Sul - RS</option>
-            <option value="RO">Rondônia - RO</option><option value="RR">Roraima - RR</option><option value="SC">Santa Catarina - SC</option>
-            <option value="SP">São Paulo - SP</option><option value="SE">Sergipe - SE</option><option value="TO">Tocantins - TO</option>
-        `;
-
-        const zonesOptionsHTML = `
-            <option value="Zona Norte">Zona Norte</option><option value="Zona Sul">Zona Sul</option>
-            <option value="Zona Leste">Zona Leste</option><option value="Zona Oeste">Zona Oeste</option>
-            <option value="Zona Centro-Oeste">Zona Centro-Oeste</option><option value="Zona Centro-Sul">Zona Centro-Sul</option>
-            <option value="Zona Central / Centro">Zona Central / Centro</option><option value="Zona Rural / Distritos">Zona Rural / Distritos</option>
-        `;
-
-        const internationalCountryList = [
-            "Todos os Países", "Estados Unidos (EUA)", "Portugal", "Japão", "Espanha", "Reino Unido", "França", "Itália", "Alemanha", "Argentina"
-        ];
-
-        /* FORMATADORES DE TECLADO AUTOMÁTICOS */
         function autoMaskPhone(input) {
             if (!input) return;
             let digits = input.value.replace(/\D/g, "");
@@ -1103,12 +1154,101 @@
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
-        function updateCitySuggestions() {
-            const stateVal = document.getElementById('state-input').value;
-            const cityLabel = document.getElementById('city-label-text');
-            if(stateVal === 'ZZ') cityLabel.innerText = "🌎 País (Exterior)";
-            else cityLabel.innerText = "Município / Capital";
+        function getUFCodeFromInput(textVal) {
+            if (!textVal) return '';
+            const upper = textVal.toUpperCase().trim();
+            if (upper.includes('EXTERIOR') || upper.includes('OUTROS PAÍSES') || upper === 'ZZ') return 'ZZ';
+            
+            const matchSigla = upper.match(/(?:-\s*|\b)([A-Z]{2})\b$/) || upper.match(/\b([A-Z]{2})\b/);
+            if (matchSigla) {
+                for (let i = matchSigla.length - 1; i >= 1; i--) {
+                    if (citiesByStateCode[matchSigla[i]]) return matchSigla[i];
+                }
+            }
+            return '';
         }
+
+        function removeAccents(str) {
+            if (!str) return '';
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        }
+
+        // CORREÇÃO FOTO 1: Filtro inteligente para "Starts With" (Começa com)
+        function updateCityDatalist(context = 'register', typedValue = '') {
+            let stateVal = '';
+            let datalistElem = null;
+            let cityInputElem = null;
+
+            if (context === 'register') {
+                stateVal = document.getElementById('state-input').value;
+                datalistElem = document.getElementById('cities-datalist');
+                cityInputElem = document.getElementById('city-input');
+            } else if (context === 'results') {
+                stateVal = document.getElementById('filter-state-select').value;
+                datalistElem = document.getElementById('filter-cities-datalist');
+                cityInputElem = document.getElementById('filter-city-select');
+            } else if (context === 'report') {
+                stateVal = document.getElementById('rep-estado').value;
+                datalistElem = document.getElementById('rep-cities-datalist');
+                cityInputElem = document.getElementById('rep-city-report');
+            }
+
+            if (!datalistElem || !cityInputElem) return;
+
+            const code = getUFCodeFromInput(stateVal);
+            datalistElem.innerHTML = '';
+
+            let sourceList = [];
+            if (code === 'ZZ') {
+                cityInputElem.placeholder = "Pesquise o país...";
+                sourceList = internationalCountryList;
+            } else if (code && citiesByStateCode[code]) {
+                cityInputElem.placeholder = "Pesquise a cidade...";
+                sourceList = citiesByStateCode[code];
+            } else {
+                cityInputElem.placeholder = "Pesquise a cidade...";
+                sourceList = Object.values(citiesByStateCode).flat();
+            }
+
+            // Filtra a lista para mostrar APENAS as que COMEÇAM com o que foi digitado
+            if (typedValue) {
+                const lowerTyped = removeAccents(typedValue).toLowerCase();
+                sourceList = sourceList.filter(city => removeAccents(city).toLowerCase().startsWith(lowerTyped));
+            }
+
+            const fragment = document.createDocumentFragment();
+            sourceList.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                fragment.appendChild(opt);
+            });
+            datalistElem.appendChild(fragment);
+        }
+
+        function handleStateTyped(context = 'register', autoRender = false) {
+            updateCityDatalist(context, '');
+            if (context === 'results' && autoRender) {
+                renderFilterSections();
+            }
+        }
+
+        function handleCityTyped(context = 'register', autoRender = false) {
+            let cityInputElem = null;
+            if (context === 'register') cityInputElem = document.getElementById('city-input');
+            else if (context === 'results') cityInputElem = document.getElementById('filter-city-select');
+            else if (context === 'report') cityInputElem = document.getElementById('rep-city-report');
+            
+            if (cityInputElem) {
+                 updateCityDatalist(context, cityInputElem.value);
+            }
+
+            if (context === 'results' && autoRender) {
+                renderFilterSections();
+            }
+        }
+        
+        handleStateTyped('register');
+        handleStateTyped('results');
 
         function openAdminLogin() {
             document.getElementById('screen-register').classList.add('hidden');
@@ -1155,20 +1295,33 @@
             } else showToast('❌ Chave incorreta. Tente "adm2026".', true);
         }
         
-        /* AVANÇO GARANTIDO E SEM TRAVAS PARA QUALQUER CELULAR */
         function goToAuth() {
             const phoneInput = document.getElementById('whatsapp-input');
             const birthInput = document.getElementById('birthdate-input');
             autoMaskPhone(phoneInput);
             autoMaskDate(birthInput);
 
-            const state = document.getElementById('state-input').value;
+            const phone = phoneInput.value.trim();
+            const birth = birthInput.value.trim();
+            const state = document.getElementById('state-input').value.trim();
             const city = document.getElementById('city-input').value.trim();
+            const zone = document.getElementById('zone-input').value;
+            const education = document.getElementById('education-input').value;
+            const income = document.getElementById('income-input').value;
+            const gender = document.getElementById('gender-input').value;
+            const race = document.getElementById('race-input').value;
             const lgpd = document.getElementById('lgpd-check').checked;
 
-            if(!state) { showToast('⚠️ Selecione o Estado / UF.', true); return; }
-            if(!city) { showToast('⚠️ Digite ou informe o Município.', true); return; }
-            if(!lgpd) { showToast('⚠️ Marque o aceite do termo LGPD.', true); return; }
+            if(!phone) { showToast('⚠️ Informe seu (DDD) WhatsApp.', true); return; }
+            if(!birth) { showToast('⚠️ Data de nascimento obrigatória.', true); return; }
+            if(!state) { showToast('⚠️ Selecione ou digite o Estado / UF.', true); return; }
+            if(!city) { showToast('⚠️ Digite ou selecione o Município.', true); return; }
+            if(!zone) { showToast('⚠️ Selecione a Zona / Região.', true); return; }
+            if(!education) { showToast('⚠️ Selecione o grau de Escolaridade.', true); return; }
+            if(!income) { showToast('⚠️ Selecione a faixa de Renda Familiar.', true); return; }
+            if(!gender) { showToast('⚠️ Selecione o Gênero.', true); return; }
+            if(!race) { showToast('⚠️ Selecione a Cor / Raça (IBGE).', true); return; }
+            if(!lgpd) { showToast('⚠️ Marque a autorização LGPD/TSE.', true); return; }
 
             activeMediaInfo = null;
             document.getElementById('screen-register').classList.add('hidden');
@@ -1267,11 +1420,20 @@
 
         const hierarchicalData = {
             president: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 42.0 }, { name: "Candidato Beta", percent: 36.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 11.0, color: "#334155" } ] } },
+            president_2t: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 48.0 }, { name: "Candidato Beta", percent: 45.0 }, { name: "Votos Brancos", percent: 3.0, color: "#64748b" }, { name: "Votos Nulos", percent: 2.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 2.0, color: "#334155" } ] } },
             governor: { datasets: { "Geral Estado": [ { name: "Candidato Delta", percent: 48.0 }, { name: "Candidato Ômega", percent: 32.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 9.0, color: "#334155" } ] } },
-            mayor: { datasets: { "Geral da Capital": [ { name: "Candidato X", percent: 46.0 }, { name: "Candidato Y", percent: 40.0 }, { name: "Votos Brancos", percent: 5.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 5.0, color: "#334155" } ] } }
+            mayor: { datasets: { "Geral do Município": [ { name: "Candidato X", percent: 46.0 }, { name: "Candidato Y", percent: 40.0 }, { name: "Votos Brancos", percent: 5.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 4.0, color: "#334155" } ] } }
         };
-        const presidentFilters = ["Geral do País", "Região Norte", "Região Nordeste", "Região Centro-Oeste", "Região Sudeste", "Região Sul"];
-        const macroStateFilters = ["Geral Estado", "Geral da Capital", "Geral do Interior"];
+        
+        const presidentFilters = [
+            "Geral do País", 
+            "Exterior (Votação em Consulados)",
+            "Região Norte", 
+            "Região Nordeste", 
+            "Região Centro-Oeste", 
+            "Região Sudeste", 
+            "Região Sul"
+        ];
 
         function setupResultTabs() {
             const tabsContainer = document.getElementById('result-tabs-container'); tabsContainer.innerHTML = '';
@@ -1281,57 +1443,186 @@
                 tabBtn.onclick = (e) => switchResultTab(ballot.id, e.currentTarget);
                 tabsContainer.appendChild(tabBtn);
             });
-            switchResultTab(activeBallots[0].id, tabsContainer.querySelector('.tab-btn'));
+            if (activeBallots.length > 0) {
+                switchResultTab(activeBallots[0].id, tabsContainer.querySelector('.tab-btn'));
+            }
         }
+
+        function onStateFilterChange() { renderFilterSections(); }
+        function onCityFilterChange() { renderFilterSections(); }
 
         function switchResultTab(category, btnElement) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btnElement.classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+            btnElement.classList.add('active');
             lastLoadedCategory = category;
-            const stateSelect = document.getElementById('filter-state-select');
-            let sHTML = `<option value="">Selecione UF</option>${statesOptionsHTML}`;
-            if(category === 'president' || category === 'president_2t') sHTML += `<option value="ZZ">🌎 Outros Países (Exterior)</option>`;
-            stateSelect.innerHTML = sHTML;
-            stateSelect.value = 'AM';
-            onStateFilterChange();
-        }
-
-        function onStateFilterChange() {
-            const stateVal = document.getElementById('filter-state-select').value;
-            const secondLabel = document.getElementById('filter-second-label');
-            if(stateVal === 'ZZ') secondLabel.innerText = "Países:";
-            else secondLabel.innerText = "Município / Países:";
             renderFilterSections();
         }
 
-        function onCityFilterChange() { renderFilterSections(); }
-
         function renderFilterSections() {
+            const filterBox = document.getElementById('main-filter-box');
             const macroContainer = document.getElementById('macro-filters-container'); 
             const microContainer = document.getElementById('micro-filters-container');
             const dividerElem = document.getElementById('section-divider-elem'); 
             const macroLabel = document.getElementById('macro-label');
+            const geoBlock = document.getElementById('geo-search-block');
+
             macroContainer.innerHTML = ''; microContainer.innerHTML = '';
-            
-            const stateVal = document.getElementById('filter-state-select').value;
-            if(lastLoadedCategory === 'president' || lastLoadedCategory === 'president_2t') {
-                dividerElem.style.display = 'none'; macroLabel.style.display = 'block'; macroLabel.innerText = "Recorte Geográfico (Federal):";
-                if(stateVal === 'ZZ') { lastLoadedKey = "Outros Países"; renderSimulatedDataset(lastLoadedCategory, "Outros Países"); macroLabel.style.display = 'none'; } 
-                else {
-                    presidentFilters.forEach((f, i) => {
-                        const b = document.createElement('button'); b.className = `sub-filter-btn ${i===0?'active':''}`; b.innerText = f;
-                        b.onclick = (e) => { document.querySelectorAll('.sub-filter-btn').forEach(x=>x.classList.remove('active')); e.currentTarget.classList.add('active'); lastLoadedKey = f; renderSimulatedDataset(lastLoadedCategory, f); };
-                        macroContainer.appendChild(b);
-                    });
-                    lastLoadedKey = presidentFilters[0]; renderSimulatedDataset(lastLoadedCategory, presidentFilters[0]);
-                }
-            } else {
-                dividerElem.style.display = 'block'; macroLabel.style.display = 'block'; macroLabel.innerText = "Recorte Geográfico:";
-                macroStateFilters.forEach((f, i) => {
-                    const b = document.createElement('button'); b.className = `sub-filter-btn ${i===0?'active':''}`; b.innerText = f;
-                    b.onclick = (e) => { document.querySelectorAll('.sub-filter-btn').forEach(x=>x.classList.remove('active')); e.currentTarget.classList.add('active'); lastLoadedKey = f; renderSimulatedDataset(lastLoadedCategory, f); };
-                    macroContainer.appendChild(b);
+
+            if (lastLoadedCategory === 'president' || lastLoadedCategory === 'president_2t') {
+                filterBox.appendChild(geoBlock);
+
+                macroLabel.style.display = 'block'; 
+                macroLabel.innerText = "Recorte Geográfico (Federal & Exterior):";
+                dividerElem.style.display = 'none';
+                microContainer.style.display = 'none';
+
+                const gridDiv = document.createElement('div');
+                gridDiv.style.display = 'grid';
+                gridDiv.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                gridDiv.style.gap = '4px';
+                gridDiv.style.marginTop = '4px';
+
+                presidentFilters.forEach((f, i) => {
+                    const b = document.createElement('button'); 
+                    b.className = `stacked-filter-btn ${i===0?'active':''}`; 
+                    b.innerText = f;
+                    if (f === 'Região Sul') b.style.gridColumn = 'span 2';
+                    b.onclick = (e) => { 
+                        document.querySelectorAll('#macro-filters-container .stacked-filter-btn').forEach(x=>x.classList.remove('active')); 
+                        e.currentTarget.classList.add('active'); 
+                        lastLoadedKey = f; 
+                        renderSimulatedDataset(lastLoadedCategory, f); 
+                    };
+                    gridDiv.appendChild(b);
                 });
-                lastLoadedKey = macroStateFilters[0]; renderSimulatedDataset(lastLoadedCategory, macroStateFilters[0]);
+                macroContainer.appendChild(gridDiv);
+
+                lastLoadedKey = presidentFilters[0]; 
+                renderSimulatedDataset(lastLoadedCategory, presidentFilters[0]);
+
+            } 
+            else if (lastLoadedCategory === 'mayor' || lastLoadedCategory === 'mayor_2t') {
+                filterBox.insertBefore(geoBlock, macroLabel);
+
+                macroLabel.style.display = 'block'; 
+                macroLabel.innerText = "Recorte Geográfico (Municipal):";
+                
+                const stackDiv = document.createElement('div');
+                stackDiv.className = 'stacked-filters';
+                const bGeral = document.createElement('button');
+                bGeral.className = 'stacked-filter-btn active';
+                bGeral.innerText = 'Geral do Município';
+                bGeral.onclick = (e) => {
+                    document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
+                    document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    lastLoadedKey = 'Geral do Município';
+                    renderSimulatedDataset(lastLoadedCategory, 'Geral do Município');
+                };
+                stackDiv.appendChild(bGeral);
+                macroContainer.appendChild(stackDiv);
+
+                // CORREÇÃO FOTOS 2 E 3 (NOME DA CIDADE NAS ZONAS DO PREFEITO)
+                const stateVal = document.getElementById('filter-state-select').value;
+                const cityVal = document.getElementById('filter-city-select').value.trim();
+                const ufCode = getUFCodeFromInput(stateVal) || 'AM';
+                const capitalName = capitalsByState[ufCode] || 'Manaus';
+                const displayCity = cityVal.length > 0 ? cityVal : capitalName;
+
+                dividerElem.style.display = 'block';
+                dividerElem.innerText = `📍 ZONAS DE ${displayCity.toUpperCase()} (${ufCode})`;
+                microContainer.style.display = 'grid';
+
+                cityZonesAlphabetical.forEach((z) => {
+                    const b = document.createElement('button'); 
+                    b.className = 'grid-filter-btn'; 
+                    b.innerText = z;
+                    b.onclick = (e) => {
+                        document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
+                        document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
+                        e.currentTarget.classList.add('active'); 
+                        lastLoadedKey = z; 
+                        renderSimulatedDataset(lastLoadedCategory, z);
+                    };
+                    microContainer.appendChild(b);
+                });
+
+                lastLoadedKey = 'Geral do Município'; 
+                renderSimulatedDataset(lastLoadedCategory, 'Geral do Município');
+
+            } 
+            else {
+                filterBox.insertBefore(geoBlock, macroLabel);
+
+                macroLabel.style.display = 'block'; 
+                macroLabel.innerText = "Recorte Geográfico (Estadual):";
+                dividerElem.style.display = 'block';
+                microContainer.style.display = 'grid';
+
+                const stateVal = document.getElementById('filter-state-select').value;
+                const cityVal = document.getElementById('filter-city-select').value.trim();
+                const ufCode = getUFCodeFromInput(stateVal) || 'AM';
+                const capitalName = capitalsByState[ufCode] || 'Manaus';
+
+                let activeMacro = "Geral Estado";
+                if (cityVal.length > 0) {
+                    if (removeAccents(cityVal) === removeAccents(capitalName)) {
+                        activeMacro = "Geral da Capital";
+                    } else {
+                        activeMacro = "Geral do Interior";
+                    }
+                }
+
+                if (cityVal.length > 0) {
+                    dividerElem.innerText = `📍 ZONAS DE ${cityVal.toUpperCase()} (${ufCode})`;
+                } else {
+                    dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
+                }
+
+                const stackDiv = document.createElement('div');
+                stackDiv.className = 'stacked-filters';
+
+                const macroOptions = ["Geral Estado", "Geral da Capital", "Geral do Interior"];
+
+                macroOptions.forEach((f) => {
+                    const b = document.createElement('button'); 
+                    b.className = `stacked-filter-btn ${f === activeMacro ? 'active' : ''}`; 
+                    b.innerText = f;
+                    b.onclick = (e) => { 
+                        document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active')); 
+                        document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
+                        e.currentTarget.classList.add('active'); 
+
+                        if (f === 'Geral da Capital') {
+                            document.getElementById('filter-city-select').value = capitalName;
+                            dividerElem.innerText = `📍 ZONAS DE ${capitalName.toUpperCase()} (${ufCode})`;
+                        } else if (f === 'Geral Estado') {
+                            dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
+                        }
+
+                        lastLoadedKey = f; 
+                        renderSimulatedDataset(lastLoadedCategory, f); 
+                    };
+                    stackDiv.appendChild(b);
+                });
+                macroContainer.appendChild(stackDiv);
+
+                cityZonesAlphabetical.forEach((z) => {
+                    const b = document.createElement('button'); 
+                    b.className = `grid-filter-btn`; 
+                    b.innerText = z;
+                    b.onclick = (e) => {
+                        document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
+                        document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
+                        e.currentTarget.classList.add('active'); 
+                        lastLoadedKey = z; 
+                        renderSimulatedDataset(lastLoadedCategory, z);
+                    };
+                    microContainer.appendChild(b);
+                });
+
+                lastLoadedKey = activeMacro; 
+                renderSimulatedDataset(lastLoadedCategory, activeMacro);
             }
         }
 
@@ -1366,8 +1657,6 @@
             });
         }
 
-        let activeReportCargo = 'Presidente';
-
         function openExportReport() {
             document.getElementById('screen-results').classList.add('hidden');
             document.getElementById('screen-export').classList.remove('hidden');
@@ -1384,59 +1673,109 @@
         function renderReportFilters() {
             const container = document.getElementById('report-dynamic-filters');
             container.innerHTML = '';
-
+            
             if (activeReportCargo === 'Presidente') {
                 container.innerHTML = `
-                    <select id="rep-nivel" onchange="updateReportSubfilters()" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        <option value="Geral (Brasil)">Geral (Brasil)</option>
-                        <option value="Por Região">Por Região</option>
-                        <option value="Por Estado">Por Estado (UF)</option>
-                        <option value="Por Capitais">Por Capitais</option>
-                        <option value="Por Município">Por Município</option>
-                        <option value="Exterior">Exterior</option>
-                    </select>
-                    <select id="rep-detalhe" onchange="generateDynamicReport()" style="flex: 1; padding: 5px; font-size: 0.52rem; display: none; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;"></select>
+                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
+                        <select id="rep-nivel" onchange="updateReportSubfilters()" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <option value="Geral (Brasil)">Geral (Brasil)</option>
+                            <option value="Por Região">Por Região</option>
+                            <option value="Por Estado (UF)">Por Estado (UF)</option>
+                            <option value="Por Município">Por Município</option>
+                            <option value="Exterior (Consulados)">Exterior (Consulados)</option>
+                        </select>
+                        <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="generateDynamicReport()"></select>
+                    </div>
+                    
+                    <!-- CORREÇÃO FOTO 4: Mostra Estado -> Município em cascata para Presidente quando "Por Município" -->
+                    <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%; margin-bottom: 4px;">
+                        <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                        <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                    </div>
                 `;
             } else if (activeReportCargo === 'Governador' || activeReportCargo === 'Senador') {
                 container.innerHTML = `
-                    <select id="rep-estado" onchange="generateDynamicReport()" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        ${statesOptionsHTML}
-                    </select>
-                    <select id="rep-nivel" onchange="updateReportSubfilters()" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        <option value="Geral (Estado)">Geral (Estado)</option>
-                        <option value="Capital">Capital</option>
-                        <option value="Zonas da Capital">Zonas da Capital</option>
-                        <option value="Geral Interior">Geral Interior</option>
-                    </select>
+                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
+                        <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                        
+                        <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
+                        <!-- CORREÇÃO FOTO 5: Nomenclatura explícita para evitar conflito/ambiguidade -->
+                        <select id="rep-nivel" onchange="generateDynamicReport()" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <option value="Geral (Todo o Estado)">Geral (Todo o Estado)</option>
+                            <option value="Geral (Apenas o Município)">Geral (Apenas o Município)</option>
+                            <option value="Centro / Central (Município)">Centro / Central (Município)</option>
+                            <option value="Zona Norte (Município)">Zona Norte (Município)</option>
+                            <option value="Zona Sul (Município)">Zona Sul (Município)</option>
+                            <option value="Zona Leste (Município)">Zona Leste (Município)</option>
+                            <option value="Zona Oeste (Município)">Zona Oeste (Município)</option>
+                            <option value="Zona Rural / Distritos (Município)">Zona Rural / Distritos (Município)</option>
+                        </select>
+                    </div>
                 `;
             } else if (activeReportCargo === 'Prefeito') {
                 container.innerHTML = `
-                    <select id="rep-estado" onchange="generateDynamicReport()" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        ${statesOptionsHTML}
-                    </select>
-                    <input type="text" id="rep-city" oninput="generateDynamicReport()" placeholder="Digite a cidade..." value="Manaus" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
+                         <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                         
+                         <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                    </div>
+                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
+                        <select id="rep-nivel" onchange="generateDynamicReport()" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <option value="Geral Município">Geral Município</option>
+                            <option value="Centro / Central">Centro / Central</option>
+                            <option value="Zona Norte">Zona Norte</option>
+                            <option value="Zona Sul">Zona Sul</option>
+                            <option value="Zona Leste">Zona Leste</option>
+                            <option value="Zona Oeste">Zona Oeste</option>
+                            <option value="Zona Rural / Distritos">Zona Rural / Distritos</option>
+                        </select>
+                    </div>
                 `;
             }
             updateReportSubfilters();
         }
 
         function updateReportSubfilters() {
-            if(activeReportCargo === 'Presidente') {
+            if (activeReportCargo === 'Presidente') {
                 const nivel = document.getElementById('rep-nivel').value;
-                const detalhe = document.getElementById('rep-detalhe');
-                detalhe.style.display = 'block';
+                const detalheSelect = document.getElementById('rep-detalhe-select');
+                const municipioRow = document.getElementById('rep-presidente-municipio-row');
+                
+                if (!detalheSelect || !municipioRow) return;
+                
+                detalheSelect.innerHTML = '';
+                detalheSelect.style.display = 'none';
+                municipioRow.style.display = 'none';
 
-                if(nivel === 'Geral (Brasil)' || nivel === 'Por Capitais') {
-                    detalhe.style.display = 'none';
-                } else if(nivel === 'Por Região') {
-                    detalhe.innerHTML = '<option>Norte</option><option>Nordeste</option><option>Centro-Oeste</option><option>Sudeste</option><option>Sul</option>';
-                } else if(nivel === 'Por Estado' || nivel === 'Por Município') {
-                    detalhe.innerHTML = statesOptionsHTML;
-                } else if(nivel === 'Exterior') {
-                    let cHTML = ''; internationalCountryList.forEach(c => cHTML+=`<option>${c}</option>`);
-                    detalhe.innerHTML = cHTML;
+                if (nivel === 'Geral (Brasil)') {
+                    // oculto
+                } else if (nivel === 'Por Município') {
+                    // Mostra as duas colunas corretas (Foto 4)
+                    municipioRow.style.display = 'flex';
+                } else {
+                    detalheSelect.style.display = 'block';
+                    let options = [];
+                    
+                    if (nivel === 'Por Região') {
+                        options = ['Região Norte', 'Região Nordeste', 'Região Centro-Oeste', 'Região Sudeste', 'Região Sul'];
+                    } else if (nivel === 'Por Estado (UF)') {
+                        const stateOptions = Array.from(document.getElementById('states-datalist').options);
+                        options = stateOptions.map(opt => opt.value).filter(val => val !== "Outros Países (Exterior)");
+                    } else if (nivel === 'Exterior (Consulados)') {
+                        options = internationalCountryList.filter(c => c !== "Todos os Países");
+                    }
+
+                    options.forEach(optVal => {
+                        const opt = document.createElement('option');
+                        opt.value = optVal;
+                        opt.innerText = optVal;
+                        detalheSelect.appendChild(opt);
+                    });
                 }
-            }
+            } 
             generateDynamicReport();
         }
 
@@ -1447,28 +1786,52 @@
             
             if(activeReportCargo === 'Presidente') { 
                 const nivel = document.getElementById('rep-nivel').value;
-                const detalhe = document.getElementById('rep-detalhe') ? document.getElementById('rep-detalhe').value : '';
-                filterDesc = `<li><strong>Abrangência:</strong> ${nivel} ${detalhe ? '- ' + detalhe : ''}</li>`;
+                if (nivel === 'Por Município') {
+                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
+                    const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
+                    filterDesc = `<li><strong>Abrangência:</strong> Município Específico</li>`;
+                    if(estado) filterDesc += `<li><strong>Estado (UF):</strong> ${estado}</li>`;
+                    if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                } else {
+                    const detalheSelect = document.getElementById('rep-detalhe-select');
+                    const detalhe = (detalheSelect && detalheSelect.style.display !== 'none') ? detalheSelect.value : '';
+                    filterDesc = `<li><strong>Abrangência:</strong> ${nivel} ${detalhe ? ' - ' + detalhe : ''}</li>`;
+                }
                 candA = 48.5; candB = 41.2; 
                 candAName = "Candidato Alpha (PTX)"; candBName = "Candidato Beta (PLZ)";
             }
             else if(activeReportCargo === 'Governador') { 
-                const estado = document.getElementById('rep-estado').value;
+                const estado = document.getElementById('rep-estado').value || 'Geral Brasil';
+                const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
+                const nivel = document.getElementById('rep-nivel').value;
+                
                 filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li>`;
+                if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                if(nivel && !nivel.includes('Geral (Todo o Estado)')) filterDesc += `<li><strong>Zona / Região:</strong> ${nivel}</li>`;
+                
                 candA = 51.0; candB = 38.0; 
                 candAName = "Candidato Delta (PSB)"; candBName = "Candidato Ômega (PSD)";
             }
             else if(activeReportCargo === 'Senador') { 
-                const estado = document.getElementById('rep-estado').value;
+                const estado = document.getElementById('rep-estado').value || 'Geral Brasil';
+                const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
+                const nivel = document.getElementById('rep-nivel').value;
+                
                 filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li>`;
+                if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                if(nivel && !nivel.includes('Geral (Todo o Estado)')) filterDesc += `<li><strong>Zona / Região:</strong> ${nivel}</li>`;
+                
                 candA = 34.0; candB = 28.0; 
                 candAName = "Candidato Um (MDB)"; candBName = "Candidato Dois (UNIÃO)";
             }
             else if(activeReportCargo === 'Prefeito') { 
-                const estado = document.getElementById('rep-estado').value;
-                const cityElem = document.getElementById('rep-city');
-                const city = cityElem ? cityElem.value : 'Manaus';
-                filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li><li><strong>Município:</strong> ${city}</li>`;
+                const estado = document.getElementById('rep-estado').value || 'Não Selecionado';
+                const cityElem = document.getElementById('rep-city-report');
+                const city = cityElem && cityElem.value ? cityElem.value : 'Não Selecionado';
+                const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral';
+                
+                filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li><li><strong>Município:</strong> ${city}</li><li><strong>Zona / Região:</strong> ${nivel}</li>`;
+                
                 candA = 46.0; candB = 40.0; 
                 candAName = "Candidato X (UNIÃO)"; candBName = "Candidato Y (PSD)";
             }
@@ -1488,7 +1851,7 @@
 
             let reportHTML = `
                 ${mediaHeaderHTML}
-                <h3>DOCUMENTO DE IMPRENSA & CONFORMIDADE</h3>
+                <h3>PESQUISA JUSTA — PLACAR ELEITORAL OFICIAL</h3>
                 <p style="text-align:center; font-size: 0.52rem; color: #64748b; margin-bottom: 6px;">Protocolo PesqEle: BR-02849/2026 | Turno: ${currentTurn}º</p>
                 <hr>
                 <div class="report-section-title">📊 CARGO ANALISADO: ${activeReportCargo.toUpperCase()}</div>
@@ -1498,10 +1861,17 @@
                     ${filterDesc}
                 </ul>
                 
-                <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 6px; border-radius: 6px;">
-                    <p style="margin-top: 2px;">• ${candAName}: <strong>${candA}%</strong></p>
-                    <p>• ${candBName}: <strong>${candB}%</strong></p>
-                    <p style="margin-bottom: 2px;">• Votos Brancos / Nulos / Indecisos: <strong>${rest}%</strong></p>
+                <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px;">
+                    <p style="margin-top: 2px;">📺 <strong>Placar Telejornal / Intenção de Voto:</strong></p>
+                    <p>• 🟢 ${candAName}: <strong>${candA}%</strong></p>
+                    <p>• 🔵 ${candBName}: <strong>${candB}%</strong></p>
+                    <p style="margin-bottom: 2px;">• ⚪ Brancos / Nulos / Indecisos: <strong>${rest}%</strong></p>
+                </div>
+
+                <div style="margin-top: 6px; background-color: #f1f5f9; padding: 6px; border-radius: 4px; font-size: 0.50rem; color: #475569;">
+                    <strong>Ficha Técnica & Cobertura TSE:</strong><br>
+                    • Período de Campo: 5 dias (Amostra Ponderada)<br>
+                    • Margem de Erro: ± 1.5% (Confiança 95%)
                 </div>
                 
                 <p style="font-size: 0.48rem; color: #94a3b8; text-align: center; margin-top: 8px;">Amostra segmentada extraída oficialmente do sistema cego.</p>
@@ -1566,6 +1936,18 @@
         function resetApp() {
             currentStep = 0; votesData = {}; selectedPattern = []; activeMediaInfo = null;
             document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
+            
+            document.getElementById('whatsapp-input').value = '';
+            document.getElementById('birthdate-input').value = '';
+            document.getElementById('state-input').value = '';
+            document.getElementById('city-input').value = '';
+            document.getElementById('zone-input').selectedIndex = 0;
+            document.getElementById('education-input').selectedIndex = 0;
+            document.getElementById('income-input').selectedIndex = 0;
+            document.getElementById('gender-input').selectedIndex = 0;
+            document.getElementById('race-input').selectedIndex = 0;
+            document.getElementById('lgpd-check').checked = false;
+
             document.getElementById('screen-results').classList.add('hidden');
             document.getElementById('screen-export').classList.add('hidden');
             document.getElementById('screen-admin-login').classList.add('hidden');
