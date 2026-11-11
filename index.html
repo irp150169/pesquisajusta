@@ -314,7 +314,7 @@
 
             <div class="screen-content">
                 
-                <!-- TELA 1: CADASTRO DEMOGRÁFICO -->
+                <!-- TELA 1: CADASTRO DEMOGRÁFICO (ScreenRegister) -->
                 <div id="screen-register" class="view">
                     
                     <div class="demographic-header-box">
@@ -340,7 +340,7 @@
                         </div>
                         <div class="form-group" style="flex: 1.05;">
                             <label id="city-label-text">Município / Capital</label>
-                            <input type="text" id="city-input" list="cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="GeoDatabase.updateCityDatalist('register', this.value)" oninput="GeoDatabase.handleCityTyped('register', false)">
+                            <input type="text" id="city-input" list="cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="GeoDatabase.updateCityDatalist('register', this.value)" oninput="GeoDatabase.handleCityTyped('register', false)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();">
                         </div>
                     </div>
 
@@ -427,7 +427,7 @@
                     </div>
                 </div>
 
-                <!-- TELA 1.1: LOGIN ADM -->
+                <!-- TELA 1.1: LOGIN ADM (ScreenAdmin) -->
                 <div id="screen-admin-login" class="view hidden">
                     <div style="text-align: center; margin-bottom: 6px;">
                         <span class="badge" style="background-color: rgba(56, 189, 248, 0.2); color: #38bdf8;">Painel de Controle</span>
@@ -451,7 +451,7 @@
                     <button onclick="ScreenAdmin.backToRegister()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
                 </div>
 
-                <!-- TELA 1.2: LOGIN MÍDIA / IMPRENSA -->
+                <!-- TELA 1.2: LOGIN MÍDIA / IMPRENSA (ScreenMedia) -->
                 <div id="screen-media-login" class="view hidden">
                     <div style="text-align: center; margin-bottom: 6px;">
                         <span class="badge" style="background-color: rgba(16, 185, 129, 0.2); color: #10b981;">Licenciamento Comercial</span>
@@ -472,7 +472,7 @@
                     <button onclick="ScreenMedia.backToRegister()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
                 </div>
 
-                <!-- TELA 2: AUTENTICAÇÃO -->
+                <!-- TELA 2: AUTENTICAÇÃO (ScreenAuth) -->
                 <div id="screen-auth" class="view hidden">
                     <div style="text-align: center;">
                         <span class="badge">Segurança & Acesso</span>
@@ -500,7 +500,7 @@
                     </div>
                 </div>
 
-                <!-- TELA 3: CÉDULA DE VOTAÇÃO -->
+                <!-- TELA 3: CÉDULA DE VOTAÇÃO (ScreenVoting) -->
                 <div id="screen-voting" class="view hidden">
                     <div style="text-align: center;">
                         <span class="badge" id="voting-badge">Etapa 1 de X</span>
@@ -519,7 +519,7 @@
                     <button id="btn-next-vote" onclick="ScreenVoting.nextVotingStep()" style="background-color: #0f766e; border-color: #14b8a6;" disabled>Confirmar e Avançar</button>
                 </div>
 
-                <!-- TELA 4: SUCESSO -->
+                <!-- TELA 4: SUCESSO (ScreenVoting / Urna Cega) -->
                 <div id="screen-success" class="view hidden success-box">
                     <div class="success-icon">🛡️</div>
                     <h2 style="color: #10b981; font-size: 0.85rem;">Voto Computado e Anonimizado</h2>
@@ -530,7 +530,7 @@
                     <button onclick="ScreenVoting.goToResults()">Consultar Resultados e Ficha TSE</button>
                 </div>
 
-                <!-- TELA 5: RESULTADOS / PAINEL ANALÍTICO -->
+                <!-- TELA 5: RESULTADOS / PAINEL ANALÍTICO (ScreenResults) -->
                 <div id="screen-results" class="view hidden">
                     <div style="display: flex; gap: 6px; margin-bottom: 5px;">
                         <div class="admin-stat-card" style="flex: 1;">
@@ -554,7 +554,7 @@
                             </div>
                             <div style="display: flex; gap: 6px; margin-bottom: 4px;" id="geographic-selectors-wrapper">
                                 <input type="text" id="filter-state-select" list="states-datalist" placeholder="Digite para buscar UF..." value="Amazonas - AM" oninput="GeoDatabase.handleStateTyped('results', true)" onchange="ScreenResults.onStateFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; font-size: 0.50rem; padding: 4px;">
-                                <input type="text" id="filter-city-select" list="filter-cities-datalist" placeholder="Pesquise a cidade..." value="Manaus" onfocus="GeoDatabase.updateCityDatalist('results', this.value)" oninput="GeoDatabase.handleCityTyped('results', true)" onchange="ScreenResults.onCityFilterChange()" style="flex: 1; font-size: 0.50rem; padding: 4px;">
+                                <input type="text" id="filter-city-select" list="filter-cities-datalist" placeholder="Pesquise a cidade..." value="Manaus" onfocus="GeoDatabase.updateCityDatalist('results', this.value)" oninput="GeoDatabase.handleCityTyped('results', true)" onchange="ScreenResults.onCityFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; font-size: 0.50rem; padding: 4px;">
                             </div>
                         </div>
 
@@ -582,7 +582,7 @@
                     <button onclick="AppState.resetApp()" style="padding: 5px; background-color: #334155; font-size: 0.50rem; margin-top: 4px;">Sair / Reiniciar Teste</button>
                 </div>
 
-                <!-- TELA 6: MÓDULO INTERATIVO DE RELATÓRIO OFICIAL -->
+                <!-- TELA 6: MÓDULO INTERATIVO DE RELATÓRIO OFICIAL (ScreenReport) -->
                 <div id="screen-export" class="view hidden">
                     
                     <div style="text-align: center; margin-bottom: 4px;">
@@ -631,7 +631,7 @@
     <!-- SCRIPT DA APLICAÇÃO ORGANIZADO EM MÓDULOS DE ESCOPO ISOLADO -->
     <script>
         /* ==========================================================================
-           1. ESTADO GLOBAL E UTILITÁRIOS (AppState)
+           1. ESTADO GLOBAL E UTILITÁRIOS ISOLADOS (AppState)
            ========================================================================== */
         const AppState = {
             currentYear: 2026,
@@ -647,7 +647,7 @@
                 const toast = document.getElementById('toast-container');
                 if (!toast) return;
                 toast.innerText = message;
-                if(isError) toast.classList.add('error'); else toast.classList.remove('error');
+                if (isError) toast.classList.add('error'); else toast.classList.remove('error');
                 toast.classList.add('show');
                 setTimeout(() => toast.classList.remove('show'), 3500);
             },
@@ -660,16 +660,17 @@
 
                 document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
                 
-                document.getElementById('whatsapp-input').value = '';
-                document.getElementById('birthdate-input').value = '';
-                document.getElementById('state-input').value = '';
-                document.getElementById('city-input').value = '';
-                document.getElementById('zone-input').selectedIndex = 0;
-                document.getElementById('education-input').selectedIndex = 0;
-                document.getElementById('income-input').selectedIndex = 0;
-                document.getElementById('gender-input').selectedIndex = 0;
-                document.getElementById('race-input').selectedIndex = 0;
-                document.getElementById('lgpd-check').checked = false;
+                const wInput = document.getElementById('whatsapp-input'); if (wInput) wInput.value = '';
+                const bInput = document.getElementById('birthdate-input'); if (bInput) bInput.value = '';
+                const sInput = document.getElementById('state-input'); if (sInput) sInput.value = '';
+                const cInput = document.getElementById('city-input'); if (cInput) cInput.value = '';
+                
+                const zSelect = document.getElementById('zone-input'); if (zSelect) zSelect.selectedIndex = 0;
+                const eSelect = document.getElementById('education-input'); if (eSelect) eSelect.selectedIndex = 0;
+                const iSelect = document.getElementById('income-input'); if (iSelect) iSelect.selectedIndex = 0;
+                const gSelect = document.getElementById('gender-input'); if (gSelect) gSelect.selectedIndex = 0;
+                const rSelect = document.getElementById('race-input'); if (rSelect) rSelect.selectedIndex = 0;
+                const lgCheck = document.getElementById('lgpd-check'); if (lgCheck) lgCheck.checked = false;
 
                 document.getElementById('screen-results').classList.add('hidden');
                 document.getElementById('screen-export').classList.add('hidden');
@@ -682,7 +683,7 @@
         };
 
         /* ==========================================================================
-           2. BANCO DE DADOS GEOGRÁFICO E MAPEAMENTOS (GeoDatabase)
+           2. BANCO DE DADOS GEOGRÁFICO E MAPEAMENTOS BLINDADOS (GeoDatabase)
            ========================================================================== */
         const GeoDatabase = {
             stateNameToCode: {
@@ -747,7 +748,7 @@
                 'RJ': ['Angra dos Reis', 'Araruama', 'Barra Mansa', 'Belford Roxo', 'Cabo Frio', 'Campos dos Goytacazes', 'Duque de Caxias', 'Itaboraí', 'Itaguaí', 'Macaé', 'Magé', 'Maricá', 'Mesquita', 'Nilópolis', 'Niterói', 'Nova Friburgo', 'Nova Iguaçu', 'Petrópolis', 'Resende', 'Rio das Ostras', 'Rio de Janeiro', 'São Gonçalo', 'São João de Meriti', 'Teresópolis', 'Volta Redonda'],
                 'RN': ['Açu', 'Apodi', 'Caicó', 'Ceará-Mirim', 'Currais Novos', 'João Câmara', 'Macaíba', 'Mossoró', 'Natal', 'Nova Cruz', 'Parnamirim', 'Santa Cruz', 'São Gonçalo do Amarante', 'São José de Mipibu'],
                 'RO': ['Ariquemes', 'Cacoal', 'Guajará-Mirim', 'Jaru', 'Ji-Paraná', 'Porto Velho', 'Rolim de Moura', 'Vilhena'],
-                'RR': ['Alto Alegre', 'Amajari', 'Boa Vista', 'Bonfim', 'Cantá', 'Caracaraí', 'Caroebe', 'Iracema', 'Mucajaí', 'Normandia', 'Pacaraima', 'Roraimópolis', 'Uiramutã'],
+                'RR': ['Alto Alegre', 'Amajari', 'Boa Vista', 'Bonfim', 'Cantá', 'Caracaraí', 'Caroebe', 'Iracema', 'Mucajaí', 'Normandia', 'Pacaraima', 'Rorainópolis', 'Uiramutã'],
                 'RS': ['Alvorada', 'Bagé', 'Bento Gonçalves', 'Cachoeirinha', 'Camaquã', 'Canoas', 'Caxias do Sul', 'Erechim', 'Gravataí', 'Guaíba', 'Ijuí', 'Lajeado', 'Novo Hamburgo', 'Passo Fundo', 'Pelotas', 'Porto Alegre', 'Rio Grande', 'Santa Cruz do Sul', 'Santa Maria', 'Sant\'Ana do Livramento', 'São Leopoldo', 'Sapucaia do Sul', 'Uruguaiana', 'Viamão'],
                 'SC': ['Balneário Camboriú', 'Blumenau', 'Chapecó', 'Criciúma', 'Florianópolis', 'Itajaí', 'Joinville', 'Lages', 'São José', 'Tubarão'],
                 'SE': ['Aracaju', 'Estância', 'Itabaiana', 'Lagarto', 'Nossa Senhora do Socorro', 'São Cristóvão', 'Simão Dias', 'Tobias Barreto'],
@@ -796,15 +797,18 @@
                 let cityInputElem = null;
 
                 if (context === 'register') {
-                    stateVal = document.getElementById('state-input').value;
+                    const stElem = document.getElementById('state-input');
+                    if (stElem) stateVal = stElem.value;
                     datalistElem = document.getElementById('cities-datalist');
                     cityInputElem = document.getElementById('city-input');
                 } else if (context === 'results') {
-                    stateVal = document.getElementById('filter-state-select').value;
+                    const stElem = document.getElementById('filter-state-select');
+                    if (stElem) stateVal = stElem.value;
                     datalistElem = document.getElementById('filter-cities-datalist');
                     cityInputElem = document.getElementById('filter-city-select');
                 } else if (context === 'report') {
-                    stateVal = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
+                    const stElem = document.getElementById('rep-estado');
+                    if (stElem) stateVal = stElem.value;
                     datalistElem = document.getElementById('rep-cities-datalist');
                     cityInputElem = document.getElementById('rep-city-report');
                 }
@@ -844,6 +848,8 @@
                 this.updateCityDatalist(context, '');
                 if (context === 'results' && autoRender) {
                     ScreenResults.renderFilterSections();
+                } else if (context === 'report' && autoRender) {
+                    ScreenReport.generateDynamicReport();
                 }
             },
 
@@ -859,12 +865,14 @@
 
                 if (context === 'results' && autoRender) {
                     ScreenResults.renderFilterSections();
+                } else if (context === 'report' && autoRender) {
+                    ScreenReport.generateDynamicReport();
                 }
             }
         };
 
         /* ==========================================================================
-           3. MÓDULO DA TELA 1: CADASTRO DEMOGRÁFICO (ScreenRegister)
+           3. MÓDULO DA TELA 1: CADASTRO DEMOGRÁFICO BLINDADO (ScreenRegister)
            ========================================================================== */
         const ScreenRegister = {
             autoMaskPhone(input) {
@@ -903,27 +911,27 @@
                 this.autoMaskPhone(phoneInput);
                 this.autoMaskDate(birthInput);
 
-                const phone = phoneInput.value.trim();
-                const birth = birthInput.value.trim();
-                const state = document.getElementById('state-input').value.trim();
-                const city = document.getElementById('city-input').value.trim();
-                const zone = document.getElementById('zone-input').value;
-                const education = document.getElementById('education-input').value;
-                const income = document.getElementById('income-input').value;
-                const gender = document.getElementById('gender-input').value;
-                const race = document.getElementById('race-input').value;
-                const lgpd = document.getElementById('lgpd-check').checked;
+                const phone = phoneInput ? phoneInput.value.trim() : '';
+                const birth = birthInput ? birthInput.value.trim() : '';
+                const state = document.getElementById('state-input') ? document.getElementById('state-input').value.trim() : '';
+                const city = document.getElementById('city-input') ? document.getElementById('city-input').value.trim() : '';
+                const zone = document.getElementById('zone-input') ? document.getElementById('zone-input').value : '';
+                const education = document.getElementById('education-input') ? document.getElementById('education-input').value : '';
+                const income = document.getElementById('income-input') ? document.getElementById('income-input').value : '';
+                const gender = document.getElementById('gender-input') ? document.getElementById('gender-input').value : '';
+                const race = document.getElementById('race-input') ? document.getElementById('race-input').value : '';
+                const lgpd = document.getElementById('lgpd-check') ? document.getElementById('lgpd-check').checked : false;
 
-                if(!phone) { AppState.showToast('⚠️ Informe seu (DDD) WhatsApp.', true); return; }
-                if(!birth) { AppState.showToast('⚠️ Data de nascimento obrigatória.', true); return; }
-                if(!state) { AppState.showToast('⚠️ Selecione ou digite o Estado / UF.', true); return; }
-                if(!city) { AppState.showToast('⚠️ Digite ou selecione o Município.', true); return; }
-                if(!zone) { AppState.showToast('⚠️ Selecione a Zona / Região.', true); return; }
-                if(!education) { AppState.showToast('⚠️ Selecione o grau de Escolaridade.', true); return; }
-                if(!income) { AppState.showToast('⚠️ Selecione a faixa de Renda Familiar.', true); return; }
-                if(!gender) { AppState.showToast('⚠️ Selecione o Gênero.', true); return; }
-                if(!race) { AppState.showToast('⚠️ Selecione a Cor / Raça (IBGE).', true); return; }
-                if(!lgpd) { AppState.showToast('⚠️ Marque a autorização LGPD/TSE.', true); return; }
+                if (!phone) { AppState.showToast('⚠️ Informe seu (DDD) WhatsApp.', true); return; }
+                if (!birth) { AppState.showToast('⚠️ Data de nascimento obrigatória.', true); return; }
+                if (!state) { AppState.showToast('⚠️ Selecione ou digite o Estado / UF.', true); return; }
+                if (!city) { AppState.showToast('⚠️ Digite ou selecione o Município.', true); return; }
+                if (!zone) { AppState.showToast('⚠️ Selecione a Zona / Região.', true); return; }
+                if (!education) { AppState.showToast('⚠️ Selecione o grau de Escolaridade.', true); return; }
+                if (!income) { AppState.showToast('⚠️ Selecione a faixa de Renda Familiar.', true); return; }
+                if (!gender) { AppState.showToast('⚠️ Selecione o Gênero.', true); return; }
+                if (!race) { AppState.showToast('⚠️ Selecione a Cor / Raça (IBGE).', true); return; }
+                if (!lgpd) { AppState.showToast('⚠️ Marque a autorização LGPD/TSE.', true); return; }
 
                 AppState.activeMediaInfo = null;
                 document.getElementById('screen-register').classList.add('hidden');
@@ -934,7 +942,7 @@
         };
 
         /* ==========================================================================
-           4. MÓDULOS DE AUTENTICAÇÃO GESTOR & MÍDIA (ScreenAdmin / ScreenMedia)
+           4. MÓDULOS DE AUTENTICAÇÃO GESTOR & MÍDIA BLINDADOS (ScreenAdmin / ScreenMedia)
            ========================================================================== */
         const ScreenAdmin = {
             openLogin() {
@@ -946,12 +954,14 @@
                 document.getElementById('screen-register').classList.remove('hidden');
             },
             toggleSystemTurn() {
-                AppState.currentTurn = parseInt(document.getElementById('admin-turn-toggle').value);
+                const toggle = document.getElementById('admin-turn-toggle');
+                if (toggle) AppState.currentTurn = parseInt(toggle.value);
                 AppState.updateTurnState();
             },
             validateLogin() {
-                const pass = document.getElementById('admin-pass-input').value.trim();
-                if(pass === 'adm2026' || pass === '') {
+                const input = document.getElementById('admin-pass-input');
+                const pass = input ? input.value.trim() : '';
+                if (pass === 'adm2026' || pass === '') {
                     AppState.activeMediaInfo = null;
                     document.getElementById('screen-admin-login').classList.add('hidden');
                     document.getElementById('screen-results').classList.remove('hidden');
@@ -977,9 +987,10 @@
                 document.getElementById('screen-register').classList.remove('hidden');
             },
             validateLogin() {
-                const key = document.getElementById('media-key-input').value.trim().toUpperCase();
-                if(!key) { AppState.showToast('⚠️ Digite sua chave de licença de mídia.', true); return; }
-                if(this.demoMediaKeys[key]) AppState.activeMediaInfo = this.demoMediaKeys[key];
+                const input = document.getElementById('media-key-input');
+                const key = input ? input.value.trim().toUpperCase() : '';
+                if (!key) { AppState.showToast('⚠️ Digite sua chave de licença de mídia.', true); return; }
+                if (this.demoMediaKeys[key]) AppState.activeMediaInfo = this.demoMediaKeys[key];
                 else AppState.activeMediaInfo = { name: `Veículo Mídia (${key})`, type: 'Portal / Veículo', tier: 'Licença Comercial' };
                 document.getElementById('screen-media-login').classList.add('hidden');
                 document.getElementById('screen-export').classList.remove('hidden');
@@ -989,7 +1000,7 @@
         };
 
         /* ==========================================================================
-           5. MÓDULO DA TELA 2: AUTENTICAÇÃO SWIPE & WEBAUTHN (ScreenAuth)
+           5. MÓDULO DA TELA 2: AUTENTICAÇÃO SWIPE & WEBAUTHN BLINDADO (ScreenAuth)
            ========================================================================== */
         const ScreenAuth = {
             selectedPattern: [],
@@ -1081,8 +1092,8 @@
             },
 
             startVoting(event) {
-                if(event && event.currentTarget && event.currentTarget.innerText.includes('Padrão')) {
-                    if(this.selectedPattern.length < 3) {
+                if (event && event.currentTarget && event.currentTarget.innerText.includes('Padrão')) {
+                    if (this.selectedPattern.length < 3) {
                         AppState.showToast('⚠️ Desenhe/Deslize por pelo menos 3 pontos no padrão.', true); 
                         return;
                     }
@@ -1095,7 +1106,7 @@
         };
 
         /* ==========================================================================
-           6. MÓDULO DA TELA 3 & 4: URNA CEGA & VOTAÇÃO (ScreenVoting)
+           6. MÓDULO DA TELA 3 & 4: URNA CEGA & VOTAÇÃO BLINDADA (ScreenVoting)
            ========================================================================== */
         const ScreenVoting = {
             currentStep: 0,
@@ -1149,49 +1160,57 @@
                 this.activeBallots = this.getActiveBallots();
                 const data = this.activeBallots[this.currentStep];
 
-                document.getElementById('voting-badge').innerText = `Etapa ${this.currentStep + 1} de ${this.activeBallots.length} (${AppState.currentTurn}º Turno)`;
-                document.getElementById('voting-title').innerText = data.title;
-                document.getElementById('voting-subtitle').innerText = data.subtitle;
+                const badge = document.getElementById('voting-badge'); if (badge) badge.innerText = `Etapa ${this.currentStep + 1} de ${this.activeBallots.length} (${AppState.currentTurn}º Turno)`;
+                const title = document.getElementById('voting-title'); if (title) title.innerText = data.title;
+                const sub = document.getElementById('voting-subtitle'); if (sub) sub.innerText = data.subtitle;
 
                 const container = document.getElementById('candidates-container');
+                if (!container) return;
                 container.innerHTML = '';
+                
                 data.candidates.forEach((cand) => {
-                    const card = document.createElement('div'); card.className = 'candidate-card';
+                    const card = document.createElement('div'); 
+                    card.className = 'candidate-card';
                     card.innerHTML = `<img src="${cand.img}" class="candidate-img"><div class="candidate-info"><h4>${cand.name}</h4><p>${cand.party}</p></div>`;
                     card.onclick = () => this.handleSelect(card, cand.name, data.type);
                     container.appendChild(card);
                 });
-                document.getElementById('btn-next-vote').disabled = true;
+                
+                const btnNext = document.getElementById('btn-next-vote');
+                if (btnNext) btnNext.disabled = true;
                 this.currentSelections = [];
             },
 
             handleSelect(cardElement, name, type) {
                 document.querySelectorAll('.special-vote-btn').forEach(b => b.classList.remove('selected'));
-                if(type === 'single') {
+                const btnNext = document.getElementById('btn-next-vote');
+
+                if (type === 'single') {
                     document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
                     cardElement.classList.add('selected'); 
                     this.currentSelections = [name];
-                    document.getElementById('btn-next-vote').disabled = false;
+                    if (btnNext) btnNext.disabled = false;
                 } else {
-                    if(cardElement.classList.contains('selected')) {
+                    if (cardElement.classList.contains('selected')) {
                         cardElement.classList.remove('selected'); 
                         this.currentSelections = this.currentSelections.filter(item => item !== name);
                     } else {
-                        if(this.currentSelections.length < 2) { 
+                        if (this.currentSelections.length < 2) { 
                             cardElement.classList.add('selected'); 
                             this.currentSelections.push(name); 
                         } else AppState.showToast('⚠️ Selecione no máximo 2 candidatos.', true);
                     }
-                    document.getElementById('btn-next-vote').disabled = this.currentSelections.length === 0;
+                    if (btnNext) btnNext.disabled = this.currentSelections.length === 0;
                 }
             },
 
             handleSpecialVote(type, event) {
                 document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
                 document.querySelectorAll('.special-vote-btn').forEach(b => b.classList.remove('selected'));
-                if(event && event.currentTarget) event.currentTarget.classList.add('selected');
+                if (event && event.currentTarget) event.currentTarget.classList.add('selected');
                 this.currentSelections = [type];
-                document.getElementById('btn-next-vote').disabled = false;
+                const btnNext = document.getElementById('btn-next-vote');
+                if (btnNext) btnNext.disabled = false;
             },
 
             nextVotingStep() {
@@ -1201,7 +1220,7 @@
                 this.currentSelections = [];
                 this.currentStep++;
 
-                if(this.currentStep < this.activeBallots.length) this.renderBallot();
+                if (this.currentStep < this.activeBallots.length) this.renderBallot();
                 else {
                     document.getElementById('screen-voting').classList.add('hidden');
                     document.getElementById('screen-success').classList.remove('hidden');
@@ -1216,7 +1235,7 @@
         };
 
         /* ==========================================================================
-           7. MÓDULO DA TELA 5: PAINEL DE RESULTADOS (ScreenResults)
+           7. MÓDULO DA TELA 5: PAINEL DE RESULTADOS BLINDADO (ScreenResults)
            ========================================================================== */
         const ScreenResults = {
             currentMode: 'geral',
@@ -1227,7 +1246,10 @@
                 president: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 42.0 }, { name: "Candidato Beta", percent: 36.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 11.0, color: "#334155" } ] } },
                 president_2t: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 48.0 }, { name: "Candidato Beta", percent: 45.0 }, { name: "Votos Brancos", percent: 3.0, color: "#64748b" }, { name: "Votos Nulos", percent: 2.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 2.0, color: "#334155" } ] } },
                 governor: { datasets: { "Geral Estado": [ { name: "Candidato Delta", percent: 48.0 }, { name: "Candidato Ômega", percent: 32.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 9.0, color: "#334155" } ] } },
-                mayor: { datasets: { "Geral do Município": [ { name: "Candidato X", percent: 46.0 }, { name: "Candidato Y", percent: 40.0 }, { name: "Votos Brancos", percent: 5.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 4.0, color: "#334155" } ] } }
+                governor_2t: { datasets: { "Geral Estado": [ { name: "Candidato Delta", percent: 52.0 }, { name: "Candidato Ômega", percent: 44.0 }, { name: "Votos Brancos", percent: 2.0, color: "#64748b" }, { name: "Votos Nulos", percent: 2.0, color: "#475569" } ] } },
+                senator: { datasets: { "Geral Estado": [ { name: "Candidato Um", percent: 34.0 }, { name: "Candidato Dois", percent: 28.0 }, { name: "Candidato Três", percent: 18.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 9.0, color: "#334155" } ] } },
+                mayor: { datasets: { "Geral do Município": [ { name: "Candidato X", percent: 46.0 }, { name: "Candidato Y", percent: 40.0 }, { name: "Votos Brancos", percent: 5.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 4.0, color: "#334155" } ] } },
+                mayor_2t: { datasets: { "Geral do Município": [ { name: "Candidato X", percent: 51.5 }, { name: "Candidato Y", percent: 45.5 }, { name: "Votos Brancos", percent: 1.5, color: "#64748b" }, { name: "Votos Nulos", percent: 1.5, color: "#475569" } ] } }
             },
 
             presidentFilters: [
@@ -1238,6 +1260,7 @@
 
             setupResultTabs() {
                 const tabsContainer = document.getElementById('result-tabs-container'); 
+                if (!tabsContainer) return;
                 tabsContainer.innerHTML = '';
                 const activeBallots = ScreenVoting.getActiveBallots();
 
@@ -1259,7 +1282,7 @@
 
             switchResultTab(category, btnElement) {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
-                btnElement.classList.add('active');
+                if (btnElement) btnElement.classList.add('active');
                 this.lastLoadedCategory = category;
                 this.renderFilterSections();
             },
@@ -1271,6 +1294,8 @@
                 const dividerElem = document.getElementById('section-divider-elem'); 
                 const macroLabel = document.getElementById('macro-label');
                 const geoBlock = document.getElementById('geo-search-block');
+
+                if (!filterBox || !macroContainer || !microContainer || !geoBlock || !macroLabel || !dividerElem) return;
 
                 macroContainer.innerHTML = ''; microContainer.innerHTML = '';
 
@@ -1327,8 +1352,10 @@
                     stackDiv.appendChild(bGeral);
                     macroContainer.appendChild(stackDiv);
 
-                    const stateVal = document.getElementById('filter-state-select').value;
-                    const cityVal = document.getElementById('filter-city-select').value.trim();
+                    const stElem = document.getElementById('filter-state-select');
+                    const ctElem = document.getElementById('filter-city-select');
+                    const stateVal = stElem ? stElem.value : '';
+                    const cityVal = ctElem ? ctElem.value.trim() : '';
                     const ufCode = GeoDatabase.getUFCodeFromInput(stateVal) || 'AM';
                     const capitalName = GeoDatabase.capitalsByState[ufCode] || 'Manaus';
                     const displayCity = cityVal.length > 0 ? cityVal : capitalName;
@@ -1362,8 +1389,10 @@
                     dividerElem.style.display = 'block';
                     microContainer.style.display = 'grid';
 
-                    const stateVal = document.getElementById('filter-state-select').value;
-                    const cityVal = document.getElementById('filter-city-select').value.trim();
+                    const stElem = document.getElementById('filter-state-select');
+                    const ctElem = document.getElementById('filter-city-select');
+                    const stateVal = stElem ? stElem.value : '';
+                    const cityVal = ctElem ? ctElem.value.trim() : '';
                     const ufCode = GeoDatabase.getUFCodeFromInput(stateVal) || 'AM';
                     const capitalName = GeoDatabase.capitalsByState[ufCode] || 'Manaus';
 
@@ -1396,8 +1425,8 @@
                             document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
                             e.currentTarget.classList.add('active'); 
 
-                            if (f === 'Geral da Capital') {
-                                document.getElementById('filter-city-select').value = capitalName;
+                            if (f === 'Geral da Capital' && ctElem) {
+                                ctElem.value = capitalName;
                                 dividerElem.innerText = `📍 ZONAS DE ${capitalName.toUpperCase()} (${ufCode})`;
                             } else if (f === 'Geral Estado') {
                                 dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
@@ -1431,8 +1460,10 @@
 
             setCalculationMode(mode) {
                 this.currentMode = mode;
-                document.getElementById('btn-mode-geral').classList.toggle('active', mode === 'geral');
-                document.getElementById('btn-mode-validos').classList.toggle('active', mode === 'validos');
+                const btnGeral = document.getElementById('btn-mode-geral');
+                const btnValidos = document.getElementById('btn-mode-validos');
+                if (btnGeral) btnGeral.classList.toggle('active', mode === 'geral');
+                if (btnValidos) btnValidos.classList.toggle('active', mode === 'validos');
                 this.renderSimulatedDataset(this.lastLoadedCategory, this.lastLoadedKey);
             },
 
@@ -1441,20 +1472,21 @@
                 let dataset = []; 
                 const config = this.hierarchicalData[category] || this.hierarchicalData['mayor'];
                 
-                if(config && config.datasets && config.datasets[filterKey]) dataset = JSON.parse(JSON.stringify(config.datasets[filterKey]));
+                if (config && config.datasets && config.datasets[filterKey]) dataset = JSON.parse(JSON.stringify(config.datasets[filterKey]));
                 else dataset = [ { name: `Candidato Principal`, percent: 45.0 }, { name: `Candidato Opositor`, percent: 35.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos", percent: 9.0, color: "#334155" } ];
                 
-                if(this.currentMode === 'validos') {
+                if (this.currentMode === 'validos') {
                     let validCandidates = dataset.filter(item => !item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso'));
                     let somaValidos = validCandidates.reduce((acc, curr) => acc + curr.percent, 0);
                     dataset = dataset.map(item => {
-                        if(!item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso')) {
-                            return { ...item, percent: parseFloat((somaValidos>0 ? (item.percent/somaValidos)*100 : 0).toFixed(1)) };
+                        if (!item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso')) {
+                            return { ...item, percent: parseFloat((somaValidos > 0 ? (item.percent / somaValidos) * 100 : 0).toFixed(1)) };
                         } else return { ...item, percent: 0, hidden: true };
                     }).filter(item => !item.hidden);
                 }
 
                 const container = document.getElementById('results-content-container'); 
+                if (!container) return;
                 container.innerHTML = '';
                 dataset.forEach(item => {
                     const barDiv = document.createElement('div'); 
@@ -1466,7 +1498,7 @@
         };
 
         /* ==========================================================================
-           8. MÓDULO DA TELA 6: GERADOR DE RELATÓRIOS (ScreenReport)
+           8. MÓDULO DA TELA 6: GERADOR DE RELATÓRIOS BLINDADO (ScreenReport)
            ========================================================================== */
         const ScreenReport = {
             activeCargo: 'Presidente',
@@ -1479,13 +1511,14 @@
 
             switchCargo(cargo, btnElement) {
                 document.querySelectorAll('#report-cargo-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-                btnElement.classList.add('active');
+                if (btnElement) btnElement.classList.add('active');
                 this.activeCargo = cargo;
                 this.renderReportFilters();
             },
 
             renderReportFilters() {
                 const container = document.getElementById('report-dynamic-filters');
+                if (!container) return;
                 container.innerHTML = '';
                 
                 let geoInputsHTML = '';
@@ -1503,15 +1536,15 @@
                             <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="ScreenReport.generateDynamicReport()"></select>
                         </div>
                         <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%;">
-                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." onchange="GeoDatabase.updateCityDatalist('report'); ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report')" onchange="ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         </div>
                     `;
                 } else if (this.activeCargo === 'Governador' || this.activeCargo === 'Senador') {
                     geoInputsHTML = `
                         <div style="display: flex; gap: 4px; width: 100%;">
-                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="GeoDatabase.updateCityDatalist('report'); ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report')" onchange="ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         </div>
                         <div style="display: flex; gap: 4px; width: 100%;">
                             <select id="rep-nivel" onchange="ScreenReport.generateDynamicReport()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
@@ -1523,8 +1556,8 @@
                 } else if (this.activeCargo === 'Prefeito') {
                     geoInputsHTML = `
                         <div style="display: flex; gap: 4px; width: 100%;">
-                             <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="GeoDatabase.updateCityDatalist('report'); ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                             <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report')" onchange="ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                             <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                             <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         </div>
                     `;
                 }
@@ -1589,7 +1622,7 @@
             updateReportSubfilters() {
                 if (this.activeCargo === 'Presidente') {
                     const nivelElem = document.getElementById('rep-nivel');
-                    if(!nivelElem) return;
+                    if (!nivelElem) return;
                     const nivel = nivelElem.value;
                     const detalheSelect = document.getElementById('rep-detalhe-select');
                     const municipioRow = document.getElementById('rep-presidente-municipio-row');
@@ -1636,15 +1669,15 @@
                 const generoVal = document.getElementById('rep-genero') ? document.getElementById('rep-genero').value : 'Todos os Gêneros';
                 const corVal = document.getElementById('rep-cor') ? document.getElementById('rep-cor').value : 'Todas as Raças';
 
-                if(this.activeCargo === 'Presidente') { 
+                if (this.activeCargo === 'Presidente') { 
                     const nivelElem = document.getElementById('rep-nivel');
                     const nivel = nivelElem ? nivelElem.value : 'Geral (Brasil)';
                     if (nivel === 'Por Município') {
                         const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
                         const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
                         filterDesc = `<li><strong>Abrangência:</strong> Município Específico</li>`;
-                        if(estado) filterDesc += `<li><strong>Estado (UF):</strong> ${estado}</li>`;
-                        if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                        if (estado) filterDesc += `<li><strong>Estado (UF):</strong> ${estado}</li>`;
+                        if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
                     } else {
                         const detalheSelect = document.getElementById('rep-detalhe-select');
                         const detalhe = (detalheSelect && detalheSelect.style.display !== 'none') ? detalheSelect.value : '';
@@ -1652,27 +1685,27 @@
                     }
                     candA = 48.5; candB = 41.2; 
                     candAName = "Candidato Alpha (PTX)"; candBName = "Candidato Beta (PLZ)";
-                } else if(this.activeCargo === 'Governador') { 
+                } else if (this.activeCargo === 'Governador') { 
                     const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
                     const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
                     const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral';
                     
                     filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
-                    if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                    if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
                     filterDesc += `<li><strong>Escopo:</strong> ${nivel}</li>`;
                     
                     candA = 51.0; candB = 38.0; 
                     candAName = "Candidato Delta (PSB)"; candBName = "Candidato Ômega (PSD)";
-                } else if(this.activeCargo === 'Senador') { 
+                } else if (this.activeCargo === 'Senador') { 
                     const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
                     const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
                     
                     filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
-                    if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                    if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
                     
                     candA = 34.0; candB = 28.0; 
                     candAName = "Candidato Um (MDB)"; candBName = "Candidato Dois (UNIÃO)";
-                } else if(this.activeCargo === 'Prefeito') { 
+                } else if (this.activeCargo === 'Prefeito') { 
                     const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Não Selecionado';
                     const cityElem = document.getElementById('rep-city-report');
                     const city = cityElem && cityElem.value ? cityElem.value : 'Não Selecionado';
@@ -1737,17 +1770,20 @@
                     <p style="font-size: 0.44rem; color: #94a3b8; text-align: center; margin-top: 6px;">Amostra segmentada extraída oficialmente do sistema cego.</p>
                 `;
 
-                document.getElementById('report-content-box').innerHTML = reportHTML;
+                const contentBox = document.getElementById('report-content-box');
+                if (contentBox) contentBox.innerHTML = reportHTML;
             },
 
             copyText() {
-                const reportText = document.getElementById('report-content-box').innerText;
+                const contentBox = document.getElementById('report-content-box');
+                if (!contentBox) return;
+                const reportText = contentBox.innerText;
                 var textArea = document.createElement("textarea");
                 textArea.value = reportText; textArea.style.position = "fixed"; textArea.style.opacity = "0";
                 document.body.appendChild(textArea); textArea.focus(); textArea.select();
                 try {
                     var successful = document.execCommand('copy');
-                    if(successful) AppState.showToast('📋 Relatório copiado para a área de transferência!');
+                    if (successful) AppState.showToast('📋 Relatório copiado para a área de transferência!');
                     else AppState.showToast('❌ Erro ao copiar.', true);
                 } catch (err) { AppState.showToast('❌ O navegador bloqueou a cópia.', true); }
                 document.body.removeChild(textArea);
@@ -1755,25 +1791,32 @@
 
             toggleShareMenu() {
                 const menu = document.getElementById('share-submenu');
+                if (!menu) return;
                 if (menu.classList.contains('hidden')) menu.classList.remove('hidden');
                 else menu.classList.add('hidden');
             },
 
             shareWhatsApp() {
-                const reportText = document.getElementById('report-content-box').innerText;
+                const contentBox = document.getElementById('report-content-box');
+                if (!contentBox) return;
+                const reportText = contentBox.innerText;
                 const textToShare = encodeURIComponent(reportText);
                 window.open(`https://api.whatsapp.com/send?text=${textToShare}`, '_blank');
                 AppState.showToast('💬 Abrindo WhatsApp...');
-                document.getElementById('share-submenu').classList.add('hidden');
+                const menu = document.getElementById('share-submenu');
+                if (menu) menu.classList.add('hidden');
             },
 
             shareEmail() {
-                const reportText = document.getElementById('report-content-box').innerText;
+                const contentBox = document.getElementById('report-content-box');
+                if (!contentBox) return;
+                const reportText = contentBox.innerText;
                 const subject = encodeURIComponent(`Relatório Segmentado - ${this.activeCargo}`);
                 const body = encodeURIComponent(reportText);
                 window.location.href = `mailto:?subject=${subject}&body=${body}`;
                 AppState.showToast('📧 Abrindo E-mail...');
-                document.getElementById('share-submenu').classList.add('hidden');
+                const menu = document.getElementById('share-submenu');
+                if (menu) menu.classList.add('hidden');
             },
 
             printReport() {
@@ -1788,9 +1831,10 @@
 
             backToResults() {
                 document.getElementById('screen-export').classList.add('hidden');
-                if(AppState.activeMediaInfo) document.getElementById('screen-register').classList.remove('hidden');
+                if (AppState.activeMediaInfo) document.getElementById('screen-register').classList.remove('hidden');
                 else document.getElementById('screen-results').classList.remove('hidden');
-                document.getElementById('share-submenu').classList.add('hidden');
+                const menu = document.getElementById('share-submenu');
+                if (menu) menu.classList.add('hidden');
             }
         };
 
