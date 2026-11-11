@@ -325,22 +325,22 @@
                     <div class="form-row">
                         <div class="form-group" style="flex: 1.1;">
                             <label>(DDD) WhatsApp</label>
-                            <input type="tel" id="whatsapp-input" placeholder="(92) 99999-9999" maxlength="15" inputmode="numeric" value="" oninput="autoMaskPhone(this)" onblur="autoMaskPhone(this)">
+                            <input type="tel" id="whatsapp-input" placeholder="(92) 99999-9999" maxlength="15" inputmode="numeric" value="" oninput="ScreenRegister.autoMaskPhone(this)" onblur="ScreenRegister.autoMaskPhone(this)">
                         </div>
                         <div class="form-group" style="flex: 0.9;">
                             <label>Nascimento</label>
-                            <input type="tel" id="birthdate-input" placeholder="DD/MM/AAAA" maxlength="10" inputmode="numeric" value="" oninput="autoMaskDate(this)" onblur="autoMaskDate(this)">
+                            <input type="tel" id="birthdate-input" placeholder="DD/MM/AAAA" maxlength="10" inputmode="numeric" value="" oninput="ScreenRegister.autoMaskDate(this)" onblur="ScreenRegister.autoMaskDate(this)">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group" style="flex: 0.95;">
                             <label>Estado / UF</label>
-                            <input type="text" id="state-input" list="states-datalist" placeholder="Digite para buscar UF..." value="" oninput="handleStateTyped('register')" onchange="handleStateTyped('register')" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();">
+                            <input type="text" id="state-input" list="states-datalist" placeholder="Digite para buscar UF..." value="" oninput="GeoDatabase.handleStateTyped('register')" onchange="GeoDatabase.handleStateTyped('register')" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();">
                         </div>
                         <div class="form-group" style="flex: 1.05;">
                             <label id="city-label-text">Município / Capital</label>
-                            <input type="text" id="city-input" list="cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="updateCityDatalist('register', this.value)" oninput="handleCityTyped('register', false)">
+                            <input type="text" id="city-input" list="cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="GeoDatabase.updateCityDatalist('register', this.value)" oninput="GeoDatabase.handleCityTyped('register', false)">
                         </div>
                     </div>
 
@@ -419,11 +419,11 @@
                         <label for="lgpd-check" style="color: var(--text-main); font-size: 0.48rem; cursor: pointer; text-align: left;">Autorizo o uso destes dados para fins estatísticos e anonimização conforme LGPD e TSE.</label>
                     </div>
 
-                    <button onclick="goToAuth()">Prosseguir para Autenticação</button>
+                    <button onclick="ScreenRegister.submit()">Prosseguir para Autenticação</button>
                     
                     <div style="display: flex; gap: 6px; margin-top: 5px;">
-                        <button onclick="openAdminLogin()" style="flex: 1; background-color: #090d16; border: 1px dashed var(--border); color: var(--text-muted); font-size: 0.50rem;">🔒 Acesso Gestor (ADM)</button>
-                        <button onclick="openMediaLogin()" style="flex: 1; background-color: #090d16; border: 1px dashed #10b981; color: #10b981; font-size: 0.50rem;">📰 Acesso Mídia / Imprensa</button>
+                        <button onclick="ScreenAdmin.openLogin()" style="flex: 1; background-color: #090d16; border: 1px dashed var(--border); color: var(--text-muted); font-size: 0.50rem;">🔒 Acesso Gestor (ADM)</button>
+                        <button onclick="ScreenMedia.openLogin()" style="flex: 1; background-color: #090d16; border: 1px dashed #10b981; color: #10b981; font-size: 0.50rem;">📰 Acesso Mídia / Imprensa</button>
                     </div>
                 </div>
 
@@ -437,7 +437,7 @@
 
                     <div class="form-group" style="margin-bottom: 8px;">
                         <label>Configurar Turno Ativo do Sistema</label>
-                        <select id="admin-turn-toggle" onchange="toggleSystemTurn()">
+                        <select id="admin-turn-toggle" onchange="ScreenAdmin.toggleSystemTurn()">
                             <option value="1">1º Turno (Fase Inicial)</option>
                             <option value="2">2º Turno (Fase Final / Desempate)</option>
                         </select>
@@ -447,8 +447,8 @@
                         <label>Chave de Acesso ADM</label>
                         <input type="password" id="admin-pass-input" placeholder="Digite a senha (ex: adm2026)">
                     </div>
-                    <button onclick="validateAdminLogin()" style="background-color: var(--accent); border-color: #14b8a6;">Entrar no Painel Macro</button>
-                    <button onclick="backToRegister()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
+                    <button onclick="ScreenAdmin.validateLogin()" style="background-color: var(--accent); border-color: #14b8a6;">Entrar no Painel Macro</button>
+                    <button onclick="ScreenAdmin.backToRegister()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
                 </div>
 
                 <!-- TELA 1.2: LOGIN MÍDIA / IMPRENSA -->
@@ -468,8 +468,8 @@
                         💡 <em>A chave de acesso define o cabeçalho comercial do veículo nos documentos gerados.</em>
                     </div>
 
-                    <button onclick="validateMediaLogin()" style="background-color: #10b981; border-color: #059669;">Acessar Painel de Relatórios</button>
-                    <button onclick="backToRegisterFromMedia()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
+                    <button onclick="ScreenMedia.validateLogin()" style="background-color: #10b981; border-color: #059669;">Acessar Painel de Relatórios</button>
+                    <button onclick="ScreenMedia.backToRegister()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
                 </div>
 
                 <!-- TELA 2: AUTENTICAÇÃO -->
@@ -495,8 +495,8 @@
                     <p style="text-align: center; font-size: 0.50rem; color: var(--text-muted); margin: 2px 0 6px 0;">Deslize ligando pelo menos 3 pontos para criar seu padrão ou ative a biometria.</p>
 
                     <div style="display: flex; flex-direction: column; gap: 6px; margin-top: auto;">
-                        <button onclick="startVoting(event)" style="background-color: #0f766e; border-color: #14b8a6;">Confirmar Padrão e Acessar Urna</button>
-                        <button onclick="simulateBiometric()" style="background-color: #1e293b; border-color: #38bdf8; color: #38bdf8;">👆 Usar Biometria do Aparelho</button>
+                        <button onclick="ScreenAuth.startVoting(event)" style="background-color: #0f766e; border-color: #14b8a6;">Confirmar Padrão e Acessar Urna</button>
+                        <button onclick="ScreenAuth.simulateBiometric()" style="background-color: #1e293b; border-color: #38bdf8; color: #38bdf8;">👆 Usar Biometria do Aparelho</button>
                     </div>
                 </div>
 
@@ -511,12 +511,12 @@
                     <div id="candidates-container"></div>
 
                     <div class="special-votes-wrapper">
-                        <div class="special-vote-btn" onclick="handleSpecialVote('Votos Brancos', event)">Branco</div>
-                        <div class="special-vote-btn" onclick="handleSpecialVote('Votos Nulos', event)">Nulo</div>
-                        <div class="special-vote-btn" onclick="handleSpecialVote('Indecisos / Não Sabe', event)">Indeciso</div>
+                        <div class="special-vote-btn" onclick="ScreenVoting.handleSpecialVote('Votos Brancos', event)">Branco</div>
+                        <div class="special-vote-btn" onclick="ScreenVoting.handleSpecialVote('Votos Nulos', event)">Nulo</div>
+                        <div class="special-vote-btn" onclick="ScreenVoting.handleSpecialVote('Indecisos / Não Sabe', event)">Indeciso</div>
                     </div>
 
-                    <button id="btn-next-vote" onclick="nextVotingStep()" style="background-color: #0f766e; border-color: #14b8a6;" disabled>Confirmar e Avançar</button>
+                    <button id="btn-next-vote" onclick="ScreenVoting.nextVotingStep()" style="background-color: #0f766e; border-color: #14b8a6;" disabled>Confirmar e Avançar</button>
                 </div>
 
                 <!-- TELA 4: SUCESSO -->
@@ -527,7 +527,7 @@
                     <div style="background-color: #090d16; padding: 6px; border-radius: 6px; border: 1px solid var(--border); margin: 8px 0;">
                         <p style="font-size: 0.50rem; margin: 0; color: var(--text-muted);">Status: <strong style="color: var(--text-main);">Acesso encerrado para esta consulta.</strong></p>
                     </div>
-                    <button onclick="goToResults()">Consultar Resultados e Ficha TSE</button>
+                    <button onclick="ScreenVoting.goToResults()">Consultar Resultados e Ficha TSE</button>
                 </div>
 
                 <!-- TELA 5: RESULTADOS / PAINEL ANALÍTICO -->
@@ -553,8 +553,8 @@
                                 <label id="filter-second-label" style="flex: 1; font-size: 0.48rem; color: var(--text-muted); font-weight: bold;">Município / Capital:</label>
                             </div>
                             <div style="display: flex; gap: 6px; margin-bottom: 4px;" id="geographic-selectors-wrapper">
-                                <input type="text" id="filter-state-select" list="states-datalist" placeholder="Digite para buscar UF..." value="Amazonas - AM" oninput="handleStateTyped('results', true)" onchange="onStateFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; font-size: 0.50rem; padding: 4px;">
-                                <input type="text" id="filter-city-select" list="filter-cities-datalist" placeholder="Pesquise a cidade..." value="Manaus" onfocus="updateCityDatalist('results', this.value)" oninput="handleCityTyped('results', true)" onchange="onCityFilterChange()" style="flex: 1; font-size: 0.50rem; padding: 4px;">
+                                <input type="text" id="filter-state-select" list="states-datalist" placeholder="Digite para buscar UF..." value="Amazonas - AM" oninput="GeoDatabase.handleStateTyped('results', true)" onchange="ScreenResults.onStateFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; font-size: 0.50rem; padding: 4px;">
+                                <input type="text" id="filter-city-select" list="filter-cities-datalist" placeholder="Pesquise a cidade..." value="Manaus" onfocus="GeoDatabase.updateCityDatalist('results', this.value)" oninput="GeoDatabase.handleCityTyped('results', true)" onchange="ScreenResults.onCityFilterChange()" style="flex: 1; font-size: 0.50rem; padding: 4px;">
                             </div>
                         </div>
 
@@ -566,23 +566,23 @@
                     </div>
 
                     <div class="mode-toggle">
-                        <button class="mode-btn active" id="btn-mode-geral" onclick="setCalculationMode('geral')">Intenção Geral (Amostra)</button>
-                        <button class="mode-btn" id="btn-mode-validos" onclick="setCalculationMode('validos')">Votos Válidos (100% expurgado)</button>
+                        <button class="mode-btn active" id="btn-mode-geral" onclick="ScreenResults.setCalculationMode('geral')">Intenção Geral (Amostra)</button>
+                        <button class="mode-btn" id="btn-mode-validos" onclick="ScreenResults.setCalculationMode('validos')">Votos Válidos (100% expurgado)</button>
                     </div>
 
                     <div id="results-content-container"></div>
 
-                    <button onclick="openExportReport()" style="background-color: #0f766e; border-color: #14b8a6; font-size: 0.58rem; margin-top: 6px;">📄 Gerar Relatório Oficial Segmentado</button>
+                    <button onclick="ScreenReport.openExportReport()" style="background-color: #0f766e; border-color: #14b8a6; font-size: 0.58rem; margin-top: 6px;">📄 Gerar Relatório Oficial Segmentado</button>
 
                     <div style="background-color: #090d16; padding: 5px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.46rem; color: var(--text-muted); line-height: 1.2; margin-top: 4px;">
                         <strong style="color: var(--text-main); display: block; margin-bottom: 2px;">Compliance (TSE):</strong>
                         • Protocolo PesqEle: BR-02849/2026 | Amostra: 4.500 Ponderados | Margem: ± 1.5%
                     </div>
 
-                    <button onclick="resetApp()" style="padding: 5px; background-color: #334155; font-size: 0.50rem; margin-top: 4px;">Sair / Reiniciar Teste</button>
+                    <button onclick="AppState.resetApp()" style="padding: 5px; background-color: #334155; font-size: 0.50rem; margin-top: 4px;">Sair / Reiniciar Teste</button>
                 </div>
 
-                <!-- TELA 6: MÓDULO INTERATIVO DE RELATÓRIO OFICIAL (COM DEMOGRAFIA: IDADE, ZONA, GÊNERO, COR) -->
+                <!-- TELA 6: MÓDULO INTERATIVO DE RELATÓRIO OFICIAL -->
                 <div id="screen-export" class="view hidden">
                     
                     <div style="text-align: center; margin-bottom: 4px;">
@@ -591,31 +591,30 @@
                     </div>
 
                     <div class="result-tabs" id="report-cargo-tabs">
-                        <button class="tab-btn active" onclick="switchReportCargo('Presidente', this)">Presidente</button>
-                        <button class="tab-btn" onclick="switchReportCargo('Governador', this)">Governador</button>
-                        <button class="tab-btn" onclick="switchReportCargo('Senador', this)">Senador</button>
-                        <button class="tab-btn" onclick="switchReportCargo('Prefeito', this)">Prefeito</button>
+                        <button class="tab-btn active" onclick="ScreenReport.switchCargo('Presidente', this)">Presidente</button>
+                        <button class="tab-btn" onclick="ScreenReport.switchCargo('Governador', this)">Governador</button>
+                        <button class="tab-btn" onclick="ScreenReport.switchCargo('Senador', this)">Senador</button>
+                        <button class="tab-btn" onclick="ScreenReport.switchCargo('Prefeito', this)">Prefeito</button>
                     </div>
 
-                    <!-- CONTAINER DOS FILTROS GEOGRÁFICOS E DEMOGRÁFICOS DA TELA 6 -->
                     <div id="report-dynamic-filters" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px; width: 100%;"></div>
 
                     <div class="report-preview-box" id="report-content-box"></div>
 
                     <div style="margin-top: auto; display: flex; flex-direction: column; gap: 4px;">
                         <div style="display: flex; gap: 4px; margin-top: 4px;">
-                            <button onclick="copyReportText()" style="flex: 1; background-color: #2563eb; border-color: #3b82f6; font-size: 0.50rem; padding: 6px 4px;">📋 Copiar</button>
-                            <button onclick="toggleShareMenu()" style="flex: 1; background-color: #10b981; border-color: #059669; font-size: 0.50rem; padding: 6px 4px;">📤 Enviar</button>
-                            <button onclick="printReport()" style="flex: 1; background-color: #2563eb; border-color: #3b82f6; font-size: 0.50rem; padding: 6px 4px;">🖨️ Imprimir</button>
+                            <button onclick="ScreenReport.copyText()" style="flex: 1; background-color: #2563eb; border-color: #3b82f6; font-size: 0.50rem; padding: 6px 4px;">📋 Copiar</button>
+                            <button onclick="ScreenReport.toggleShareMenu()" style="flex: 1; background-color: #10b981; border-color: #059669; font-size: 0.50rem; padding: 6px 4px;">📤 Enviar</button>
+                            <button onclick="ScreenReport.printReport()" style="flex: 1; background-color: #2563eb; border-color: #3b82f6; font-size: 0.50rem; padding: 6px 4px;">🖨️ Imprimir</button>
                         </div>
 
                         <div id="share-submenu" class="hidden" style="display: flex; gap: 4px; background-color: #1e293b; padding: 5px; border-radius: 6px; border: 1px dashed var(--border);">
-                            <button onclick="shareWhatsApp()" style="flex: 1; background-color: #10b981; border-color: #059669; font-size: 0.48rem; padding: 5px 4px;">💬 WhatsApp</button>
-                            <button onclick="shareEmail()" style="flex: 1; background-color: #475569; border-color: #64748b; font-size: 0.48rem; padding: 5px 4px;">📧 E-mail</button>
+                            <button onclick="ScreenReport.shareWhatsApp()" style="flex: 1; background-color: #10b981; border-color: #059669; font-size: 0.48rem; padding: 5px 4px;">💬 WhatsApp</button>
+                            <button onclick="ScreenReport.shareEmail()" style="flex: 1; background-color: #475569; border-color: #64748b; font-size: 0.48rem; padding: 5px 4px;">📧 E-mail</button>
                         </div>
                         
-                        <button onclick="downloadReportPdf()" style="background-color: #0f766e; border-color: #14b8a6; font-size: 0.56rem;">💾 Salvar Arquivo (PDF)</button>
-                        <button onclick="backToResults()" style="background-color: #334155; font-size: 0.54rem;">Voltar ao Painel Analítico</button>
+                        <button onclick="ScreenReport.downloadPdf()" style="background-color: #0f766e; border-color: #14b8a6; font-size: 0.56rem;">💾 Salvar Arquivo (PDF)</button>
+                        <button onclick="ScreenReport.backToResults()" style="background-color: #334155; font-size: 0.54rem;">Voltar ao Painel Analítico</button>
                     </div>
                 </div>
 
@@ -629,1154 +628,1181 @@
         </div>
     </div>
 
-    <!-- SCRIPT DA APLICAÇÃO -->
+    <!-- SCRIPT DA APLICAÇÃO ORGANIZADO EM MÓDULOS DE ESCOPO ISOLADO -->
     <script>
-        let currentYear = 2026;
-        let currentTurn = 1; 
-        let currentStep = 0;
-        let activeBallots = [];
-        let votesData = {};
-        let currentMode = 'geral'; 
-        let lastLoadedCategory = '';
-        let lastLoadedKey = '';
-        
-        let selectedPattern = [];
-        let isDrawingPattern = false;
-
-        let activeMediaInfo = null;
-        let activeReportCargo = 'Presidente';
-
-        // 1. MAPEAMENTO DE NOME E SIGLA DE ESTADOS PARA BUSCA 100% BLINDADA
-        const stateNameToCode = {
-            'AC': 'AC', 'ACRE': 'AC',
-            'AL': 'AL', 'ALAGOAS': 'AL',
-            'AP': 'AP', 'AMAPA': 'AP', 'AMAPÁ': 'AP',
-            'AM': 'AM', 'AMAZONAS': 'AM',
-            'BA': 'BA', 'BAHIA': 'BA',
-            'CE': 'CE', 'CEARA': 'CE', 'CEARÁ': 'CE',
-            'DF': 'DF', 'DISTRITO FEDERAL': 'DF',
-            'ES': 'ES', 'ESPIRITO SANTO': 'ES', 'ESPÍRITO SANTO': 'ES',
-            'GO': 'GO', 'GOIAS': 'GO', 'GOIÁS': 'GO',
-            'MA': 'MA', 'MARANHAO': 'MA', 'MARANHÃO': 'MA',
-            'MG': 'MG', 'MINAS GERAIS': 'MG',
-            'MS': 'MS', 'MATO GROSSO DO SUL': 'MS',
-            'MT': 'MT', 'MATO GROSSO': 'MT',
-            'PA': 'PA', 'PARA': 'PA', 'PARÁ': 'PA',
-            'PB': 'PB', 'PARAIBA': 'PB', 'PARAÍBA': 'PB',
-            'PE': 'PE', 'PERNAMBUCO': 'PE',
-            'PI': 'PI', 'PIAUI': 'PI', 'PIAUÍ': 'PI',
-            'PR': 'PR', 'PARANA': 'PR', 'PARANÁ': 'PR',
-            'RJ': 'RJ', 'RIO DE JANEIRO': 'RJ',
-            'RN': 'RN', 'RIO GRANDE DO NORTE': 'RN',
-            'RO': 'RO', 'RONDONIA': 'RO', 'RONDÔNIA': 'RO',
-            'RR': 'RR', 'RORAIMA': 'RR',
-            'RS': 'RS', 'RIO GRANDE DO SUL': 'RS',
-            'SC': 'SC', 'SANTA CATARINA': 'SC',
-            'SE': 'SE', 'SERGIPE': 'SE',
-            'SP': 'SP', 'SAO PAULO': 'SP', 'SÃO PAULO': 'SP',
-            'TO': 'TO', 'TOCANTINS': 'TO',
-            'ZZ': 'ZZ', 'EXTERIOR': 'ZZ', 'OUTROS PAÍSES': 'ZZ'
-        };
-
-        const capitalsByState = {
-            'AC': 'Rio Branco', 'AL': 'Maceió', 'AM': 'Manaus', 'AP': 'Macapá', 'BA': 'Salvador',
-            'CE': 'Fortaleza', 'DF': 'Brasília', 'ES': 'Vitória', 'GO': 'Goiânia', 'MA': 'São Luís',
-            'MG': 'Belo Horizonte', 'MS': 'Campo Grande', 'MT': 'Cuiabá', 'PA': 'Belém', 'PB': 'João Pessoa',
-            'PE': 'Recife', 'PI': 'Teresina', 'PR': 'Curitiba', 'RJ': 'Rio de Janeiro', 'RN': 'Natal',
-            'RO': 'Porto Velho', 'RR': 'Boa Vista', 'RS': 'Porto Alegre', 'SC': 'Florianópolis',
-            'SE': 'Aracaju', 'SP': 'São Paulo', 'TO': 'Palmas'
-        };
-
-        const citiesByStateCode = {
-            'AC': ['Acrelândia', 'Assis Brasil', 'Brasiléia', 'Bujari', 'Capixaba', 'Cruzeiro do Sul', 'Epitaciolândia', 'Feijó', 'Jordão', 'Mâncio Lima', 'Manoel Urbano', 'Marechal Thaumaturgo', 'Plácido de Castro', 'Porto Acre', 'Porto Walter', 'Rio Branco', 'Rodrigues Alves', 'Santa Rosa do Purus', 'Sena Madureira', 'Senador Guiomard', 'Tarauacá', 'Xapuri'],
-            'AL': ['Anadia', 'Arapiraca', 'Atalaia', 'Barra de Santo Antônio', 'Barra de São Miguel', 'Batalha', 'Belo Monte', 'Boca da Mata', 'Branquinha', 'Cacimbinhas', 'Cajueiro', 'Campestre', 'Campo Alegre', 'Campo Grande', 'Canapi', 'Capela', 'Carneiros', 'Chã Preta', 'Coité do Nóia', 'Colônia Leopoldina', 'Coqueiro Seco', 'Coruripe', 'Craíbas', 'Delmiro Gouveia', 'Dois Riachos', 'Japaratinga', 'Jaramataia', 'Jequiá da Praia', 'Joaquim Gomes', 'Jundiá', 'Junqueiro', 'Lagoa da Canoa', 'Limoeiro de Anadia', 'Maceió', 'Major Izidoro', 'Maragogi', 'Maravilha', 'Marechal Deodoro', 'Maribondo', 'Mar Vermelho', 'Mata Grande', 'Matriz de Camaragibe', 'Messias', 'Minador do Negrão', 'Monteirópolis', 'Murici', 'Novo Lino', 'Olho d\'Água das Flores', 'Olho d\'Água do Casado', 'Olho d\'Água Grande', 'Olivença', 'Ouro Branco', 'Palestina', 'Palmeira dos Índios', 'Pão de Açúcar', 'Pariconha', 'Paripueira', 'Passo de Camaragibe', 'Paulo Jacinto', 'Penedo', 'Piaçabuçu', 'Pilar', 'Pindoba', 'Piranhas', 'Poço das Trincheiras', 'Porto Calvo', 'Porto de Pedras', 'Porto Real do Colégio', 'Quebrangulo', 'Rio Largo', 'Roteiro', 'Santa Luzia do Norte', 'Santana do Ipanema', 'Santana do Mundaú', 'São Brás', 'São José da Tapera', 'São José da Laje', 'São Luís do Quitunde', 'São Miguel dos Campos', 'São Miguel dos Milagres', 'São Sebastião', 'Satuba', 'Senador Rui Palmeira', 'Tanque d\'Arca', 'Taquarana', 'Teotônio Vilela', 'Traipu', 'União dos Palmares', 'Viçosa'],
-            'AM': ['Alvarães', 'Amaturá', 'Anamã', 'Anori', 'Apuí', 'Atalaia do Norte', 'Autazes', 'Barcelos', 'Barreirinha', 'Benjamin Constant', 'Beruri', 'Boa Vista do Ramos', 'Boca do Acre', 'Borba', 'Caapiranga', 'Canutama', 'Carauari', 'Careiro', 'Careiro da Várzea', 'Coari', 'Codajás', 'Eirunepé', 'Envira', 'Fonte Boa', 'Guajará', 'Humaitá', 'Ipixuna', 'Iranduba', 'Itacoatiara', 'Itamarati', 'Itapiranga', 'Japurá', 'Juruá', 'Jutaí', 'Lábrea', 'Manacapuru', 'Manaquiri', 'Manaus', 'Manicoré', 'Maraã', 'Maués', 'Nhamundá', 'Nova Olinda do Norte', 'Novo Airão', 'Novo Aripuanã', 'Parintins', 'Pauini', 'Presidente Figueiredo', 'Rio Preto da Eva', 'Santa Isabel do Rio Negro', 'Santo Antônio do Içá', 'São Gabriel da Cachoeira', 'São Paulo de Olivença', 'São Sebastião do Uatumã', 'Silves', 'Tabatinga', 'Tapauá', 'Tefé', 'Tonantins', 'Uarini', 'Urucará', 'Urucurituba'],
-            'AP': ['Amapá', 'Calçoene', 'Cutias', 'Ferreira Gomes', 'Itaubal', 'Laranjal do Jari', 'Macapá', 'Mazagão', 'Oiapoque', 'Pedra Branca do Amapari', 'Pracuúba', 'Santana', 'Serra do Navio', 'Tartarugalzinho', 'Vitória do Jari'],
-            'BA': ['Alcobaca', 'Barreiras', 'Bom Jesus da Lapa', 'Brumado', 'Camaçari', 'Eunápolis', 'Feira de Santana', 'Guanambi', 'Ilhéus', 'Irecê', 'Itabuna', 'Itapetinga', 'Jacobina', 'Jequié', 'Juazeiro', 'Lauro de Freitas', 'Luís Eduardo Magalhães', 'Paulo Afonso', 'Porto Seguro', 'Salvador', 'Santo Antônio de Jesus', 'Seabra', 'Teixeira de Freitas', 'Valença', 'Vitória da Conquista'],
-            'CE': ['Aracati', 'Barbalha', 'Baturité', 'Camocim', 'Caucaia', 'Crateús', 'Crato', 'Eusébio', 'Fortaleza', 'Iguatu', 'Itapipoca', 'Juazeiro do Norte', 'Limoeiro do Norte', 'Maracanaú', 'Maranguape', 'Quixadá', 'Quixeramobim', 'Sobral', 'Tianguá', 'Tauá'],
-            'DF': ['Águas Claras', 'Brasília', 'Ceilândia', 'Gama', 'Guará', 'Planaltina', 'Plano Piloto', 'Recanto das Antas', 'Samambaia', 'Santa Maria', 'Sobradinho', 'Taguatinga', 'Vicente Pires'],
-            'ES': ['Aracruz', 'Cachoeiro de Itapemirim', 'Cariacica', 'Colatina', 'Guarapari', 'Linhares', 'Marataízes', 'Nova Venécia', 'São Mateus', 'Serra', 'Vila Velha', 'Vitória'],
-            'GO': ['Águas Lindas de Goiás', 'Anápolis', 'Aparecida de Goiânia', 'Caldas Novas', 'Catalão', 'Formosa', 'Goiânia', 'Itumbiara', 'Jataí', 'Luziânia', 'Rio Verde', 'Senador Canedo', 'Trindade', 'Uruaçu', 'Valparaíso de Goiás'],
-            'MA': ['Açailândia', 'Bacabal', 'Balsas', 'Bar Barra do Corda', 'Caxias', 'Codó', 'Imperatriz', 'Itapecuru Mirim', 'Paço do Lumiar', 'Pinheiro', 'Santa Inês', 'São José de Ribamar', 'São Luís', 'Timon'],
-            'MG': ['Araguari', 'Barbacena', 'Belo Horizonte', 'Betim', 'Caratinga', 'Conselheiro Lafaiete', 'Contagem', 'Coronel Fabriciano', 'Divinópolis', 'Governador Valadares', 'Ibiritė', 'Ipatinga', 'Itabira', 'Itajubá', 'Itaúna', 'Juiz de Fora', 'Lavras', 'Manhuaçu', 'Montes Claros', 'Muriae', 'Nova Lima', 'Passos', 'Patos de Minas', 'Poços de Caldas', 'Pouso Alegre', 'Ribeirão das Neves', 'Sabará', 'Santa Luzia', 'São João del-Rei', 'Seven Lagoas', 'Tófilo Otoni', 'Ubá', 'Uberaba', 'Uberlândia', 'Varginha', 'Viçosa'],
-            'MS': ['Aquidauana', 'Campo Grande', 'Corumbá', 'Coxim', 'Dourados', 'Maracaju', 'Naviraí', 'Nova Andradina', 'Paranaíba', 'Ponta Porã', 'Sidrolândia', 'Três Lagoas'],
-            'MT': ['Alta Floresta', 'Barra do Garças', 'Cáceres', 'Cuiabá', 'Juína', 'Lucas do Rio Verde', 'Pontes e Lacerda', 'Primavera do Leste', 'Rondonópolis', 'Sinop', 'Sorriso', 'Tangará da Serra', 'Várzea Grande'],
-            'PA': ['Abaetetuba', 'Altamira', 'Ananindeua', 'Barcarena', 'Belém', 'Bragança', 'Breves', 'Cametá', 'Castanhal', 'Itaituba', 'Marabá', 'Marituba', 'Paragominas', 'Parauapebas', 'Redenção', 'Santarém', 'Tucuruí'],
-            'PB': ['Bayeux', 'Cabedelo', 'Cajazeiras', 'Campina Grande', 'Guarabira', 'João Pessoa', 'Mamanguape', 'Monteiro', 'Patos', 'Santa Rita', 'Sousa'],
-            'PE': ['Abreu e Lima', 'Araripina', 'Cabo de Santo Agostinho', 'Camaragibe', 'Caruaru', 'Garanhuns', 'Goiana', 'Igarassu', 'Ipojuca', 'Jaboatão dos Guararapes', 'Olinda', 'Ouricuri', 'Paulista', 'Petrolina', 'Recife', 'Salgueiro', 'Serra Talhada', 'Timbaúba', 'Vitória de Santo Antão'],
-            'PI': ['Altos', 'Barras', 'Bom Jesus', 'Campo Maior', 'Esperantina', 'Floriano', 'José de Freitas', 'Parnaíba', 'Picos', 'Piripiri', 'São Raimundo Nonato', 'Teresina', 'União'],
-            'PR': ['Apucarana', 'Arapongas', 'Araucária', 'Campo Largo', 'Cascavel', 'Castro', 'Cianorte', 'Colombo', 'Curitiba', 'Fazenda Rio Grande', 'Foz do Iguaçu', 'Francisco Beltrão', 'Guarapuava', 'Londrina', 'Marechal Cândido Rondon', 'Maringá', 'Paranaguá', 'Paranavaí', 'Pato Branco', 'Pinhais', 'Piraquara', 'Ponta Grossa', 'São José dos Pinhais', 'Toledo', 'Umuarama'],
-            'RJ': ['Angra dos Reis', 'Araruama', 'Barra Mansa', 'Belford Roxo', 'Cabo Frio', 'Campos dos Goytacazes', 'Duque de Caxias', 'Itaboraí', 'Itaguaí', 'Macaé', 'Magé', 'Maricá', 'Mesquita', 'Nilópolis', 'Niterói', 'Nova Friburgo', 'Nova Iguaçu', 'Petrópolis', 'Resende', 'Rio das Ostras', 'Rio de Janeiro', 'São Gonçalo', 'São João de Meriti', 'Teresópolis', 'Volta Redonda'],
-            'RN': ['Açu', 'Apodi', 'Caicó', 'Ceará-Mirim', 'Currais Novos', 'João Câmara', 'Macaíba', 'Mossoró', 'Natal', 'Nova Cruz', 'Parnamirim', 'Santa Cruz', 'São Gonçalo do Amarante', 'São José de Mipibu'],
-            'RO': ['Ariquemes', 'Cacoal', 'Guajará-Mirim', 'Jaru', 'Ji-Paraná', 'Porto Velho', 'Rolim de Moura', 'Vilhena'],
-            'RR': ['Alto Alegre', 'Amajari', 'Boa Vista', 'Bonfim', 'Cantá', 'Caracaraí', 'Caroebe', 'Iracema', 'Mucajaí', 'Normandia', 'Pacaraima', 'Roraimópolis', 'Uiramutã'],
-            'RS': ['Alvorada', 'Bagé', 'Bento Gonçalves', 'Cachoeirinha', 'Camaquã', 'Canoas', 'Caxias do Sul', 'Erechim', 'Gravataí', 'Guaíba', 'Ijuí', 'Lajeado', 'Novo Hamburgo', 'Passo Fundo', 'Pelotas', 'Porto Alegre', 'Rio Grande', 'Santa Cruz do Sul', 'Santa Maria', 'Sant\'Ana do Livramento', 'São Leopoldo', 'Sapucaia do Sul', 'Uruguaiana', 'Viamão'],
-            'SC': ['Balneário Camboriú', 'Blumenau', 'Chapecó', 'Criciúma', 'Florianópolis', 'Itajaí', 'Joinville', 'Lages', 'São José', 'Tubarão'],
-            'SE': ['Aracaju', 'Estância', 'Itabaiana', 'Lagarto', 'Nossa Senhora do Socorro', 'São Cristóvão', 'Simão Dias', 'Tobias Barreto'],
-            'SP': ['Americana', 'Araçatuba', 'Araraquara', 'Bauru', 'Campinas', 'Carapicuíba', 'Diadema', 'Franca', 'Guarulhos', 'Itaquaquecetuba', 'Jundiaí', 'Limeira', 'Mauá', 'Mogi das Cruzes', 'Osasco', 'Piracicaba', 'Praia Grande', 'Presidente Prudente', 'Ribeirão Preto', 'Santo André', 'Santos', 'São Bernardo do Campo', 'São José do Rio Preto', 'São José dos Campos', 'São Paulo', 'Sorocaba', 'Sumaré', 'Taubaté'],
-            'TO': ['Araguaína', 'Araguatins', 'Colinas do Tocantins', 'Guaraí', 'Gurupi', 'Miracema do Tocantins', 'Palmas', 'Paraíso do Tocantins', 'Porto Nacional', 'Tocantinópolis']
-        };
-
-        const cityZonesAlphabetical = [
-            "Centro / Central",
-            "Rural / Distritos",
-            "Zona Centro-Oeste",
-            "Zona Centro-Sul",
-            "Zona Leste",
-            "Zona Norte",
-            "Zona Oeste",
-            "Zona Sul",
-            "Zona Urbana"
-        ];
-
-        const internationalCountryList = [
-            "Todos os Países", "Alemanha", "Angola", "Argentina", "Austrália", "Áustria", "Bélgica", "Bolívia", "Canadá", "Chile", "China", "Colômbia", "Coreia do Sul", "Dinamarca", "Emirados Árabes Unidos", "Espanha", "Estados Unidos (EUA)", "França", "Holanda", "Irlanda", "Israel", "Itália", "Japão", "México", "Moçambique", "Noruega", "Nova Zelândia", "Paraguai", "Peru", "Portugal", "Reino Unido", "Suíça", "Uruguai", "Venezuela"
-        ];
-
-        const demoMediaKeys = {
-            'TV-AM-2026': { name: 'Rede Amazônica de Comunicação', type: 'Emissora de TV / Rádio', tier: 'Licenciamento Estadual' },
-            'BLOG-MANAUS': { name: 'Portal & Blog de Notícias Manaus', type: 'Portal Eletrônico Local', tier: 'Licenciamento Municipal' },
-            'JORNAL-2026': { name: 'Jornal Commercio do Amazonas', type: 'Jornal Impresso / Digital', tier: 'Licenciamento Estadual' },
-            'MIDIA-NACIONAL': { name: 'Agência Nacional de Notícias', type: 'Veículo Nacional de Imprensa', tier: 'Licenciamento Nacional' }
-        };
-
-        const electionSchedules = {
-            2026: {
-                1: [
-                    { id: 'president', title: "Presidente", subtitle: "Selecione 1 candidato ou voto especial", type: "single", candidates: [
-                        { name: "Candidato Alpha", party: "PTX / Nº 12", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
-                        { name: "Candidato Beta", party: "PLZ / Nº 22", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
-                    ]},
-                    { id: 'governor', title: "Governador", subtitle: "Selecione 1 candidato ou voto especial", type: "single", candidates: [
-                        { name: "Candidato Delta", party: "PSB / Nº 40", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" },
-                        { name: "Candidato Ômega", party: "PSD / Nº 55", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150" }
-                    ]},
-                    { id: 'senator', title: "Senador(es)", subtitle: "Selecione ATÉ 2 candidatos", type: "multiple", candidates: [
-                        { name: "Candidato Um", party: "MDB / Nº 151", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150" },
-                        { name: "Candidato Dois", party: "UNIÃO / Nº 444", img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150" }
-                    ]},
-                    { id: 'mayor', title: "Prefeito", subtitle: "Selecione 1 candidato ou voto especial", type: "single", candidates: [
-                        { name: "Candidato X", party: "UNIÃO / Nº 44", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" },
-                        { name: "Candidato Y", party: "PSD / Nº 55", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" }
-                    ]}
-                ],
-                2: [
-                    { id: 'president_2t', title: "Presidente", subtitle: "Finalistas - Selecione 1 candidato", type: "single", candidates: [
-                        { name: "Candidato Alpha", party: "PTX / Nº 12", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
-                        { name: "Candidato Beta", party: "PLZ / Nº 22", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
-                    ]},
-                    { id: 'governor_2t', title: "Governador", subtitle: "Finalistas - Selecione 1 candidato", type: "single", candidates: [
-                        { name: "Candidato Delta", party: "PSB / Nº 40", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" },
-                        { name: "Candidato Ômega", party: "PSD / Nº 55", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150" }
-                    ]},
-                    { id: 'mayor_2t', title: "Prefeito", subtitle: "Finalistas Municipal", type: "single", candidates: [
-                        { name: "Candidato X", party: "UNIÃO / Nº 44", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" },
-                        { name: "Candidato Y", party: "PSD / Nº 55", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" }
-                    ]}
-                ]
-            }
-        };
-
-        function autoMaskPhone(input) {
-            if (!input) return;
-            let digits = input.value.replace(/\D/g, "");
-            if (digits.length > 11) digits = digits.substring(0, 11);
-            let formatted = "";
-            if (digits.length > 0) {
-                formatted = "(" + digits.substring(0, 2);
-                if (digits.length > 2) {
-                    formatted += ") " + digits.substring(2, 7);
-                    if (digits.length > 7) formatted += "-" + digits.substring(7, 11);
-                }
-            }
-            input.value = formatted;
-        }
-
-        function autoMaskDate(input) {
-            if (!input) return;
-            let digits = input.value.replace(/\D/g, "");
-            if (digits.length > 8) digits = digits.substring(0, 8);
-            let formatted = "";
-            if (digits.length > 0) {
-                formatted = digits.substring(0, 2);
-                if (digits.length > 2) {
-                    formatted += "/" + digits.substring(2, 4);
-                    if (digits.length > 4) formatted += "/" + digits.substring(4, 8);
-                }
-            }
-            input.value = formatted;
-        }
-
-        function updateSystemState() {
-            activeBallots = electionSchedules[currentYear][currentTurn] || electionSchedules[2026][1];
-            const bannerElem = document.getElementById('status-banner-text');
-            if (bannerElem) bannerElem.innerText = `🗳️ Pesquisa Eleitoral Oficial (${currentTurn}º Turno)`;
-        }
-        updateSystemState();
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast-container');
-            if (!toast) return;
-            toast.innerText = message;
-            if(isError) toast.classList.add('error'); else toast.classList.remove('error');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3500);
-        }
-
-        function removeAccents(str) {
-            if (!str) return '';
-            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
-
-        // FUNÇÃO DE BUSCA DE UF TOTALMENTE ROBUSTA
-        function getUFCodeFromInput(textVal) {
-            if (!textVal) return '';
-            const clean = removeAccents(textVal).toUpperCase().trim();
-            if (clean.includes('EXTERIOR') || clean.includes('OUTROS PAISES') || clean === 'ZZ') return 'ZZ';
-            
-            // Tenta casamento por sigla no final (ex: "Amazonas - AM")
-            const matchSigla = clean.match(/(?:-\s*|\b)([A-Z]{2})\b$/) || clean.match(/\b([A-Z]{2})\b/);
-            if (matchSigla) {
-                for (let i = matchSigla.length - 1; i >= 1; i--) {
-                    const codeCandidate = matchSigla[i];
-                    if (stateNameToCode[codeCandidate]) return stateNameToCode[codeCandidate];
-                }
-            }
-
-            // Tenta casamento por nome completo do estado (ex: "Amazonas", "São Paulo")
-            for (const [key, code] of Object.entries(stateNameToCode)) {
-                const cleanKey = removeAccents(key).toUpperCase();
-                if (clean === cleanKey || clean.includes(cleanKey)) {
-                    return code;
-                }
-            }
-            return '';
-        }
-
-        function updateCityDatalist(context = 'register', typedValue = '') {
-            let stateVal = '';
-            let datalistElem = null;
-            let cityInputElem = null;
-
-            if (context === 'register') {
-                stateVal = document.getElementById('state-input').value;
-                datalistElem = document.getElementById('cities-datalist');
-                cityInputElem = document.getElementById('city-input');
-            } else if (context === 'results') {
-                stateVal = document.getElementById('filter-state-select').value;
-                datalistElem = document.getElementById('filter-cities-datalist');
-                cityInputElem = document.getElementById('filter-city-select');
-            } else if (context === 'report') {
-                stateVal = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
-                datalistElem = document.getElementById('rep-cities-datalist');
-                cityInputElem = document.getElementById('rep-city-report');
-            }
-
-            if (!datalistElem || !cityInputElem) return;
-
-            const code = getUFCodeFromInput(stateVal);
-            datalistElem.innerHTML = '';
-
-            let sourceList = [];
-            if (code === 'ZZ') {
-                cityInputElem.placeholder = "Pesquise o país...";
-                sourceList = internationalCountryList;
-            } else if (code && citiesByStateCode[code]) {
-                cityInputElem.placeholder = "Pesquise a cidade...";
-                sourceList = citiesByStateCode[code];
-            } else {
-                cityInputElem.placeholder = "Pesquise a cidade...";
-                sourceList = Object.values(citiesByStateCode).flat();
-            }
-
-            if (typedValue) {
-                const lowerTyped = removeAccents(typedValue).toLowerCase();
-                sourceList = sourceList.filter(city => removeAccents(city).toLowerCase().startsWith(lowerTyped));
-            }
-
-            const fragment = document.createDocumentFragment();
-            sourceList.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item;
-                fragment.appendChild(opt);
-            });
-            datalistElem.appendChild(fragment);
-        }
-
-        function handleStateTyped(context = 'register', autoRender = false) {
-            updateCityDatalist(context, '');
-            if (context === 'results' && autoRender) {
-                renderFilterSections();
-            }
-        }
-
-        function handleCityTyped(context = 'register', autoRender = false) {
-            let cityInputElem = null;
-            if (context === 'register') cityInputElem = document.getElementById('city-input');
-            else if (context === 'results') cityInputElem = document.getElementById('filter-city-select');
-            else if (context === 'report') cityInputElem = document.getElementById('rep-city-report');
-            
-            if (cityInputElem) {
-                 updateCityDatalist(context, cityInputElem.value);
-            }
-
-            if (context === 'results' && autoRender) {
-                renderFilterSections();
-            }
-        }
-        
-        handleStateTyped('register');
-        handleStateTyped('results');
-
-        function openAdminLogin() {
-            document.getElementById('screen-register').classList.add('hidden');
-            document.getElementById('screen-admin-login').classList.remove('hidden');
-        }
-        function backToRegister() {
-            document.getElementById('screen-admin-login').classList.add('hidden');
-            document.getElementById('screen-register').classList.remove('hidden');
-        }
-
-        function openMediaLogin() {
-            document.getElementById('screen-register').classList.add('hidden');
-            document.getElementById('screen-media-login').classList.remove('hidden');
-        }
-        function backToRegisterFromMedia() {
-            document.getElementById('screen-media-login').classList.add('hidden');
-            document.getElementById('screen-register').classList.remove('hidden');
-        }
-
-        function validateMediaLogin() {
-            const key = document.getElementById('media-key-input').value.trim().toUpperCase();
-            if(!key) { showToast('⚠️ Digite sua chave de licença de mídia.', true); return; }
-            if(demoMediaKeys[key]) activeMediaInfo = demoMediaKeys[key];
-            else activeMediaInfo = { name: `Veículo Mídia (${key})`, type: 'Portal / Veículo', tier: 'Licença Comercial' };
-            document.getElementById('screen-media-login').classList.add('hidden');
-            document.getElementById('screen-export').classList.remove('hidden');
-            renderReportFilters();
-            showToast(`📰 Licença ativada: ${activeMediaInfo.name}`);
-        }
-
-        function toggleSystemTurn() {
-            currentTurn = parseInt(document.getElementById('admin-turn-toggle').value);
-            updateSystemState();
-        }
-
-        function validateAdminLogin() {
-            const pass = document.getElementById('admin-pass-input').value.trim();
-            if(pass === 'adm2026' || pass === '') {
-                activeMediaInfo = null;
-                document.getElementById('screen-admin-login').classList.add('hidden');
-                document.getElementById('screen-results').classList.remove('hidden');
-                setupResultTabs();
-                showToast('✅ Acesso ADM liberado!');
-            } else showToast('❌ Chave incorreta. Tente "adm2026".', true);
-        }
-        
-        function goToAuth() {
-            const phoneInput = document.getElementById('whatsapp-input');
-            const birthInput = document.getElementById('birthdate-input');
-            autoMaskPhone(phoneInput);
-            autoMaskDate(birthInput);
-
-            const phone = phoneInput.value.trim();
-            const birth = birthInput.value.trim();
-            const state = document.getElementById('state-input').value.trim();
-            const city = document.getElementById('city-input').value.trim();
-            const zone = document.getElementById('zone-input').value;
-            const education = document.getElementById('education-input').value;
-            const income = document.getElementById('income-input').value;
-            const gender = document.getElementById('gender-input').value;
-            const race = document.getElementById('race-input').value;
-            const lgpd = document.getElementById('lgpd-check').checked;
-
-            if(!phone) { showToast('⚠️ Informe seu (DDD) WhatsApp.', true); return; }
-            if(!birth) { showToast('⚠️ Data de nascimento obrigatória.', true); return; }
-            if(!state) { showToast('⚠️ Selecione ou digite o Estado / UF.', true); return; }
-            if(!city) { showToast('⚠️ Digite ou selecione o Município.', true); return; }
-            if(!zone) { showToast('⚠️ Selecione a Zona / Região.', true); return; }
-            if(!education) { showToast('⚠️ Selecione o grau de Escolaridade.', true); return; }
-            if(!income) { showToast('⚠️ Selecione a faixa de Renda Familiar.', true); return; }
-            if(!gender) { showToast('⚠️ Selecione o Gênero.', true); return; }
-            if(!race) { showToast('⚠️ Selecione a Cor / Raça (IBGE).', true); return; }
-            if(!lgpd) { showToast('⚠️ Marque a autorização LGPD/TSE.', true); return; }
-
-            activeMediaInfo = null;
-            document.getElementById('screen-register').classList.add('hidden');
-            document.getElementById('screen-auth').classList.remove('hidden');
-            selectedPattern = [];
-            document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
-        }
-
-        // GESTOS DE TOUCH/SWIPE NO PADRÃO DE PONTOS
-        function activateDot(element) {
-            if (!element) return;
-            const id = element.getAttribute('data-id');
-            if (id && !element.classList.contains('active')) {
-                element.classList.add('active');
-                if (!selectedPattern.includes(id)) {
-                    selectedPattern.push(id);
-                }
-            }
-        }
-
-        const patternGrid = document.getElementById('pattern-grid');
-
-        patternGrid.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            isDrawingPattern = true;
-            const touch = e.touches[0];
-            const elem = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (elem && elem.classList.contains('pattern-dot')) {
-                activateDot(elem);
-            }
-        }, { passive: false });
-
-        patternGrid.addEventListener('touchmove', function(e) {
-            if (!isDrawingPattern) return;
-            e.preventDefault();
-            const touch = e.touches[0];
-            const elem = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (elem && elem.classList.contains('pattern-dot')) {
-                activateDot(elem);
-            }
-        }, { passive: false });
-
-        patternGrid.addEventListener('touchend', function() {
-            isDrawingPattern = false;
-        });
-
-        patternGrid.addEventListener('mousedown', function(e) {
-            isDrawingPattern = true;
-            if (e.target.classList.contains('pattern-dot')) {
-                activateDot(e.target);
-            }
-        });
-
-        patternGrid.addEventListener('mousemove', function(e) {
-            if (isDrawingPattern && e.target.classList.contains('pattern-dot')) {
-                activateDot(e.target);
-            }
-        });
-
-        document.addEventListener('mouseup', function() {
-            isDrawingPattern = false;
-        });
-
-        // BIOMETRIA WEBAUTHN NATIVA
-        async function simulateBiometric() {
-            if (window.PublicKeyCredential) {
-                try {
-                    showToast('⏳ Aguardando leitura biométrica do celular...', false);
-                    const publicKeyCredentialCreationOptions = {
-                        challenge: Uint8Array.from('pesquisajusta_sec_challenge_2026', c => c.charCodeAt(0)),
-                        rp: { name: "Pesquisa Justa" },
-                        user: {
-                            id: Uint8Array.from('user_id_eleitor_2026', c => c.charCodeAt(0)),
-                            name: "eleitor@pesquisajusta.com.br",
-                            displayName: "Eleitor Autenticado"
-                        },
-                        pubKeyCredParams: [
-                            { alg: -7, type: "public-key" },
-                            { alg: -257, type: "public-key" }
-                        ],
-                        authenticatorSelection: {
-                            authenticatorAttachment: "platform",
-                            userVerification: "required"
-                        },
-                        timeout: 60000
-                    };
-
-                    const credential = await navigator.credentials.create({
-                        publicKey: publicKeyCredentialCreationOptions
-                    });
-
-                    if (credential) {
-                        showToast('✅ Biometria confirmada com sucesso pelo aparelho!');
-                        setTimeout(() => startVoting(null), 800);
-                    }
-                } catch (err) {
-                    console.error("Erro ou cancelamento de biometria:", err);
-                    if (err.name === 'NotAllowedError') {
-                        showToast('❌ Leitura biométrica cancelada ou não reconhecida.', true);
-                    } else {
-                        showToast('⚠️ Biometria confirmada (Modo de Compatibilidade)!');
-                        setTimeout(() => startVoting(null), 800);
-                    }
-                }
-            } else {
-                showToast('❌ Seu dispositivo não possui leitor biométrico compatível.', true);
-            }
-        }
-
-        function startVoting(event) {
-            if(event && event.currentTarget && event.currentTarget.innerText.includes('Padrão')) {
-                if(selectedPattern.length < 3) {
-                    showToast('⚠️ Desenhe/Deslize por pelo menos 3 pontos no padrão.', true); 
-                    return;
-                }
-            }
-            document.getElementById('screen-auth').classList.add('hidden');
-            document.getElementById('screen-voting').classList.remove('hidden');
-            currentStep = 0;
-            renderBallot();
-        }
-
-        let currentSelections = [];
-        function renderBallot() {
-            updateSystemState();
-            const data = activeBallots[currentStep];
-            document.getElementById('voting-badge').innerText = `Etapa ${currentStep + 1} de ${activeBallots.length} (${currentTurn}º Turno)`;
-            document.getElementById('voting-title').innerText = data.title;
-            document.getElementById('voting-subtitle').innerText = data.subtitle;
-
-            const container = document.getElementById('candidates-container');
-            container.innerHTML = '';
-            data.candidates.forEach((cand) => {
-                const card = document.createElement('div'); card.className = 'candidate-card';
-                card.innerHTML = `<img src="${cand.img}" class="candidate-img"><div class="candidate-info"><h4>${cand.name}</h4><p>${cand.party}</p></div>`;
-                card.onclick = () => handleSelect(card, cand.name, data.type);
-                container.appendChild(card);
-            });
-            document.getElementById('btn-next-vote').disabled = true;
-            currentSelections = [];
-        }
-
-        function handleSelect(cardElement, name, type) {
-            document.querySelectorAll('.special-vote-btn').forEach(b => b.classList.remove('selected'));
-            if(type === 'single') {
-                document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
-                cardElement.classList.add('selected'); currentSelections = [name];
-                document.getElementById('btn-next-vote').disabled = false;
-            } else {
-                if(cardElement.classList.contains('selected')) {
-                    cardElement.classList.remove('selected'); currentSelections = currentSelections.filter(item => item !== name);
-                } else {
-                    if(currentSelections.length < 2) { cardElement.classList.add('selected'); currentSelections.push(name); }
-                    else showToast('⚠️ Selecione no máximo 2 candidatos.', true);
-                }
-                document.getElementById('btn-next-vote').disabled = currentSelections.length === 0;
-            }
-        }
-
-        function handleSpecialVote(type, event) {
-            document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
-            document.querySelectorAll('.special-vote-btn').forEach(b => b.classList.remove('selected'));
-            if(event && event.currentTarget) event.currentTarget.classList.add('selected');
-            currentSelections = [type];
-            document.getElementById('btn-next-vote').disabled = false;
-        }
-
-        function nextVotingStep() {
-            updateSystemState();
-            const currentBallotMeta = activeBallots[currentStep];
-            votesData[currentBallotMeta.id] = [...currentSelections];
-            currentSelections = [];
-            currentStep++;
-            if(currentStep < activeBallots.length) renderBallot();
-            else {
-                document.getElementById('screen-voting').classList.add('hidden');
-                document.getElementById('screen-success').classList.remove('hidden');
-            }
-        }
-
-        function goToResults() {
-            document.getElementById('screen-success').classList.add('hidden');
-            document.getElementById('screen-results').classList.remove('hidden');
-            setupResultTabs();
-        }
-
-        const hierarchicalData = {
-            president: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 42.0 }, { name: "Candidato Beta", percent: 36.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 11.0, color: "#334155" } ] } },
-            president_2t: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 48.0 }, { name: "Candidato Beta", percent: 45.0 }, { name: "Votos Brancos", percent: 3.0, color: "#64748b" }, { name: "Votos Nulos", percent: 2.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 2.0, color: "#334155" } ] } },
-            governor: { datasets: { "Geral Estado": [ { name: "Candidato Delta", percent: 48.0 }, { name: "Candidato Ômega", percent: 32.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 9.0, color: "#334155" } ] } },
-            mayor: { datasets: { "Geral do Município": [ { name: "Candidato X", percent: 46.0 }, { name: "Candidato Y", percent: 40.0 }, { name: "Votos Brancos", percent: 5.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 4.0, color: "#334155" } ] } }
-        };
-        
-        const presidentFilters = [
-            "Geral do País", 
-            "Exterior (Votação em Consulados)",
-            "Região Norte", 
-            "Região Nordeste", 
-            "Região Centro-Oeste", 
-            "Região Sudeste", 
-            "Região Sul"
-        ];
-
-        function setupResultTabs() {
-            const tabsContainer = document.getElementById('result-tabs-container'); tabsContainer.innerHTML = '';
-            activeBallots.forEach((ballot, index) => {
-                const tabBtn = document.createElement('button'); tabBtn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
-                tabBtn.innerText = ballot.title;
-                tabBtn.onclick = (e) => switchResultTab(ballot.id, e.currentTarget);
-                tabsContainer.appendChild(tabBtn);
-            });
-            if (activeBallots.length > 0) {
-                switchResultTab(activeBallots[0].id, tabsContainer.querySelector('.tab-btn'));
-            }
-        }
-
-        function onStateFilterChange() { renderFilterSections(); }
-        function onCityFilterChange() { renderFilterSections(); }
-
-        function switchResultTab(category, btnElement) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
-            btnElement.classList.add('active');
-            lastLoadedCategory = category;
-            renderFilterSections();
-        }
-
-        function renderFilterSections() {
-            const filterBox = document.getElementById('main-filter-box');
-            const macroContainer = document.getElementById('macro-filters-container'); 
-            const microContainer = document.getElementById('micro-filters-container');
-            const dividerElem = document.getElementById('section-divider-elem'); 
-            const macroLabel = document.getElementById('macro-label');
-            const geoBlock = document.getElementById('geo-search-block');
-
-            macroContainer.innerHTML = ''; microContainer.innerHTML = '';
-
-            if (lastLoadedCategory === 'president' || lastLoadedCategory === 'president_2t') {
-                filterBox.appendChild(geoBlock);
-
-                macroLabel.style.display = 'block'; 
-                macroLabel.innerText = "Recorte Geográfico (Federal & Exterior):";
-                dividerElem.style.display = 'none';
-                microContainer.style.display = 'none';
-
-                const gridDiv = document.createElement('div');
-                gridDiv.style.display = 'grid';
-                gridDiv.style.gridTemplateColumns = 'repeat(2, 1fr)';
-                gridDiv.style.gap = '4px';
-                gridDiv.style.marginTop = '4px';
-
-                presidentFilters.forEach((f, i) => {
-                    const b = document.createElement('button'); 
-                    b.className = `stacked-filter-btn ${i===0?'active':''}`; 
-                    b.innerText = f;
-                    if (f === 'Região Sul') b.style.gridColumn = 'span 2';
-                    b.onclick = (e) => { 
-                        document.querySelectorAll('#macro-filters-container .stacked-filter-btn').forEach(x=>x.classList.remove('active')); 
-                        e.currentTarget.classList.add('active'); 
-                        lastLoadedKey = f; 
-                        renderSimulatedDataset(lastLoadedCategory, f); 
-                    };
-                    gridDiv.appendChild(b);
-                });
-                macroContainer.appendChild(gridDiv);
-
-                lastLoadedKey = presidentFilters[0]; 
-                renderSimulatedDataset(lastLoadedCategory, presidentFilters[0]);
-
-            } 
-            else if (lastLoadedCategory === 'mayor' || lastLoadedCategory === 'mayor_2t') {
-                filterBox.insertBefore(geoBlock, macroLabel);
-
-                macroLabel.style.display = 'block'; 
-                macroLabel.innerText = "Recorte Geográfico (Municipal):";
+        /* ==========================================================================
+           1. ESTADO GLOBAL E UTILITÁRIOS (AppState)
+           ========================================================================== */
+        const AppState = {
+            currentYear: 2026,
+            currentTurn: 1,
+            activeMediaInfo: null,
+
+            updateTurnState() {
+                const bannerElem = document.getElementById('status-banner-text');
+                if (bannerElem) bannerElem.innerText = `🗳️ Pesquisa Eleitoral Oficial (${this.currentTurn}º Turno)`;
+            },
+
+            showToast(message, isError = false) {
+                const toast = document.getElementById('toast-container');
+                if (!toast) return;
+                toast.innerText = message;
+                if(isError) toast.classList.add('error'); else toast.classList.remove('error');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3500);
+            },
+
+            resetApp() {
+                ScreenVoting.currentStep = 0;
+                ScreenVoting.votesData = {};
+                ScreenAuth.selectedPattern = [];
+                this.activeMediaInfo = null;
+
+                document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
                 
-                const stackDiv = document.createElement('div');
-                stackDiv.className = 'stacked-filters';
-                const bGeral = document.createElement('button');
-                bGeral.className = 'stacked-filter-btn active';
-                bGeral.innerText = 'Geral do Município';
-                bGeral.onclick = (e) => {
-                    document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
-                    document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
-                    e.currentTarget.classList.add('active');
-                    lastLoadedKey = 'Geral do Município';
-                    renderSimulatedDataset(lastLoadedCategory, 'Geral do Município');
-                };
-                stackDiv.appendChild(bGeral);
-                macroContainer.appendChild(stackDiv);
+                document.getElementById('whatsapp-input').value = '';
+                document.getElementById('birthdate-input').value = '';
+                document.getElementById('state-input').value = '';
+                document.getElementById('city-input').value = '';
+                document.getElementById('zone-input').selectedIndex = 0;
+                document.getElementById('education-input').selectedIndex = 0;
+                document.getElementById('income-input').selectedIndex = 0;
+                document.getElementById('gender-input').selectedIndex = 0;
+                document.getElementById('race-input').selectedIndex = 0;
+                document.getElementById('lgpd-check').checked = false;
 
-                const stateVal = document.getElementById('filter-state-select').value;
-                const cityVal = document.getElementById('filter-city-select').value.trim();
-                const ufCode = getUFCodeFromInput(stateVal) || 'AM';
-                const capitalName = capitalsByState[ufCode] || 'Manaus';
-                const displayCity = cityVal.length > 0 ? cityVal : capitalName;
+                document.getElementById('screen-results').classList.add('hidden');
+                document.getElementById('screen-export').classList.add('hidden');
+                document.getElementById('screen-admin-login').classList.add('hidden');
+                document.getElementById('screen-media-login').classList.add('hidden');
+                document.getElementById('screen-auth').classList.add('hidden');
+                document.getElementById('screen-success').classList.add('hidden');
+                document.getElementById('screen-register').classList.remove('hidden');
+            }
+        };
 
-                dividerElem.style.display = 'block';
-                dividerElem.innerText = `📍 ZONAS DE ${displayCity.toUpperCase()} (${ufCode})`;
-                microContainer.style.display = 'grid';
+        /* ==========================================================================
+           2. BANCO DE DADOS GEOGRÁFICO E MAPEAMENTOS (GeoDatabase)
+           ========================================================================== */
+        const GeoDatabase = {
+            stateNameToCode: {
+                'AC': 'AC', 'ACRE': 'AC',
+                'AL': 'AL', 'ALAGOAS': 'AL',
+                'AP': 'AP', 'AMAPA': 'AP', 'AMAPÁ': 'AP',
+                'AM': 'AM', 'AMAZONAS': 'AM',
+                'BA': 'BA', 'BAHIA': 'BA',
+                'CE': 'CE', 'CEARA': 'CE', 'CEARÁ': 'CE',
+                'DF': 'DF', 'DISTRITO FEDERAL': 'DF',
+                'ES': 'ES', 'ESPIRITO SANTO': 'ES', 'ESPÍRITO SANTO': 'ES',
+                'GO': 'GO', 'GOIAS': 'GO', 'GOIÁS': 'GO',
+                'MA': 'MA', 'MARANHAO': 'MA', 'MARANHÃO': 'MA',
+                'MG': 'MG', 'MINAS GERAIS': 'MG',
+                'MS': 'MS', 'MATO GROSSO DO SUL': 'MS',
+                'MT': 'MT', 'MATO GROSSO': 'MT',
+                'PA': 'PA', 'PARA': 'PA', 'PARÁ': 'PA',
+                'PB': 'PB', 'PARAIBA': 'PB', 'PARAÍBA': 'PB',
+                'PE': 'PE', 'PERNAMBUCO': 'PE',
+                'PI': 'PI', 'PIAUI': 'PI', 'PIAUÍ': 'PI',
+                'PR': 'PR', 'PARANA': 'PR', 'PARANÁ': 'PR',
+                'RJ': 'RJ', 'RIO DE JANEIRO': 'RJ',
+                'RN': 'RN', 'RIO GRANDE DO NORTE': 'RN',
+                'RO': 'RO', 'RONDONIA': 'RO', 'RONDÔNIA': 'RO',
+                'RR': 'RR', 'RORAIMA': 'RR',
+                'RS': 'RS', 'RIO GRANDE DO SUL': 'RS',
+                'SC': 'SC', 'SANTA CATARINA': 'SC',
+                'SE': 'SE', 'SERGIPE': 'SE',
+                'SP': 'SP', 'SAO PAULO': 'SP', 'SÃO PAULO': 'SP',
+                'TO': 'TO', 'TOCANTINS': 'TO',
+                'ZZ': 'ZZ', 'EXTERIOR': 'ZZ', 'OUTROS PAÍSES': 'ZZ'
+            },
 
-                cityZonesAlphabetical.forEach((z) => {
-                    const b = document.createElement('button'); 
-                    b.className = 'grid-filter-btn'; 
-                    b.innerText = z;
-                    b.onclick = (e) => {
+            capitalsByState: {
+                'AC': 'Rio Branco', 'AL': 'Maceió', 'AM': 'Manaus', 'AP': 'Macapá', 'BA': 'Salvador',
+                'CE': 'Fortaleza', 'DF': 'Brasília', 'ES': 'Vitória', 'GO': 'Goiânia', 'MA': 'São Luís',
+                'MG': 'Belo Horizonte', 'MS': 'Campo Grande', 'MT': 'Cuiabá', 'PA': 'Belém', 'PB': 'João Pessoa',
+                'PE': 'Recife', 'PI': 'Teresina', 'PR': 'Curitiba', 'RJ': 'Rio de Janeiro', 'RN': 'Natal',
+                'RO': 'Porto Velho', 'RR': 'Boa Vista', 'RS': 'Porto Alegre', 'SC': 'Florianópolis',
+                'SE': 'Aracaju', 'SP': 'São Paulo', 'TO': 'Palmas'
+            },
+
+            citiesByStateCode: {
+                'AC': ['Acrelândia', 'Assis Brasil', 'Brasiléia', 'Bujari', 'Capixaba', 'Cruzeiro do Sul', 'Epitaciolândia', 'Feijó', 'Jordão', 'Mâncio Lima', 'Manoel Urbano', 'Marechal Thaumaturgo', 'Plácido de Castro', 'Porto Acre', 'Porto Walter', 'Rio Branco', 'Rodrigues Alves', 'Santa Rosa do Purus', 'Sena Madureira', 'Senador Guiomard', 'Tarauacá', 'Xapuri'],
+                'AL': ['Anadia', 'Arapiraca', 'Atalaia', 'Barra de Santo Antônio', 'Barra de São Miguel', 'Batalha', 'Belo Monte', 'Boca da Mata', 'Branquinha', 'Cacimbinhas', 'Cajueiro', 'Campestre', 'Campo Alegre', 'Campo Grande', 'Canapi', 'Capela', 'Carneiros', 'Chã Preta', 'Coité do Nóia', 'Colônia Leopoldina', 'Coqueiro Seco', 'Coruripe', 'Craíbas', 'Delmiro Gouveia', 'Dois Riachos', 'Japaratinga', 'Jaramataia', 'Jequiá da Praia', 'Joaquim Gomes', 'Jundiá', 'Junqueiro', 'Lagoa da Canoa', 'Limoeiro de Anadia', 'Maceió', 'Major Izidoro', 'Maragogi', 'Maravilha', 'Marechal Deodoro', 'Maribondo', 'Mar Vermelho', 'Mata Grande', 'Matriz de Camaragibe', 'Messias', 'Minador do Negrão', 'Monteirópolis', 'Murici', 'Novo Lino', 'Olho d\'Água das Flores', 'Olho d\'Água do Casado', 'Olho d\'Água Grande', 'Olivença', 'Ouro Branco', 'Palestina', 'Palmeira dos Índios', 'Pão de Açúcar', 'Pariconha', 'Paripueira', 'Passo de Camaragibe', 'Paulo Jacinto', 'Penedo', 'Piaçabuçu', 'Pilar', 'Pindoba', 'Piranhas', 'Poço das Trincheiras', 'Porto Calvo', 'Porto de Pedras', 'Porto Real do Colégio', 'Quebrangulo', 'Rio Largo', 'Roteiro', 'Santa Luzia do Norte', 'Santana do Ipanema', 'Santana do Mundaú', 'São Brás', 'São José da Tapera', 'São José da Laje', 'São Luís do Quitunde', 'São Miguel dos Campos', 'São Miguel dos Milagres', 'São Sebastião', 'Satuba', 'Senador Rui Palmeira', 'Tanque d\'Arca', 'Taquarana', 'Teotônio Vilela', 'Traipu', 'União dos Palmares', 'Viçosa'],
+                'AM': ['Alvarães', 'Amaturá', 'Anamã', 'Anori', 'Apuí', 'Atalaia do Norte', 'Autazes', 'Barcelos', 'Barreirinha', 'Benjamin Constant', 'Beruri', 'Boa Vista do Ramos', 'Boca do Acre', 'Borba', 'Caapiranga', 'Canutama', 'Carauari', 'Careiro', 'Careiro da Várzea', 'Coari', 'Codajás', 'Eirunepé', 'Envira', 'Fonte Boa', 'Guajará', 'Humaitá', 'Ipixuna', 'Iranduba', 'Itacoatiara', 'Itamarati', 'Itapiranga', 'Japurá', 'Juruá', 'Jutaí', 'Lábrea', 'Manacapuru', 'Manaquiri', 'Manaus', 'Manicoré', 'Maraã', 'Maués', 'Nhamundá', 'Nova Olinda do Norte', 'Novo Airão', 'Novo Aripuanã', 'Parintins', 'Pauini', 'Presidente Figueiredo', 'Rio Preto da Eva', 'Santa Isabel do Rio Negro', 'Santo Antônio do Içá', 'São Gabriel da Cachoeira', 'São Paulo de Olivença', 'São Sebastião do Uatumã', 'Silves', 'Tabatinga', 'Tapauá', 'Tefé', 'Tonantins', 'Uarini', 'Urucará', 'Urucurituba'],
+                'AP': ['Amapá', 'Calçoene', 'Cutias', 'Ferreira Gomes', 'Itaubal', 'Laranjal do Jari', 'Macapá', 'Mazagão', 'Oiapoque', 'Pedra Branca do Amapari', 'Pracuúba', 'Santana', 'Serra do Navio', 'Tartarugalzinho', 'Vitória do Jari'],
+                'BA': ['Alcobaca', 'Barreiras', 'Bom Jesus da Lapa', 'Brumado', 'Camaçari', 'Eunápolis', 'Feira de Santana', 'Guanambi', 'Ilhéus', 'Irecê', 'Itabuna', 'Itapetinga', 'Jacobina', 'Jequié', 'Juazeiro', 'Lauro de Freitas', 'Luís Eduardo Magalhães', 'Paulo Afonso', 'Porto Seguro', 'Salvador', 'Santo Antônio de Jesus', 'Seabra', 'Teixeira de Freitas', 'Valença', 'Vitória da Conquista'],
+                'CE': ['Aracati', 'Barbalha', 'Baturité', 'Camocim', 'Caucaia', 'Crateús', 'Crato', 'Eusébio', 'Fortaleza', 'Iguatu', 'Itapipoca', 'Juazeiro do Norte', 'Limoeiro do Norte', 'Maracanaú', 'Maranguape', 'Quixadá', 'Quixeramobim', 'Sobral', 'Tianguá', 'Tauá'],
+                'DF': ['Águas Claras', 'Brasília', 'Ceilândia', 'Gama', 'Guará', 'Planaltina', 'Plano Piloto', 'Recanto das Antas', 'Samambaia', 'Santa Maria', 'Sobradinho', 'Taguatinga', 'Vicente Pires'],
+                'ES': ['Aracruz', 'Cachoeiro de Itapemirim', 'Cariacica', 'Colatina', 'Guarapari', 'Linhares', 'Marataízes', 'Nova Venécia', 'São Mateus', 'Serra', 'Vila Velha', 'Vitória'],
+                'GO': ['Águas Lindas de Goiás', 'Anápolis', 'Aparecida de Goiânia', 'Caldas Novas', 'Catalão', 'Formosa', 'Goiânia', 'Itumbiara', 'Jataí', 'Luziânia', 'Rio Verde', 'Senador Canedo', 'Trindade', 'Uruaçu', 'Valparaíso de Goiás'],
+                'MA': ['Açailândia', 'Bacabal', 'Balsas', 'Bar Barra do Corda', 'Caxias', 'Codó', 'Imperatriz', 'Itapecuru Mirim', 'Paço do Lumiar', 'Pinheiro', 'Santa Inês', 'São José de Ribamar', 'São Luís', 'Timon'],
+                'MG': ['Araguari', 'Barbacena', 'Belo Horizonte', 'Betim', 'Caratinga', 'Conselheiro Lafaiete', 'Contagem', 'Coronel Fabriciano', 'Divinópolis', 'Governador Valadares', 'Ibiritė', 'Ipatinga', 'Itabira', 'Itajubá', 'Itaúna', 'Juiz de Fora', 'Lavras', 'Manhuaçu', 'Montes Claros', 'Muriae', 'Nova Lima', 'Passos', 'Patos de Minas', 'Poços de Caldas', 'Pouso Alegre', 'Ribeirão das Neves', 'Sabará', 'Santa Luzia', 'São João del-Rei', 'Seven Lagoas', 'Tófilo Otoni', 'Ubá', 'Uberaba', 'Uberlândia', 'Varginha', 'Viçosa'],
+                'MS': ['Aquidauana', 'Campo Grande', 'Corumbá', 'Coxim', 'Dourados', 'Maracaju', 'Naviraí', 'Nova Andradina', 'Paranaíba', 'Ponta Porã', 'Sidrolândia', 'Três Lagoas'],
+                'MT': ['Alta Floresta', 'Barra do Garças', 'Cáceres', 'Cuiabá', 'Juína', 'Lucas do Rio Verde', 'Pontes e Lacerda', 'Primavera do Leste', 'Rondonópolis', 'Sinop', 'Sorriso', 'Tangará da Serra', 'Várzea Grande'],
+                'PA': ['Abaetetuba', 'Altamira', 'Ananindeua', 'Barcarena', 'Belém', 'Bragança', 'Breves', 'Cametá', 'Castanhal', 'Itaituba', 'Marabá', 'Marituba', 'Paragominas', 'Parauapebas', 'Redenção', 'Santarém', 'Tucuruí'],
+                'PB': ['Bayeux', 'Cabedelo', 'Cajazeiras', 'Campina Grande', 'Guarabira', 'João Pessoa', 'Mamanguape', 'Monteiro', 'Patos', 'Santa Rita', 'Sousa'],
+                'PE': ['Abreu e Lima', 'Araripina', 'Cabo de Santo Agostinho', 'Camaragibe', 'Caruaru', 'Garanhuns', 'Goiana', 'Igarassu', 'Ipojuca', 'Jaboatão dos Guararapes', 'Olinda', 'Ouricuri', 'Paulista', 'Petrolina', 'Recife', 'Salgueiro', 'Serra Talhada', 'Timbaúba', 'Vitória de Santo Antão'],
+                'PI': ['Altos', 'Barras', 'Bom Jesus', 'Campo Maior', 'Esperantina', 'Floriano', 'José de Freitas', 'Parnaíba', 'Picos', 'Piripiri', 'São Raimundo Nonato', 'Teresina', 'União'],
+                'PR': ['Apucarana', 'Arapongas', 'Araucária', 'Campo Largo', 'Cascavel', 'Castro', 'Cianorte', 'Colombo', 'Curitiba', 'Fazenda Rio Grande', 'Foz do Iguaçu', 'Francisco Beltrão', 'Guarapuava', 'Londrina', 'Marechal Cândido Rondon', 'Maringá', 'Paranaguá', 'Paranavaí', 'Pato Branco', 'Pinhais', 'Piraquara', 'Ponta Grossa', 'São José dos Pinhais', 'Toledo', 'Umuarama'],
+                'RJ': ['Angra dos Reis', 'Araruama', 'Barra Mansa', 'Belford Roxo', 'Cabo Frio', 'Campos dos Goytacazes', 'Duque de Caxias', 'Itaboraí', 'Itaguaí', 'Macaé', 'Magé', 'Maricá', 'Mesquita', 'Nilópolis', 'Niterói', 'Nova Friburgo', 'Nova Iguaçu', 'Petrópolis', 'Resende', 'Rio das Ostras', 'Rio de Janeiro', 'São Gonçalo', 'São João de Meriti', 'Teresópolis', 'Volta Redonda'],
+                'RN': ['Açu', 'Apodi', 'Caicó', 'Ceará-Mirim', 'Currais Novos', 'João Câmara', 'Macaíba', 'Mossoró', 'Natal', 'Nova Cruz', 'Parnamirim', 'Santa Cruz', 'São Gonçalo do Amarante', 'São José de Mipibu'],
+                'RO': ['Ariquemes', 'Cacoal', 'Guajará-Mirim', 'Jaru', 'Ji-Paraná', 'Porto Velho', 'Rolim de Moura', 'Vilhena'],
+                'RR': ['Alto Alegre', 'Amajari', 'Boa Vista', 'Bonfim', 'Cantá', 'Caracaraí', 'Caroebe', 'Iracema', 'Mucajaí', 'Normandia', 'Pacaraima', 'Roraimópolis', 'Uiramutã'],
+                'RS': ['Alvorada', 'Bagé', 'Bento Gonçalves', 'Cachoeirinha', 'Camaquã', 'Canoas', 'Caxias do Sul', 'Erechim', 'Gravataí', 'Guaíba', 'Ijuí', 'Lajeado', 'Novo Hamburgo', 'Passo Fundo', 'Pelotas', 'Porto Alegre', 'Rio Grande', 'Santa Cruz do Sul', 'Santa Maria', 'Sant\'Ana do Livramento', 'São Leopoldo', 'Sapucaia do Sul', 'Uruguaiana', 'Viamão'],
+                'SC': ['Balneário Camboriú', 'Blumenau', 'Chapecó', 'Criciúma', 'Florianópolis', 'Itajaí', 'Joinville', 'Lages', 'São José', 'Tubarão'],
+                'SE': ['Aracaju', 'Estância', 'Itabaiana', 'Lagarto', 'Nossa Senhora do Socorro', 'São Cristóvão', 'Simão Dias', 'Tobias Barreto'],
+                'SP': ['Americana', 'Araçatuba', 'Araraquara', 'Bauru', 'Campinas', 'Carapicuíba', 'Diadema', 'Franca', 'Guarulhos', 'Itaquaquecetuba', 'Jundiaí', 'Limeira', 'Mauá', 'Mogi das Cruzes', 'Osasco', 'Piracicaba', 'Praia Grande', 'Presidente Prudente', 'Ribeirão Preto', 'Santo André', 'Santos', 'São Bernardo do Campo', 'São José do Rio Preto', 'São José dos Campos', 'São Paulo', 'Sorocaba', 'Sumaré', 'Taubaté'],
+                'TO': ['Araguaína', 'Araguatins', 'Colinas do Tocantins', 'Guaraí', 'Gurupi', 'Miracema do Tocantins', 'Palmas', 'Paraíso do Tocantins', 'Porto Nacional', 'Tocantinópolis']
+            },
+
+            cityZonesAlphabetical: [
+                "Centro / Central", "Rural / Distritos", "Zona Centro-Oeste",
+                "Zona Centro-Sul", "Zona Leste", "Zona Norte",
+                "Zona Oeste", "Zona Sul", "Zona Urbana"
+            ],
+
+            internationalCountryList: [
+                "Todos os Países", "Alemanha", "Angola", "Argentina", "Austrália", "Áustria", "Bélgica", "Bolívia", "Canadá", "Chile", "China", "Colômbia", "Coreia do Sul", "Dinamarca", "Emirados Árabes Unidos", "Espanha", "Estados Unidos (EUA)", "França", "Holanda", "Irlanda", "Israel", "Itália", "Japão", "México", "Moçambique", "Noruega", "Nova Zelândia", "Paraguai", "Peru", "Portugal", "Reino Unido", "Suíça", "Uruguai", "Venezuela"
+            ],
+
+            removeAccents(str) {
+                if (!str) return '';
+                return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            },
+
+            getUFCodeFromInput(textVal) {
+                if (!textVal) return '';
+                const clean = this.removeAccents(textVal).toUpperCase().trim();
+                if (clean.includes('EXTERIOR') || clean.includes('OUTROS PAISES') || clean === 'ZZ') return 'ZZ';
+                
+                const matchSigla = clean.match(/(?:-\s*|\b)([A-Z]{2})\b$/) || clean.match(/\b([A-Z]{2})\b/);
+                if (matchSigla) {
+                    for (let i = matchSigla.length - 1; i >= 1; i--) {
+                        const codeCandidate = matchSigla[i];
+                        if (this.stateNameToCode[codeCandidate]) return this.stateNameToCode[codeCandidate];
+                    }
+                }
+
+                for (const [key, code] of Object.entries(this.stateNameToCode)) {
+                    const cleanKey = this.removeAccents(key).toUpperCase();
+                    if (clean === cleanKey || clean.includes(cleanKey)) return code;
+                }
+                return '';
+            },
+
+            updateCityDatalist(context = 'register', typedValue = '') {
+                let stateVal = '';
+                let datalistElem = null;
+                let cityInputElem = null;
+
+                if (context === 'register') {
+                    stateVal = document.getElementById('state-input').value;
+                    datalistElem = document.getElementById('cities-datalist');
+                    cityInputElem = document.getElementById('city-input');
+                } else if (context === 'results') {
+                    stateVal = document.getElementById('filter-state-select').value;
+                    datalistElem = document.getElementById('filter-cities-datalist');
+                    cityInputElem = document.getElementById('filter-city-select');
+                } else if (context === 'report') {
+                    stateVal = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
+                    datalistElem = document.getElementById('rep-cities-datalist');
+                    cityInputElem = document.getElementById('rep-city-report');
+                }
+
+                if (!datalistElem || !cityInputElem) return;
+
+                const code = this.getUFCodeFromInput(stateVal);
+                datalistElem.innerHTML = '';
+
+                let sourceList = [];
+                if (code === 'ZZ') {
+                    cityInputElem.placeholder = "Pesquise o país...";
+                    sourceList = this.internationalCountryList;
+                } else if (code && this.citiesByStateCode[code]) {
+                    cityInputElem.placeholder = "Pesquise a cidade...";
+                    sourceList = this.citiesByStateCode[code];
+                } else {
+                    cityInputElem.placeholder = "Pesquise a cidade...";
+                    sourceList = Object.values(this.citiesByStateCode).flat();
+                }
+
+                if (typedValue) {
+                    const lowerTyped = this.removeAccents(typedValue).toLowerCase();
+                    sourceList = sourceList.filter(city => this.removeAccents(city).toLowerCase().startsWith(lowerTyped));
+                }
+
+                const fragment = document.createDocumentFragment();
+                sourceList.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item;
+                    fragment.appendChild(opt);
+                });
+                datalistElem.appendChild(fragment);
+            },
+
+            handleStateTyped(context = 'register', autoRender = false) {
+                this.updateCityDatalist(context, '');
+                if (context === 'results' && autoRender) {
+                    ScreenResults.renderFilterSections();
+                }
+            },
+
+            handleCityTyped(context = 'register', autoRender = false) {
+                let cityInputElem = null;
+                if (context === 'register') cityInputElem = document.getElementById('city-input');
+                else if (context === 'results') cityInputElem = document.getElementById('filter-city-select');
+                else if (context === 'report') cityInputElem = document.getElementById('rep-city-report');
+                
+                if (cityInputElem) {
+                     this.updateCityDatalist(context, cityInputElem.value);
+                }
+
+                if (context === 'results' && autoRender) {
+                    ScreenResults.renderFilterSections();
+                }
+            }
+        };
+
+        /* ==========================================================================
+           3. MÓDULO DA TELA 1: CADASTRO DEMOGRÁFICO (ScreenRegister)
+           ========================================================================== */
+        const ScreenRegister = {
+            autoMaskPhone(input) {
+                if (!input) return;
+                let digits = input.value.replace(/\D/g, "");
+                if (digits.length > 11) digits = digits.substring(0, 11);
+                let formatted = "";
+                if (digits.length > 0) {
+                    formatted = "(" + digits.substring(0, 2);
+                    if (digits.length > 2) {
+                        formatted += ") " + digits.substring(2, 7);
+                        if (digits.length > 7) formatted += "-" + digits.substring(7, 11);
+                    }
+                }
+                input.value = formatted;
+            },
+
+            autoMaskDate(input) {
+                if (!input) return;
+                let digits = input.value.replace(/\D/g, "");
+                if (digits.length > 8) digits = digits.substring(0, 8);
+                let formatted = "";
+                if (digits.length > 0) {
+                    formatted = digits.substring(0, 2);
+                    if (digits.length > 2) {
+                        formatted += "/" + digits.substring(2, 4);
+                        if (digits.length > 4) formatted += "/" + digits.substring(4, 8);
+                    }
+                }
+                input.value = formatted;
+            },
+
+            submit() {
+                const phoneInput = document.getElementById('whatsapp-input');
+                const birthInput = document.getElementById('birthdate-input');
+                this.autoMaskPhone(phoneInput);
+                this.autoMaskDate(birthInput);
+
+                const phone = phoneInput.value.trim();
+                const birth = birthInput.value.trim();
+                const state = document.getElementById('state-input').value.trim();
+                const city = document.getElementById('city-input').value.trim();
+                const zone = document.getElementById('zone-input').value;
+                const education = document.getElementById('education-input').value;
+                const income = document.getElementById('income-input').value;
+                const gender = document.getElementById('gender-input').value;
+                const race = document.getElementById('race-input').value;
+                const lgpd = document.getElementById('lgpd-check').checked;
+
+                if(!phone) { AppState.showToast('⚠️ Informe seu (DDD) WhatsApp.', true); return; }
+                if(!birth) { AppState.showToast('⚠️ Data de nascimento obrigatória.', true); return; }
+                if(!state) { AppState.showToast('⚠️ Selecione ou digite o Estado / UF.', true); return; }
+                if(!city) { AppState.showToast('⚠️ Digite ou selecione o Município.', true); return; }
+                if(!zone) { AppState.showToast('⚠️ Selecione a Zona / Região.', true); return; }
+                if(!education) { AppState.showToast('⚠️ Selecione o grau de Escolaridade.', true); return; }
+                if(!income) { AppState.showToast('⚠️ Selecione a faixa de Renda Familiar.', true); return; }
+                if(!gender) { AppState.showToast('⚠️ Selecione o Gênero.', true); return; }
+                if(!race) { AppState.showToast('⚠️ Selecione a Cor / Raça (IBGE).', true); return; }
+                if(!lgpd) { AppState.showToast('⚠️ Marque a autorização LGPD/TSE.', true); return; }
+
+                AppState.activeMediaInfo = null;
+                document.getElementById('screen-register').classList.add('hidden');
+                document.getElementById('screen-auth').classList.remove('hidden');
+                ScreenAuth.selectedPattern = [];
+                document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
+            }
+        };
+
+        /* ==========================================================================
+           4. MÓDULOS DE AUTENTICAÇÃO GESTOR & MÍDIA (ScreenAdmin / ScreenMedia)
+           ========================================================================== */
+        const ScreenAdmin = {
+            openLogin() {
+                document.getElementById('screen-register').classList.add('hidden');
+                document.getElementById('screen-admin-login').classList.remove('hidden');
+            },
+            backToRegister() {
+                document.getElementById('screen-admin-login').classList.add('hidden');
+                document.getElementById('screen-register').classList.remove('hidden');
+            },
+            toggleSystemTurn() {
+                AppState.currentTurn = parseInt(document.getElementById('admin-turn-toggle').value);
+                AppState.updateTurnState();
+            },
+            validateLogin() {
+                const pass = document.getElementById('admin-pass-input').value.trim();
+                if(pass === 'adm2026' || pass === '') {
+                    AppState.activeMediaInfo = null;
+                    document.getElementById('screen-admin-login').classList.add('hidden');
+                    document.getElementById('screen-results').classList.remove('hidden');
+                    ScreenResults.setupResultTabs();
+                    AppState.showToast('✅ Acesso ADM liberado!');
+                } else AppState.showToast('❌ Chave incorreta. Tente "adm2026".', true);
+            }
+        };
+
+        const ScreenMedia = {
+            demoMediaKeys: {
+                'TV-AM-2026': { name: 'Rede Amazônica de Comunicação', type: 'Emissora de TV / Rádio', tier: 'Licenciamento Estadual' },
+                'BLOG-MANAUS': { name: 'Portal & Blog de Notícias Manaus', type: 'Portal Eletrônico Local', tier: 'Licenciamento Municipal' },
+                'JORNAL-2026': { name: 'Jornal Commercio do Amazonas', type: 'Jornal Impresso / Digital', tier: 'Licenciamento Estadual' },
+                'MIDIA-NACIONAL': { name: 'Agência Nacional de Notícias', type: 'Veículo Nacional de Imprensa', tier: 'Licenciamento Nacional' }
+            },
+            openLogin() {
+                document.getElementById('screen-register').classList.add('hidden');
+                document.getElementById('screen-media-login').classList.remove('hidden');
+            },
+            backToRegister() {
+                document.getElementById('screen-media-login').classList.add('hidden');
+                document.getElementById('screen-register').classList.remove('hidden');
+            },
+            validateLogin() {
+                const key = document.getElementById('media-key-input').value.trim().toUpperCase();
+                if(!key) { AppState.showToast('⚠️ Digite sua chave de licença de mídia.', true); return; }
+                if(this.demoMediaKeys[key]) AppState.activeMediaInfo = this.demoMediaKeys[key];
+                else AppState.activeMediaInfo = { name: `Veículo Mídia (${key})`, type: 'Portal / Veículo', tier: 'Licença Comercial' };
+                document.getElementById('screen-media-login').classList.add('hidden');
+                document.getElementById('screen-export').classList.remove('hidden');
+                ScreenReport.renderReportFilters();
+                AppState.showToast(`📰 Licença ativada: ${AppState.activeMediaInfo.name}`);
+            }
+        };
+
+        /* ==========================================================================
+           5. MÓDULO DA TELA 2: AUTENTICAÇÃO SWIPE & WEBAUTHN (ScreenAuth)
+           ========================================================================== */
+        const ScreenAuth = {
+            selectedPattern: [],
+            isDrawingPattern: false,
+
+            initTouchEvents() {
+                const patternGrid = document.getElementById('pattern-grid');
+                if (!patternGrid) return;
+
+                patternGrid.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.isDrawingPattern = true;
+                    const touch = e.touches[0];
+                    const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (elem && elem.classList.contains('pattern-dot')) this.activateDot(elem);
+                }, { passive: false });
+
+                patternGrid.addEventListener('touchmove', (e) => {
+                    if (!this.isDrawingPattern) return;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (elem && elem.classList.contains('pattern-dot')) this.activateDot(elem);
+                }, { passive: false });
+
+                patternGrid.addEventListener('touchend', () => { this.isDrawingPattern = false; });
+                patternGrid.addEventListener('mousedown', (e) => {
+                    this.isDrawingPattern = true;
+                    if (e.target.classList.contains('pattern-dot')) this.activateDot(e.target);
+                });
+                patternGrid.addEventListener('mousemove', (e) => {
+                    if (this.isDrawingPattern && e.target.classList.contains('pattern-dot')) this.activateDot(e.target);
+                });
+                document.addEventListener('mouseup', () => { this.isDrawingPattern = false; });
+            },
+
+            activateDot(element) {
+                if (!element) return;
+                const id = element.getAttribute('data-id');
+                if (id && !element.classList.contains('active')) {
+                    element.classList.add('active');
+                    if (!this.selectedPattern.includes(id)) this.selectedPattern.push(id);
+                }
+            },
+
+            async simulateBiometric() {
+                if (window.PublicKeyCredential) {
+                    try {
+                        AppState.showToast('⏳ Aguardando leitura biométrica do celular...', false);
+                        const publicKeyCredentialCreationOptions = {
+                            challenge: Uint8Array.from('pesquisajusta_sec_challenge_2026', c => c.charCodeAt(0)),
+                            rp: { name: "Pesquisa Justa" },
+                            user: {
+                                id: Uint8Array.from('user_id_eleitor_2026', c => c.charCodeAt(0)),
+                                name: "eleitor@pesquisajusta.com.br",
+                                displayName: "Eleitor Autenticado"
+                            },
+                            pubKeyCredParams: [
+                                { alg: -7, type: "public-key" },
+                                { alg: -257, type: "public-key" }
+                            ],
+                            authenticatorSelection: {
+                                authenticatorAttachment: "platform",
+                                userVerification: "required"
+                            },
+                            timeout: 60000
+                        };
+
+                        const credential = await navigator.credentials.create({
+                            publicKey: publicKeyCredentialCreationOptions
+                        });
+
+                        if (credential) {
+                            AppState.showToast('✅ Biometria confirmada com sucesso pelo aparelho!');
+                            setTimeout(() => this.startVoting(null), 800);
+                        }
+                    } catch (err) {
+                        console.error("Erro ou cancelamento de biometria:", err);
+                        if (err.name === 'NotAllowedError') {
+                            AppState.showToast('❌ Leitura biométrica cancelada ou não reconhecida.', true);
+                        } else {
+                            AppState.showToast('⚠️ Biometria confirmada (Modo de Compatibilidade)!');
+                            setTimeout(() => this.startVoting(null), 800);
+                        }
+                    }
+                } else {
+                    AppState.showToast('❌ Seu dispositivo não possui leitor biométrico compatível.', true);
+                }
+            },
+
+            startVoting(event) {
+                if(event && event.currentTarget && event.currentTarget.innerText.includes('Padrão')) {
+                    if(this.selectedPattern.length < 3) {
+                        AppState.showToast('⚠️ Desenhe/Deslize por pelo menos 3 pontos no padrão.', true); 
+                        return;
+                    }
+                }
+                document.getElementById('screen-auth').classList.add('hidden');
+                document.getElementById('screen-voting').classList.remove('hidden');
+                ScreenVoting.currentStep = 0;
+                ScreenVoting.renderBallot();
+            }
+        };
+
+        /* ==========================================================================
+           6. MÓDULO DA TELA 3 & 4: URNA CEGA & VOTAÇÃO (ScreenVoting)
+           ========================================================================== */
+        const ScreenVoting = {
+            currentStep: 0,
+            activeBallots: [],
+            votesData: {},
+            currentSelections: [],
+
+            electionSchedules: {
+                2026: {
+                    1: [
+                        { id: 'president', title: "Presidente", subtitle: "Selecione 1 candidato ou voto especial", type: "single", candidates: [
+                            { name: "Candidato Alpha", party: "PTX / Nº 12", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
+                            { name: "Candidato Beta", party: "PLZ / Nº 22", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
+                        ]},
+                        { id: 'governor', title: "Governador", subtitle: "Selecione 1 candidato ou voto especial", type: "single", candidates: [
+                            { name: "Candidato Delta", party: "PSB / Nº 40", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" },
+                            { name: "Candidato Ômega", party: "PSD / Nº 55", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150" }
+                        ]},
+                        { id: 'senator', title: "Senador(es)", subtitle: "Selecione ATÉ 2 candidatos", type: "multiple", candidates: [
+                            { name: "Candidato Um", party: "MDB / Nº 151", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150" },
+                            { name: "Candidato Dois", party: "UNIÃO / Nº 444", img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150" }
+                        ]},
+                        { id: 'mayor', title: "Prefeito", subtitle: "Selecione 1 candidato ou voto especial", type: "single", candidates: [
+                            { name: "Candidato X", party: "UNIÃO / Nº 44", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" },
+                            { name: "Candidato Y", party: "PSD / Nº 55", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" }
+                        ]}
+                    ],
+                    2: [
+                        { id: 'president_2t', title: "Presidente", subtitle: "Finalistas - Selecione 1 candidato", type: "single", candidates: [
+                            { name: "Candidato Alpha", party: "PTX / Nº 12", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
+                            { name: "Candidato Beta", party: "PLZ / Nº 22", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
+                        ]},
+                        { id: 'governor_2t', title: "Governador", subtitle: "Finalistas - Selecione 1 candidato", type: "single", candidates: [
+                            { name: "Candidato Delta", party: "PSB / Nº 40", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" },
+                            { name: "Candidato Ômega", party: "PSD / Nº 55", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150" }
+                        ]},
+                        { id: 'mayor_2t', title: "Prefeito", subtitle: "Finalistas Municipal", type: "single", candidates: [
+                            { name: "Candidato X", party: "UNIÃO / Nº 44", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" },
+                            { name: "Candidato Y", party: "PSD / Nº 55", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" }
+                        ]}
+                    ]
+                }
+            },
+
+            getActiveBallots() {
+                return this.electionSchedules[AppState.currentYear][AppState.currentTurn] || this.electionSchedules[2026][1];
+            },
+
+            renderBallot() {
+                AppState.updateTurnState();
+                this.activeBallots = this.getActiveBallots();
+                const data = this.activeBallots[this.currentStep];
+
+                document.getElementById('voting-badge').innerText = `Etapa ${this.currentStep + 1} de ${this.activeBallots.length} (${AppState.currentTurn}º Turno)`;
+                document.getElementById('voting-title').innerText = data.title;
+                document.getElementById('voting-subtitle').innerText = data.subtitle;
+
+                const container = document.getElementById('candidates-container');
+                container.innerHTML = '';
+                data.candidates.forEach((cand) => {
+                    const card = document.createElement('div'); card.className = 'candidate-card';
+                    card.innerHTML = `<img src="${cand.img}" class="candidate-img"><div class="candidate-info"><h4>${cand.name}</h4><p>${cand.party}</p></div>`;
+                    card.onclick = () => this.handleSelect(card, cand.name, data.type);
+                    container.appendChild(card);
+                });
+                document.getElementById('btn-next-vote').disabled = true;
+                this.currentSelections = [];
+            },
+
+            handleSelect(cardElement, name, type) {
+                document.querySelectorAll('.special-vote-btn').forEach(b => b.classList.remove('selected'));
+                if(type === 'single') {
+                    document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
+                    cardElement.classList.add('selected'); 
+                    this.currentSelections = [name];
+                    document.getElementById('btn-next-vote').disabled = false;
+                } else {
+                    if(cardElement.classList.contains('selected')) {
+                        cardElement.classList.remove('selected'); 
+                        this.currentSelections = this.currentSelections.filter(item => item !== name);
+                    } else {
+                        if(this.currentSelections.length < 2) { 
+                            cardElement.classList.add('selected'); 
+                            this.currentSelections.push(name); 
+                        } else AppState.showToast('⚠️ Selecione no máximo 2 candidatos.', true);
+                    }
+                    document.getElementById('btn-next-vote').disabled = this.currentSelections.length === 0;
+                }
+            },
+
+            handleSpecialVote(type, event) {
+                document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
+                document.querySelectorAll('.special-vote-btn').forEach(b => b.classList.remove('selected'));
+                if(event && event.currentTarget) event.currentTarget.classList.add('selected');
+                this.currentSelections = [type];
+                document.getElementById('btn-next-vote').disabled = false;
+            },
+
+            nextVotingStep() {
+                AppState.updateTurnState();
+                const currentBallotMeta = this.activeBallots[this.currentStep];
+                this.votesData[currentBallotMeta.id] = [...this.currentSelections];
+                this.currentSelections = [];
+                this.currentStep++;
+
+                if(this.currentStep < this.activeBallots.length) this.renderBallot();
+                else {
+                    document.getElementById('screen-voting').classList.add('hidden');
+                    document.getElementById('screen-success').classList.remove('hidden');
+                }
+            },
+
+            goToResults() {
+                document.getElementById('screen-success').classList.add('hidden');
+                document.getElementById('screen-results').classList.remove('hidden');
+                ScreenResults.setupResultTabs();
+            }
+        };
+
+        /* ==========================================================================
+           7. MÓDULO DA TELA 5: PAINEL DE RESULTADOS (ScreenResults)
+           ========================================================================== */
+        const ScreenResults = {
+            currentMode: 'geral',
+            lastLoadedCategory: '',
+            lastLoadedKey: '',
+
+            hierarchicalData: {
+                president: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 42.0 }, { name: "Candidato Beta", percent: 36.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 11.0, color: "#334155" } ] } },
+                president_2t: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 48.0 }, { name: "Candidato Beta", percent: 45.0 }, { name: "Votos Brancos", percent: 3.0, color: "#64748b" }, { name: "Votos Nulos", percent: 2.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 2.0, color: "#334155" } ] } },
+                governor: { datasets: { "Geral Estado": [ { name: "Candidato Delta", percent: 48.0 }, { name: "Candidato Ômega", percent: 32.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 9.0, color: "#334155" } ] } },
+                mayor: { datasets: { "Geral do Município": [ { name: "Candidato X", percent: 46.0 }, { name: "Candidato Y", percent: 40.0 }, { name: "Votos Brancos", percent: 5.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 4.0, color: "#334155" } ] } }
+            },
+
+            presidentFilters: [
+                "Geral do País", "Exterior (Votação em Consulados)",
+                "Região Norte", "Região Nordeste", "Região Centro-Oeste",
+                "Região Sudeste", "Região Sul"
+            ],
+
+            setupResultTabs() {
+                const tabsContainer = document.getElementById('result-tabs-container'); 
+                tabsContainer.innerHTML = '';
+                const activeBallots = ScreenVoting.getActiveBallots();
+
+                activeBallots.forEach((ballot, index) => {
+                    const tabBtn = document.createElement('button'); 
+                    tabBtn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+                    tabBtn.innerText = ballot.title;
+                    tabBtn.onclick = (e) => this.switchResultTab(ballot.id, e.currentTarget);
+                    tabsContainer.appendChild(tabBtn);
+                });
+
+                if (activeBallots.length > 0) {
+                    this.switchResultTab(activeBallots[0].id, tabsContainer.querySelector('.tab-btn'));
+                }
+            },
+
+            onStateFilterChange() { this.renderFilterSections(); },
+            onCityFilterChange() { this.renderFilterSections(); },
+
+            switchResultTab(category, btnElement) {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+                btnElement.classList.add('active');
+                this.lastLoadedCategory = category;
+                this.renderFilterSections();
+            },
+
+            renderFilterSections() {
+                const filterBox = document.getElementById('main-filter-box');
+                const macroContainer = document.getElementById('macro-filters-container'); 
+                const microContainer = document.getElementById('micro-filters-container');
+                const dividerElem = document.getElementById('section-divider-elem'); 
+                const macroLabel = document.getElementById('macro-label');
+                const geoBlock = document.getElementById('geo-search-block');
+
+                macroContainer.innerHTML = ''; microContainer.innerHTML = '';
+
+                if (this.lastLoadedCategory === 'president' || this.lastLoadedCategory === 'president_2t') {
+                    filterBox.appendChild(geoBlock);
+
+                    macroLabel.style.display = 'block'; 
+                    macroLabel.innerText = "Recorte Geográfico (Federal & Exterior):";
+                    dividerElem.style.display = 'none';
+                    microContainer.style.display = 'none';
+
+                    const gridDiv = document.createElement('div');
+                    gridDiv.style.display = 'grid';
+                    gridDiv.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                    gridDiv.style.gap = '4px';
+                    gridDiv.style.marginTop = '4px';
+
+                    this.presidentFilters.forEach((f, i) => {
+                        const b = document.createElement('button'); 
+                        b.className = `stacked-filter-btn ${i===0?'active':''}`; 
+                        b.innerText = f;
+                        if (f === 'Região Sul') b.style.gridColumn = 'span 2';
+                        b.onclick = (e) => { 
+                            document.querySelectorAll('#macro-filters-container .stacked-filter-btn').forEach(x=>x.classList.remove('active')); 
+                            e.currentTarget.classList.add('active'); 
+                            this.lastLoadedKey = f; 
+                            this.renderSimulatedDataset(this.lastLoadedCategory, f); 
+                        };
+                        gridDiv.appendChild(b);
+                    });
+                    macroContainer.appendChild(gridDiv);
+
+                    this.lastLoadedKey = this.presidentFilters[0]; 
+                    this.renderSimulatedDataset(this.lastLoadedCategory, this.presidentFilters[0]);
+
+                } else if (this.lastLoadedCategory === 'mayor' || this.lastLoadedCategory === 'mayor_2t') {
+                    filterBox.insertBefore(geoBlock, macroLabel);
+
+                    macroLabel.style.display = 'block'; 
+                    macroLabel.innerText = "Recorte Geográfico (Municipal):";
+                    
+                    const stackDiv = document.createElement('div');
+                    stackDiv.className = 'stacked-filters';
+                    const bGeral = document.createElement('button');
+                    bGeral.className = 'stacked-filter-btn active';
+                    bGeral.innerText = 'Geral do Município';
+                    bGeral.onclick = (e) => {
                         document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
                         document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
-                        e.currentTarget.classList.add('active'); 
-                        lastLoadedKey = z; 
-                        renderSimulatedDataset(lastLoadedCategory, z);
+                        e.currentTarget.classList.add('active');
+                        this.lastLoadedKey = 'Geral do Município';
+                        this.renderSimulatedDataset(this.lastLoadedCategory, 'Geral do Município');
                     };
-                    microContainer.appendChild(b);
-                });
+                    stackDiv.appendChild(bGeral);
+                    macroContainer.appendChild(stackDiv);
 
-                lastLoadedKey = 'Geral do Município'; 
-                renderSimulatedDataset(lastLoadedCategory, 'Geral do Município');
+                    const stateVal = document.getElementById('filter-state-select').value;
+                    const cityVal = document.getElementById('filter-city-select').value.trim();
+                    const ufCode = GeoDatabase.getUFCodeFromInput(stateVal) || 'AM';
+                    const capitalName = GeoDatabase.capitalsByState[ufCode] || 'Manaus';
+                    const displayCity = cityVal.length > 0 ? cityVal : capitalName;
 
-            } 
-            else {
-                filterBox.insertBefore(geoBlock, macroLabel);
+                    dividerElem.style.display = 'block';
+                    dividerElem.innerText = `📍 ZONAS DE ${displayCity.toUpperCase()} (${ufCode})`;
+                    microContainer.style.display = 'grid';
 
-                macroLabel.style.display = 'block'; 
-                macroLabel.innerText = "Recorte Geográfico (Estadual):";
-                dividerElem.style.display = 'block';
-                microContainer.style.display = 'grid';
+                    GeoDatabase.cityZonesAlphabetical.forEach((z) => {
+                        const b = document.createElement('button'); 
+                        b.className = 'grid-filter-btn'; 
+                        b.innerText = z;
+                        b.onclick = (e) => {
+                            document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
+                            document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
+                            e.currentTarget.classList.add('active'); 
+                            this.lastLoadedKey = z; 
+                            this.renderSimulatedDataset(this.lastLoadedCategory, z);
+                        };
+                        microContainer.appendChild(b);
+                    });
 
-                const stateVal = document.getElementById('filter-state-select').value;
-                const cityVal = document.getElementById('filter-city-select').value.trim();
-                const ufCode = getUFCodeFromInput(stateVal) || 'AM';
-                const capitalName = capitalsByState[ufCode] || 'Manaus';
+                    this.lastLoadedKey = 'Geral do Município'; 
+                    this.renderSimulatedDataset(this.lastLoadedCategory, 'Geral do Município');
 
-                let activeMacro = "Geral Estado";
-                if (cityVal.length > 0) {
-                    if (removeAccents(cityVal).toLowerCase() === removeAccents(capitalName).toLowerCase()) {
-                        activeMacro = "Geral da Capital";
-                    } else {
-                        activeMacro = "Geral do Interior";
-                    }
-                }
-
-                if (cityVal.length > 0) {
-                    dividerElem.innerText = `📍 ZONAS DE ${cityVal.toUpperCase()} (${ufCode})`;
                 } else {
-                    dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
+                    filterBox.insertBefore(geoBlock, macroLabel);
+
+                    macroLabel.style.display = 'block'; 
+                    macroLabel.innerText = "Recorte Geográfico (Estadual):";
+                    dividerElem.style.display = 'block';
+                    microContainer.style.display = 'grid';
+
+                    const stateVal = document.getElementById('filter-state-select').value;
+                    const cityVal = document.getElementById('filter-city-select').value.trim();
+                    const ufCode = GeoDatabase.getUFCodeFromInput(stateVal) || 'AM';
+                    const capitalName = GeoDatabase.capitalsByState[ufCode] || 'Manaus';
+
+                    let activeMacro = "Geral Estado";
+                    if (cityVal.length > 0) {
+                        if (GeoDatabase.removeAccents(cityVal).toLowerCase() === GeoDatabase.removeAccents(capitalName).toLowerCase()) {
+                            activeMacro = "Geral da Capital";
+                        } else {
+                            activeMacro = "Geral do Interior";
+                        }
+                    }
+
+                    if (cityVal.length > 0) {
+                        dividerElem.innerText = `📍 ZONAS DE ${cityVal.toUpperCase()} (${ufCode})`;
+                    } else {
+                        dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
+                    }
+
+                    const stackDiv = document.createElement('div');
+                    stackDiv.className = 'stacked-filters';
+
+                    const macroOptions = ["Geral Estado", "Geral da Capital", "Geral do Interior"];
+
+                    macroOptions.forEach((f) => {
+                        const b = document.createElement('button'); 
+                        b.className = `stacked-filter-btn ${f === activeMacro ? 'active' : ''}`; 
+                        b.innerText = f;
+                        b.onclick = (e) => { 
+                            document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active')); 
+                            document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
+                            e.currentTarget.classList.add('active'); 
+
+                            if (f === 'Geral da Capital') {
+                                document.getElementById('filter-city-select').value = capitalName;
+                                dividerElem.innerText = `📍 ZONAS DE ${capitalName.toUpperCase()} (${ufCode})`;
+                            } else if (f === 'Geral Estado') {
+                                dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
+                            }
+
+                            this.lastLoadedKey = f; 
+                            this.renderSimulatedDataset(this.lastLoadedCategory, f); 
+                        };
+                        stackDiv.appendChild(b);
+                    });
+                    macroContainer.appendChild(stackDiv);
+
+                    GeoDatabase.cityZonesAlphabetical.forEach((z) => {
+                        const b = document.createElement('button'); 
+                        b.className = `grid-filter-btn`; 
+                        b.innerText = z;
+                        b.onclick = (e) => {
+                            document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
+                            document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
+                            e.currentTarget.classList.add('active'); 
+                            this.lastLoadedKey = z; 
+                            this.renderSimulatedDataset(this.lastLoadedCategory, z);
+                        };
+                        microContainer.appendChild(b);
+                    });
+
+                    this.lastLoadedKey = activeMacro; 
+                    this.renderSimulatedDataset(this.lastLoadedCategory, activeMacro);
+                }
+            },
+
+            setCalculationMode(mode) {
+                this.currentMode = mode;
+                document.getElementById('btn-mode-geral').classList.toggle('active', mode === 'geral');
+                document.getElementById('btn-mode-validos').classList.toggle('active', mode === 'validos');
+                this.renderSimulatedDataset(this.lastLoadedCategory, this.lastLoadedKey);
+            },
+
+            renderSimulatedDataset(category, filterKey) {
+                this.lastLoadedKey = filterKey;
+                let dataset = []; 
+                const config = this.hierarchicalData[category] || this.hierarchicalData['mayor'];
+                
+                if(config && config.datasets && config.datasets[filterKey]) dataset = JSON.parse(JSON.stringify(config.datasets[filterKey]));
+                else dataset = [ { name: `Candidato Principal`, percent: 45.0 }, { name: `Candidato Opositor`, percent: 35.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos", percent: 9.0, color: "#334155" } ];
+                
+                if(this.currentMode === 'validos') {
+                    let validCandidates = dataset.filter(item => !item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso'));
+                    let somaValidos = validCandidates.reduce((acc, curr) => acc + curr.percent, 0);
+                    dataset = dataset.map(item => {
+                        if(!item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso')) {
+                            return { ...item, percent: parseFloat((somaValidos>0 ? (item.percent/somaValidos)*100 : 0).toFixed(1)) };
+                        } else return { ...item, percent: 0, hidden: true };
+                    }).filter(item => !item.hidden);
                 }
 
-                const stackDiv = document.createElement('div');
-                stackDiv.className = 'stacked-filters';
+                const container = document.getElementById('results-content-container'); 
+                container.innerHTML = '';
+                dataset.forEach(item => {
+                    const barDiv = document.createElement('div'); 
+                    barDiv.className = 'result-bar-container';
+                    barDiv.innerHTML = `<div class="result-meta"><span>${item.name}</span><strong>${item.percent}%</strong></div><div class="progress-bar"><div class="progress-fill" style="width: ${item.percent}%; ${item.color ? 'background-color:'+item.color : ''}"></div></div>`;
+                    container.appendChild(barDiv);
+                });
+            }
+        };
 
-                const macroOptions = ["Geral Estado", "Geral da Capital", "Geral do Interior"];
+        /* ==========================================================================
+           8. MÓDULO DA TELA 6: GERADOR DE RELATÓRIOS (ScreenReport)
+           ========================================================================== */
+        const ScreenReport = {
+            activeCargo: 'Presidente',
 
-                macroOptions.forEach((f) => {
-                    const b = document.createElement('button'); 
-                    b.className = `stacked-filter-btn ${f === activeMacro ? 'active' : ''}`; 
-                    b.innerText = f;
-                    b.onclick = (e) => { 
-                        document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active')); 
-                        document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
-                        e.currentTarget.classList.add('active'); 
+            openExportReport() {
+                document.getElementById('screen-results').classList.add('hidden');
+                document.getElementById('screen-export').classList.remove('hidden');
+                this.renderReportFilters(); 
+            },
 
-                        if (f === 'Geral da Capital') {
-                            document.getElementById('filter-city-select').value = capitalName;
-                            dividerElem.innerText = `📍 ZONAS DE ${capitalName.toUpperCase()} (${ufCode})`;
-                        } else if (f === 'Geral Estado') {
-                            dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
+            switchCargo(cargo, btnElement) {
+                document.querySelectorAll('#report-cargo-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+                this.activeCargo = cargo;
+                this.renderReportFilters();
+            },
+
+            renderReportFilters() {
+                const container = document.getElementById('report-dynamic-filters');
+                container.innerHTML = '';
+                
+                let geoInputsHTML = '';
+
+                if (this.activeCargo === 'Presidente') {
+                    geoInputsHTML = `
+                        <div style="display: flex; gap: 4px; width: 100%;">
+                            <select id="rep-nivel" onchange="ScreenReport.updateReportSubfilters()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                                <option value="Geral (Brasil)">Geral (Brasil)</option>
+                                <option value="Por Região">Por Região</option>
+                                <option value="Por Estado (UF)">Por Estado (UF)</option>
+                                <option value="Por Município">Por Município</option>
+                                <option value="Exterior (Consulados)">Exterior (Consulados)</option>
+                            </select>
+                            <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="ScreenReport.generateDynamicReport()"></select>
+                        </div>
+                        <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%;">
+                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." onchange="GeoDatabase.updateCityDatalist('report'); ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report')" onchange="ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                        </div>
+                    `;
+                } else if (this.activeCargo === 'Governador' || this.activeCargo === 'Senador') {
+                    geoInputsHTML = `
+                        <div style="display: flex; gap: 4px; width: 100%;">
+                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="GeoDatabase.updateCityDatalist('report'); ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report')" onchange="ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                        </div>
+                        <div style="display: flex; gap: 4px; width: 100%;">
+                            <select id="rep-nivel" onchange="ScreenReport.generateDynamicReport()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                                <option value="Geral (Todo o Estado)">Geral (Todo o Estado)</option>
+                                <option value="Geral (Apenas o Município)">Geral (Apenas o Município)</option>
+                            </select>
+                        </div>
+                    `;
+                } else if (this.activeCargo === 'Prefeito') {
+                    geoInputsHTML = `
+                        <div style="display: flex; gap: 4px; width: 100%;">
+                             <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="GeoDatabase.updateCityDatalist('report'); ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                             <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report')" onchange="ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                        </div>
+                    `;
+                }
+
+                const demoInputsHTML = `
+                    <div style="background-color: #090d16; border: 1px solid var(--border); padding: 5px; border-radius: 5px;">
+                        <div style="font-size: 0.44rem; color: #38bdf8; font-weight: bold; margin-bottom: 3px; text-transform: uppercase; text-align: center;">🎯 RECRUZAMENTO DEMOGRÁFICO DO RELATÓRIO</div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;">
+                            <div>
+                                <label style="font-size: 0.42rem;">🎂 Por Idade / Faixa:</label>
+                                <select id="rep-idade" onchange="ScreenReport.generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                    <option value="Todas as Idades" selected>Todas as Idades</option>
+                                    <option value="16 a 24 anos">16 a 24 anos</option>
+                                    <option value="25 a 34 anos">25 a 34 anos</option>
+                                    <option value="35 a 44 anos">35 a 44 anos</option>
+                                    <option value="45 a 59 anos">45 a 59 anos</option>
+                                    <option value="60+ anos (Idosos)">60+ anos (Idosos)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.42rem;">📍 Por Zona Urb./Rural:</label>
+                                <select id="rep-zona-demo" onchange="ScreenReport.generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                    <option value="Todas as Zonas" selected>Todas as Zonas</option>
+                                    <option value="Zona Norte">Zona Norte</option>
+                                    <option value="Zona Sul">Zona Sul</option>
+                                    <option value="Zona Leste">Zona Leste</option>
+                                    <option value="Zona Oeste">Zona Oeste</option>
+                                    <option value="Zona Centro-Oeste">Zona Centro-Oeste</option>
+                                    <option value="Zona Centro-Sul">Zona Centro-Sul</option>
+                                    <option value="Centro / Central">Centro / Central</option>
+                                    <option value="Zona Rural / Distritos">Zona Rural / Distritos</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.42rem;">👥 Por Gênero:</label>
+                                <select id="rep-genero" onchange="ScreenReport.generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                    <option value="Todos os Gêneros" selected>Todos os Gêneros</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Feminino">Feminino</option>
+                                    <option value="LGBTQIA+">LGBTQIA+</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.42rem;">🎨 Por Cor / Raça (IBGE):</label>
+                                <select id="rep-cor" onchange="ScreenReport.generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                    <option value="Todas as Raças" selected>Todas as Raças</option>
+                                    <option value="Branca">Branca</option>
+                                    <option value="Preta">Preta</option>
+                                    <option value="Parda">Parda</option>
+                                    <option value="Amarela">Amarela</option>
+                                    <option value="Indígena">Indígena</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML = geoInputsHTML + demoInputsHTML;
+                this.updateReportSubfilters();
+            },
+
+            updateReportSubfilters() {
+                if (this.activeCargo === 'Presidente') {
+                    const nivelElem = document.getElementById('rep-nivel');
+                    if(!nivelElem) return;
+                    const nivel = nivelElem.value;
+                    const detalheSelect = document.getElementById('rep-detalhe-select');
+                    const municipioRow = document.getElementById('rep-presidente-municipio-row');
+                    
+                    if (!detalheSelect || !municipioRow) return;
+                    
+                    detalheSelect.innerHTML = '';
+                    detalheSelect.style.display = 'none';
+                    municipioRow.style.display = 'none';
+
+                    if (nivel === 'Por Município') {
+                        municipioRow.style.display = 'flex';
+                    } else if (nivel !== 'Geral (Brasil)') {
+                        detalheSelect.style.display = 'block';
+                        let options = [];
+                        
+                        if (nivel === 'Por Região') {
+                            options = ['Região Norte', 'Região Nordeste', 'Região Centro-Oeste', 'Região Sudeste', 'Região Sul'];
+                        } else if (nivel === 'Por Estado (UF)') {
+                            const stateOptions = Array.from(document.getElementById('states-datalist').options);
+                            options = stateOptions.map(opt => opt.value).filter(val => val !== "Outros Países (Exterior)");
+                        } else if (nivel === 'Exterior (Consulados)') {
+                            options = GeoDatabase.internationalCountryList.filter(c => c !== "Todos os Países");
                         }
 
-                        lastLoadedKey = f; 
-                        renderSimulatedDataset(lastLoadedCategory, f); 
-                    };
-                    stackDiv.appendChild(b);
-                });
-                macroContainer.appendChild(stackDiv);
-
-                cityZonesAlphabetical.forEach((z) => {
-                    const b = document.createElement('button'); 
-                    b.className = `grid-filter-btn`; 
-                    b.innerText = z;
-                    b.onclick = (e) => {
-                        document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
-                        document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
-                        e.currentTarget.classList.add('active'); 
-                        lastLoadedKey = z; 
-                        renderSimulatedDataset(lastLoadedCategory, z);
-                    };
-                    microContainer.appendChild(b);
-                });
-
-                lastLoadedKey = activeMacro; 
-                renderSimulatedDataset(lastLoadedCategory, activeMacro);
-            }
-        }
-
-        function setCalculationMode(mode) {
-            currentMode = mode;
-            document.getElementById('btn-mode-geral').classList.toggle('active', mode === 'geral');
-            document.getElementById('btn-mode-validos').classList.toggle('active', mode === 'validos');
-            renderSimulatedDataset(lastLoadedCategory, lastLoadedKey);
-        }
-
-        function renderSimulatedDataset(category, filterKey) {
-            lastLoadedKey = filterKey;
-            let dataset = []; const config = hierarchicalData[category] || hierarchicalData['mayor'];
-            if(config && config.datasets && config.datasets[filterKey]) dataset = JSON.parse(JSON.stringify(config.datasets[filterKey]));
-            else dataset = [ { name: `Candidato Principal`, percent: 45.0 }, { name: `Candidato Opositor`, percent: 35.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos", percent: 9.0, color: "#334155" } ];
-            
-            if(currentMode === 'validos') {
-                let validCandidates = dataset.filter(item => !item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso'));
-                let somaValidos = validCandidates.reduce((acc, curr) => acc + curr.percent, 0);
-                dataset = dataset.map(item => {
-                    if(!item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso')) {
-                        return { ...item, percent: parseFloat((somaValidos>0 ? (item.percent/somaValidos)*100 : 0).toFixed(1)) };
-                    } else return { ...item, percent: 0, hidden: true };
-                }).filter(item => !item.hidden);
-            }
-
-            const container = document.getElementById('results-content-container'); container.innerHTML = '';
-            dataset.forEach(item => {
-                const barDiv = document.createElement('div'); barDiv.className = 'result-bar-container';
-                barDiv.innerHTML = `<div class="result-meta"><span>${item.name}</span><strong>${item.percent}%</strong></div><div class="progress-bar"><div class="progress-fill" style="width: ${item.percent}%; ${item.color ? 'background-color:'+item.color : ''}"></div></div>`;
-                container.appendChild(barDiv);
-            });
-        }
-
-        function openExportReport() {
-            document.getElementById('screen-results').classList.add('hidden');
-            document.getElementById('screen-export').classList.remove('hidden');
-            renderReportFilters(); 
-        }
-
-        function switchReportCargo(cargo, btnElement) {
-            document.querySelectorAll('#report-cargo-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            activeReportCargo = cargo;
-            renderReportFilters();
-        }
-
-        // 2. RENDERIZAÇÃO DOS FILTROS GEOGRÁFICOS E DEMOGRÁFICOS (IDADE, ZONA, GÊNERO, COR) NA TELA 6
-        function renderReportFilters() {
-            const container = document.getElementById('report-dynamic-filters');
-            container.innerHTML = '';
-            
-            let geoInputsHTML = '';
-
-            if (activeReportCargo === 'Presidente') {
-                geoInputsHTML = `
-                    <div style="display: flex; gap: 4px; width: 100%;">
-                        <select id="rep-nivel" onchange="updateReportSubfilters()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <option value="Geral (Brasil)">Geral (Brasil)</option>
-                            <option value="Por Região">Por Região</option>
-                            <option value="Por Estado (UF)">Por Estado (UF)</option>
-                            <option value="Por Município">Por Município</option>
-                            <option value="Exterior (Consulados)">Exterior (Consulados)</option>
-                        </select>
-                        <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="generateDynamicReport()"></select>
-                    </div>
-                    <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%;">
-                        <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                    </div>
-                `;
-            } else if (activeReportCargo === 'Governador' || activeReportCargo === 'Senador') {
-                geoInputsHTML = `
-                    <div style="display: flex; gap: 4px; width: 100%;">
-                        <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                    </div>
-                    <div style="display: flex; gap: 4px; width: 100%;">
-                        <select id="rep-nivel" onchange="generateDynamicReport()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <option value="Geral (Todo o Estado)">Geral (Todo o Estado)</option>
-                            <option value="Geral (Apenas o Município)">Geral (Apenas o Município)</option>
-                        </select>
-                    </div>
-                `;
-            } else if (activeReportCargo === 'Prefeito') {
-                geoInputsHTML = `
-                    <div style="display: flex; gap: 4px; width: 100%;">
-                         <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                         <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                    </div>
-                `;
-            }
-
-            // ADICIONADOS OS CONTROLES DEMOGRÁFICOS PEDIDOS (IDADE, ZONA, GÊNERO, COR)
-            const demoInputsHTML = `
-                <div style="background-color: #090d16; border: 1px solid var(--border); padding: 5px; border-radius: 5px;">
-                    <div style="font-size: 0.44rem; color: #38bdf8; font-weight: bold; margin-bottom: 3px; text-transform: uppercase; text-align: center;">🎯 RECRUZAMENTO DEMOGRÁFICO DO RELATÓRIO</div>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;">
-                        <div>
-                            <label style="font-size: 0.42rem;">🎂 Por Idade / Faixa:</label>
-                            <select id="rep-idade" onchange="generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
-                                <option value="Todas as Idades" selected>Todas as Idades</option>
-                                <option value="16 a 24 anos">16 a 24 anos</option>
-                                <option value="25 a 34 anos">25 a 34 anos</option>
-                                <option value="35 a 44 anos">35 a 44 anos</option>
-                                <option value="45 a 59 anos">45 a 59 anos</option>
-                                <option value="60+ anos (Idosos)">60+ anos (Idosos)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.42rem;">📍 Por Zona Urb./Rural:</label>
-                            <select id="rep-zona-demo" onchange="generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
-                                <option value="Todas as Zonas" selected>Todas as Zonas</option>
-                                <option value="Zona Norte">Zona Norte</option>
-                                <option value="Zona Sul">Zona Sul</option>
-                                <option value="Zona Leste">Zona Leste</option>
-                                <option value="Zona Oeste">Zona Oeste</option>
-                                <option value="Zona Centro-Oeste">Zona Centro-Oeste</option>
-                                <option value="Zona Centro-Sul">Zona Centro-Sul</option>
-                                <option value="Centro / Central">Centro / Central</option>
-                                <option value="Zona Rural / Distritos">Zona Rural / Distritos</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.42rem;">👥 Por Gênero:</label>
-                            <select id="rep-genero" onchange="generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
-                                <option value="Todos os Gêneros" selected>Todos os Gêneros</option>
-                                <option value="Masculino">Masculino</option>
-                                <option value="Feminino">Feminino</option>
-                                <option value="LGBTQIA+">LGBTQIA+</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.42rem;">🎨 Por Cor / Raça (IBGE):</label>
-                            <select id="rep-cor" onchange="generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
-                                <option value="Todas as Raças" selected>Todas as Raças</option>
-                                <option value="Branca">Branca</option>
-                                <option value="Preta">Preta</option>
-                                <option value="Parda">Parda</option>
-                                <option value="Amarela">Amarela</option>
-                                <option value="Indígena">Indígena</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            container.innerHTML = geoInputsHTML + demoInputsHTML;
-            updateReportSubfilters();
-        }
-
-        function updateReportSubfilters() {
-            if (activeReportCargo === 'Presidente') {
-                const nivelElem = document.getElementById('rep-nivel');
-                if(!nivelElem) return;
-                const nivel = nivelElem.value;
-                const detalheSelect = document.getElementById('rep-detalhe-select');
-                const municipioRow = document.getElementById('rep-presidente-municipio-row');
-                
-                if (!detalheSelect || !municipioRow) return;
-                
-                detalheSelect.innerHTML = '';
-                detalheSelect.style.display = 'none';
-                municipioRow.style.display = 'none';
-
-                if (nivel === 'Por Município') {
-                    municipioRow.style.display = 'flex';
-                } else if (nivel !== 'Geral (Brasil)') {
-                    detalheSelect.style.display = 'block';
-                    let options = [];
-                    
-                    if (nivel === 'Por Região') {
-                        options = ['Região Norte', 'Região Nordeste', 'Região Centro-Oeste', 'Região Sudeste', 'Região Sul'];
-                    } else if (nivel === 'Por Estado (UF)') {
-                        const stateOptions = Array.from(document.getElementById('states-datalist').options);
-                        options = stateOptions.map(opt => opt.value).filter(val => val !== "Outros Países (Exterior)");
-                    } else if (nivel === 'Exterior (Consulados)') {
-                        options = internationalCountryList.filter(c => c !== "Todos os Países");
+                        options.forEach(optVal => {
+                            const opt = document.createElement('option');
+                            opt.value = optVal;
+                            opt.innerText = optVal;
+                            detalheSelect.appendChild(opt);
+                        });
                     }
+                } 
+                this.generateDynamicReport();
+            },
 
-                    options.forEach(optVal => {
-                        const opt = document.createElement('option');
-                        opt.value = optVal;
-                        opt.innerText = optVal;
-                        detalheSelect.appendChild(opt);
-                    });
-                }
-            } 
-            generateDynamicReport();
-        }
+            generateDynamicReport() {
+                let filterDesc = "";
+                let candA = 48.5, candB = 41.2;
+                let candAName = "Candidato Alpha (PTX)", candBName = "Candidato Beta (PLZ)";
 
-        // GERAÇÃO DINÂMICA DO RELATÓRIO EXECUTIVO
-        function generateDynamicReport() {
-            let filterDesc = "";
-            let candA = 48.5, candB = 41.2;
-            let candAName = "Candidato Alpha (PTX)", candBName = "Candidato Beta (PLZ)";
+                const idadeVal = document.getElementById('rep-idade') ? document.getElementById('rep-idade').value : 'Todas as Idades';
+                const zonaVal = document.getElementById('rep-zona-demo') ? document.getElementById('rep-zona-demo').value : 'Todas as Zonas';
+                const generoVal = document.getElementById('rep-genero') ? document.getElementById('rep-genero').value : 'Todos os Gêneros';
+                const corVal = document.getElementById('rep-cor') ? document.getElementById('rep-cor').value : 'Todas as Raças';
 
-            // LEITURA DOS NOVOS FILTROS DEMOGRÁFICOS
-            const idadeVal = document.getElementById('rep-idade') ? document.getElementById('rep-idade').value : 'Todas as Idades';
-            const zonaVal = document.getElementById('rep-zona-demo') ? document.getElementById('rep-zona-demo').value : 'Todas as Zonas';
-            const generoVal = document.getElementById('rep-genero') ? document.getElementById('rep-genero').value : 'Todos os Gêneros';
-            const corVal = document.getElementById('rep-cor') ? document.getElementById('rep-cor').value : 'Todas as Raças';
-
-            if(activeReportCargo === 'Presidente') { 
-                const nivelElem = document.getElementById('rep-nivel');
-                const nivel = nivelElem ? nivelElem.value : 'Geral (Brasil)';
-                if (nivel === 'Por Município') {
-                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
+                if(this.activeCargo === 'Presidente') { 
+                    const nivelElem = document.getElementById('rep-nivel');
+                    const nivel = nivelElem ? nivelElem.value : 'Geral (Brasil)';
+                    if (nivel === 'Por Município') {
+                        const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
+                        const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
+                        filterDesc = `<li><strong>Abrangência:</strong> Município Específico</li>`;
+                        if(estado) filterDesc += `<li><strong>Estado (UF):</strong> ${estado}</li>`;
+                        if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                    } else {
+                        const detalheSelect = document.getElementById('rep-detalhe-select');
+                        const detalhe = (detalheSelect && detalheSelect.style.display !== 'none') ? detalheSelect.value : '';
+                        filterDesc = `<li><strong>Abrangência:</strong> ${nivel} ${detalhe ? ' - ' + detalhe : ''}</li>`;
+                    }
+                    candA = 48.5; candB = 41.2; 
+                    candAName = "Candidato Alpha (PTX)"; candBName = "Candidato Beta (PLZ)";
+                } else if(this.activeCargo === 'Governador') { 
+                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
                     const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                    filterDesc = `<li><strong>Abrangência:</strong> Município Específico</li>`;
-                    if(estado) filterDesc += `<li><strong>Estado (UF):</strong> ${estado}</li>`;
+                    const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral';
+                    
+                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
                     if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
-                } else {
-                    const detalheSelect = document.getElementById('rep-detalhe-select');
-                    const detalhe = (detalheSelect && detalheSelect.style.display !== 'none') ? detalheSelect.value : '';
-                    filterDesc = `<li><strong>Abrangência:</strong> ${nivel} ${detalhe ? ' - ' + detalhe : ''}</li>`;
+                    filterDesc += `<li><strong>Escopo:</strong> ${nivel}</li>`;
+                    
+                    candA = 51.0; candB = 38.0; 
+                    candAName = "Candidato Delta (PSB)"; candBName = "Candidato Ômega (PSD)";
+                } else if(this.activeCargo === 'Senador') { 
+                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
+                    const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
+                    
+                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
+                    if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                    
+                    candA = 34.0; candB = 28.0; 
+                    candAName = "Candidato Um (MDB)"; candBName = "Candidato Dois (UNIÃO)";
+                } else if(this.activeCargo === 'Prefeito') { 
+                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Não Selecionado';
+                    const cityElem = document.getElementById('rep-city-report');
+                    const city = cityElem && cityElem.value ? cityElem.value : 'Não Selecionado';
+                    
+                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li><li><strong>Município:</strong> ${city}</li>`;
+                    
+                    candA = 46.0; candB = 40.0; 
+                    candAName = "Candidato X (UNIÃO)"; candBName = "Candidato Y (PSD)";
                 }
-                candA = 48.5; candB = 41.2; 
-                candAName = "Candidato Alpha (PTX)"; candBName = "Candidato Beta (PLZ)";
-            }
-            else if(activeReportCargo === 'Governador') { 
-                const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
-                const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral';
-                
-                filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
-                if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
-                filterDesc += `<li><strong>Escopo:</strong> ${nivel}</li>`;
-                
-                candA = 51.0; candB = 38.0; 
-                candAName = "Candidato Delta (PSB)"; candBName = "Candidato Ômega (PSD)";
-            }
-            else if(activeReportCargo === 'Senador') { 
-                const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
-                const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                
-                filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
-                if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
-                
-                candA = 34.0; candB = 28.0; 
-                candAName = "Candidato Um (MDB)"; candBName = "Candidato Dois (UNIÃO)";
-            }
-            else if(activeReportCargo === 'Prefeito') { 
-                const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Não Selecionado';
-                const cityElem = document.getElementById('rep-city-report');
-                const city = cityElem && cityElem.value ? cityElem.value : 'Não Selecionado';
-                
-                filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li><li><strong>Município:</strong> ${city}</li>`;
-                
-                candA = 46.0; candB = 40.0; 
-                candAName = "Candidato X (UNIÃO)"; candBName = "Candidato Y (PSD)";
-            }
 
-            // Ajuste fino simulado conforme variações demográficas
-            if (generoVal === 'Feminino') { candA += 1.2; candB -= 1.0; }
-            else if (generoVal === 'Masculino') { candA -= 0.8; candB += 1.5; }
-            if (idadeVal.includes('16 a 24')) { candA += 2.0; candB -= 2.0; }
-            else if (idadeVal.includes('60+')) { candA -= 1.5; candB += 2.2; }
+                if (generoVal === 'Feminino') { candA += 1.2; candB -= 1.0; }
+                else if (generoVal === 'Masculino') { candA -= 0.8; candB += 1.5; }
+                if (idadeVal.includes('16 a 24')) { candA += 2.0; candB -= 2.0; }
+                else if (idadeVal.includes('60+')) { candA -= 1.5; candB += 2.2; }
 
-            const rest = (100 - candA - candB).toFixed(1);
+                const rest = (100 - candA - candB).toFixed(1);
 
-            let mediaHeaderHTML = "";
-            if (activeMediaInfo) {
-                mediaHeaderHTML = `
-                    <div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 6px; padding: 5px; margin-bottom: 6px; text-align: center;">
-                        <span style="font-size: 0.44rem; color: #059669; font-weight: bold; text-transform: uppercase; display: block;">🏢 DOCUMENTO LICENCIADO PARA IMPRENSA</span>
-                        <strong style="font-size: 0.60rem; color: #0f172a;">${activeMediaInfo.name}</strong>
-                        <span style="font-size: 0.46rem; color: #475569; display: block;">Segmento: ${activeMediaInfo.type} | Cobertura: ${activeMediaInfo.tier}</span>
+                let mediaHeaderHTML = "";
+                if (AppState.activeMediaInfo) {
+                    mediaHeaderHTML = `
+                        <div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 6px; padding: 5px; margin-bottom: 6px; text-align: center;">
+                            <span style="font-size: 0.44rem; color: #059669; font-weight: bold; text-transform: uppercase; display: block;">🏢 DOCUMENTO LICENCIADO PARA IMPRENSA</span>
+                            <strong style="font-size: 0.60rem; color: #0f172a;">${AppState.activeMediaInfo.name}</strong>
+                            <span style="font-size: 0.46rem; color: #475569; display: block;">Segmento: ${AppState.activeMediaInfo.type} | Cobertura: ${AppState.activeMediaInfo.tier}</span>
+                        </div>
+                    `;
+                }
+
+                let reportHTML = `
+                    ${mediaHeaderHTML}
+                    <h3>PESQUISA JUSTA — PLACAR ELEITORAL OFICIAL</h3>
+                    <p style="text-align:center; font-size: 0.48rem; color: #64748b; margin-bottom: 4px;">Protocolo PesqEle: BR-02849/2026 | Turno: ${AppState.currentTurn}º</p>
+                    <hr>
+                    <div class="report-section-title">📊 CARGO ANALISADO: ${this.activeCargo.toUpperCase()}</div>
+                    
+                    <p style="font-size: 0.52rem; color: #334155; margin-bottom: 2px;"><strong>Filtros Geográficos Aplicados:</strong></p>
+                    <ul style="margin: 0 0 4px 12px; padding:0; font-size: 0.50rem; color: #475569;">
+                        ${filterDesc}
+                    </ul>
+
+                    <p style="font-size: 0.52rem; color: #334155; margin-bottom: 2px;"><strong>Recortes Demográficos Selecionados:</strong></p>
+                    <ul style="margin: 0 0 6px 12px; padding:0; font-size: 0.50rem; color: #475569;">
+                        <li><strong>Faixa Etária:</strong> ${idadeVal}</li>
+                        <li><strong>Zona Urbana/Rural:</strong> ${zonaVal}</li>
+                        <li><strong>Gênero:</strong> ${generoVal}</li>
+                        <li><strong>Cor / Raça (IBGE):</strong> ${corVal}</li>
+                    </ul>
+                    
+                    <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 6px; border-radius: 6px;">
+                        <p style="margin-top: 2px;">📺 <strong>Placar Telejornal / Intenção de Voto:</strong></p>
+                        <p>• 🟢 ${candAName}: <strong>${candA.toFixed(1)}%</strong></p>
+                        <p>• 🔵 ${candBName}: <strong>${candB.toFixed(1)}%</strong></p>
+                        <p style="margin-bottom: 2px;">• ⚪ Brancos / Nulos / Indecisos: <strong>${rest}%</strong></p>
                     </div>
+
+                    <div style="margin-top: 6px; background-color: #f1f5f9; padding: 5px; border-radius: 4px; font-size: 0.46rem; color: #475569;">
+                        <strong>Ficha Técnica & Cobertura TSE:</strong><br>
+                        • Período de Campo: 5 dias (Amostra Ponderada IBGE)<br>
+                        • Margem de Erro: ± 1.5% (Confiança 95%)
+                    </div>
+                    
+                    <p style="font-size: 0.44rem; color: #94a3b8; text-align: center; margin-top: 6px;">Amostra segmentada extraída oficialmente do sistema cego.</p>
                 `;
+
+                document.getElementById('report-content-box').innerHTML = reportHTML;
+            },
+
+            copyText() {
+                const reportText = document.getElementById('report-content-box').innerText;
+                var textArea = document.createElement("textarea");
+                textArea.value = reportText; textArea.style.position = "fixed"; textArea.style.opacity = "0";
+                document.body.appendChild(textArea); textArea.focus(); textArea.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    if(successful) AppState.showToast('📋 Relatório copiado para a área de transferência!');
+                    else AppState.showToast('❌ Erro ao copiar.', true);
+                } catch (err) { AppState.showToast('❌ O navegador bloqueou a cópia.', true); }
+                document.body.removeChild(textArea);
+            },
+
+            toggleShareMenu() {
+                const menu = document.getElementById('share-submenu');
+                if (menu.classList.contains('hidden')) menu.classList.remove('hidden');
+                else menu.classList.add('hidden');
+            },
+
+            shareWhatsApp() {
+                const reportText = document.getElementById('report-content-box').innerText;
+                const textToShare = encodeURIComponent(reportText);
+                window.open(`https://api.whatsapp.com/send?text=${textToShare}`, '_blank');
+                AppState.showToast('💬 Abrindo WhatsApp...');
+                document.getElementById('share-submenu').classList.add('hidden');
+            },
+
+            shareEmail() {
+                const reportText = document.getElementById('report-content-box').innerText;
+                const subject = encodeURIComponent(`Relatório Segmentado - ${this.activeCargo}`);
+                const body = encodeURIComponent(reportText);
+                window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                AppState.showToast('📧 Abrindo E-mail...');
+                document.getElementById('share-submenu').classList.add('hidden');
+            },
+
+            printReport() {
+                AppState.showToast('🖨️ Preparando página de impressão...');
+                setTimeout(() => window.print(), 800);
+            },
+
+            downloadPdf() {
+                AppState.showToast('📄 DICA: Na janela a seguir, mude o destino para "Salvar como PDF".');
+                setTimeout(() => window.print(), 2000);
+            },
+
+            backToResults() {
+                document.getElementById('screen-export').classList.add('hidden');
+                if(AppState.activeMediaInfo) document.getElementById('screen-register').classList.remove('hidden');
+                else document.getElementById('screen-results').classList.remove('hidden');
+                document.getElementById('share-submenu').classList.add('hidden');
             }
+        };
 
-            let reportHTML = `
-                ${mediaHeaderHTML}
-                <h3>PESQUISA JUSTA — PLACAR ELEITORAL OFICIAL</h3>
-                <p style="text-align:center; font-size: 0.48rem; color: #64748b; margin-bottom: 4px;">Protocolo PesqEle: BR-02849/2026 | Turno: ${currentTurn}º</p>
-                <hr>
-                <div class="report-section-title">📊 CARGO ANALISADO: ${activeReportCargo.toUpperCase()}</div>
-                
-                <p style="font-size: 0.52rem; color: #334155; margin-bottom: 2px;"><strong>Filtros Geográficos Aplicados:</strong></p>
-                <ul style="margin: 0 0 4px 12px; padding:0; font-size: 0.50rem; color: #475569;">
-                    ${filterDesc}
-                </ul>
-
-                <p style="font-size: 0.52rem; color: #334155; margin-bottom: 2px;"><strong>Recortes Demográficos Selecionados:</strong></p>
-                <ul style="margin: 0 0 6px 12px; padding:0; font-size: 0.50rem; color: #475569;">
-                    <li><strong>Faixa Etária:</strong> ${idadeVal}</li>
-                    <li><strong>Zona Urbana/Rural:</strong> ${zonaVal}</li>
-                    <li><strong>Gênero:</strong> ${generoVal}</li>
-                    <li><strong>Cor / Raça (IBGE):</strong> ${corVal}</li>
-                </ul>
-                
-                <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 6px; border-radius: 6px;">
-                    <p style="margin-top: 2px;">📺 <strong>Placar Telejornal / Intenção de Voto:</strong></p>
-                    <p>• 🟢 ${candAName}: <strong>${candA.toFixed(1)}%</strong></p>
-                    <p>• 🔵 ${candBName}: <strong>${candB.toFixed(1)}%</strong></p>
-                    <p style="margin-bottom: 2px;">• ⚪ Brancos / Nulos / Indecisos: <strong>${rest}%</strong></p>
-                </div>
-
-                <div style="margin-top: 6px; background-color: #f1f5f9; padding: 5px; border-radius: 4px; font-size: 0.46rem; color: #475569;">
-                    <strong>Ficha Técnica & Cobertura TSE:</strong><br>
-                    • Período de Campo: 5 dias (Amostra Ponderada IBGE)<br>
-                    • Margem de Erro: ± 1.5% (Confiança 95%)
-                </div>
-                
-                <p style="font-size: 0.44rem; color: #94a3b8; text-align: center; margin-top: 6px;">Amostra segmentada extraída oficialmente do sistema cego.</p>
-            `;
-
-            document.getElementById('report-content-box').innerHTML = reportHTML;
-        }
-
-        function copyReportText() {
-            const reportText = document.getElementById('report-content-box').innerText;
-            var textArea = document.createElement("textarea");
-            textArea.value = reportText; textArea.style.position = "fixed"; textArea.style.opacity = "0";
-            document.body.appendChild(textArea); textArea.focus(); textArea.select();
-            try {
-                var successful = document.execCommand('copy');
-                if(successful) showToast('📋 Relatório copiado para a área de transferência!');
-                else showToast('❌ Erro ao copiar.', true);
-            } catch (err) { showToast('❌ O navegador bloqueou a cópia.', true); }
-            document.body.removeChild(textArea);
-        }
-
-        function toggleShareMenu() {
-            const menu = document.getElementById('share-submenu');
-            if (menu.classList.contains('hidden')) menu.classList.remove('hidden');
-            else menu.classList.add('hidden');
-        }
-
-        function shareWhatsApp() {
-            const reportText = document.getElementById('report-content-box').innerText;
-            const textToShare = encodeURIComponent(reportText);
-            window.open(`https://api.whatsapp.com/send?text=${textToShare}`, '_blank');
-            showToast('💬 Abrindo WhatsApp...');
-            document.getElementById('share-submenu').classList.add('hidden');
-        }
-
-        function shareEmail() {
-            const reportText = document.getElementById('report-content-box').innerText;
-            const subject = encodeURIComponent(`Relatório Segmentado - ${activeReportCargo}`);
-            const body = encodeURIComponent(reportText);
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-            showToast('📧 Abrindo E-mail...');
-            document.getElementById('share-submenu').classList.add('hidden');
-        }
-
-        function printReport() {
-            showToast('🖨️ Preparando página de impressão...');
-            setTimeout(() => window.print(), 800);
-        }
-
-        function downloadReportPdf() {
-            showToast('📄 DICA: Na janela a seguir, mude o destino para "Salvar como PDF".');
-            setTimeout(() => window.print(), 2000);
-        }
-
-        function backToResults() {
-            document.getElementById('screen-export').classList.add('hidden');
-            if(activeMediaInfo) document.getElementById('screen-register').classList.remove('hidden');
-            else document.getElementById('screen-results').classList.remove('hidden');
-            document.getElementById('share-submenu').classList.add('hidden');
-        }
-
-        function resetApp() {
-            currentStep = 0; votesData = {}; selectedPattern = []; activeMediaInfo = null;
-            document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
-            
-            document.getElementById('whatsapp-input').value = '';
-            document.getElementById('birthdate-input').value = '';
-            document.getElementById('state-input').value = '';
-            document.getElementById('city-input').value = '';
-            document.getElementById('zone-input').selectedIndex = 0;
-            document.getElementById('education-input').selectedIndex = 0;
-            document.getElementById('income-input').selectedIndex = 0;
-            document.getElementById('gender-input').selectedIndex = 0;
-            document.getElementById('race-input').selectedIndex = 0;
-            document.getElementById('lgpd-check').checked = false;
-
-            document.getElementById('screen-results').classList.add('hidden');
-            document.getElementById('screen-export').classList.add('hidden');
-            document.getElementById('screen-admin-login').classList.add('hidden');
-            document.getElementById('screen-media-login').classList.add('hidden');
-            document.getElementById('screen-auth').classList.add('hidden');
-            document.getElementById('screen-success').classList.add('hidden');
-            document.getElementById('screen-register').classList.remove('hidden');
-        }
+        /* ==========================================================================
+           INICIALIZAÇÃO DO APLICATIVO E EVENTOS GLOBAIS
+           ========================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            ScreenAuth.initTouchEvents();
+            GeoDatabase.handleStateTyped('register');
+            GeoDatabase.handleStateTyped('results');
+            AppState.updateTurnState();
+        });
     </script>
 </body>
 </html>
