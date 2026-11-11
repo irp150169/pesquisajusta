@@ -30,21 +30,37 @@
             justify-content: center;
             align-items: flex-start;
             box-sizing: border-box;
+            /* Permite rolagem no body se a tela do celular for menor que o conteúdo */
+            overflow-x: hidden; 
         }
 
         .phone-frame {
             width: 100%;
+            /* CORREÇÃO 1: Em telas de PC, limita a 420px. Em celulares, ocupa 100% */
             max-width: 420px;
             min-height: 100vh;
             background-color: var(--card-bg);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             position: relative;
             box-sizing: border-box;
             box-shadow: 0 10px 25px rgba(0,0,0,0.6);
             border-left: 2px solid var(--border);
             border-right: 2px solid var(--border);
+        }
+
+        /* MEDIA QUERY: Remove as bordas e a sombra se a tela for do tamanho de um celular */
+        @media (max-width: 480px) {
+            .phone-frame {
+                max-width: 100%;
+                border-left: none;
+                border-right: none;
+                box-shadow: none;
+                min-height: 100vh; /* Garante que preencha a tela */
+            }
+            html, body {
+                background-color: var(--card-bg); /* Unifica a cor de fundo */
+            }
         }
 
         .screen {
@@ -53,6 +69,7 @@
             flex-direction: column;
             padding: 10px 12px;
             box-sizing: border-box;
+            min-height: 100vh; /* Assegura o preenchimento vertical */
         }
 
         .app-brand-header {
@@ -62,6 +79,7 @@
             border-radius: 6px;
             padding: 5px;
             margin-bottom: 5px;
+            flex-shrink: 0;
         }
         .app-brand-header h1 {
             font-size: 0.92rem;
@@ -89,6 +107,7 @@
             color: var(--highlight-yellow);
             font-weight: bold;
             margin-bottom: 5px;
+            flex-shrink: 0;
         }
 
         .tse-notice-box {
@@ -98,6 +117,7 @@
             padding: 4px 6px;
             text-align: center;
             margin-bottom: 6px;
+            flex-shrink: 0;
         }
         .tse-notice-box span {
             font-size: 0.50rem;
@@ -125,7 +145,6 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
         }
 
         h1, h2, h3 {
@@ -284,6 +303,7 @@
             color: #10b981;
         }
 
+        /* CORREÇÃO 2: Container do Padrão preparado para gestos (Touch) */
         .pattern-lock-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -296,6 +316,8 @@
             border-radius: 8px;
             justify-items: center;
             align-items: center;
+            touch-action: none; /* Previne o scroll da tela enquanto desenha o padrão */
+            position: relative;
         }
         .pattern-dot {
             width: 24px;
@@ -305,12 +327,14 @@
             border: 2px solid var(--border);
             cursor: pointer;
             transition: all 0.2s;
+            pointer-events: auto; /* Garante que recebe eventos mesmo com touchmove */
         }
         .pattern-dot.active {
             background-color: var(--accent);
             border-color: #38bdf8;
             box-shadow: 0 0 8px #38bdf8;
         }
+        /* Linhas SVG para ligar os pontos (opcional para o visual deslizar, deixado invisível por simplicidade, o visual do botão já acende) */
 
         .hidden {
             display: none !important;
@@ -555,6 +579,7 @@
             text-align: center;
             box-sizing: border-box;
             margin-top: auto;
+            flex-shrink: 0;
         }
         .external-sponsor-banner span {
             font-size: 0.40rem;
@@ -841,7 +866,7 @@
                     <button onclick="backToRegisterFromMedia()" style="background-color: #334155;">Voltar ao Início</button>
                 </div>
 
-                <!-- TELA 2: AUTENTICAÇÃO -->
+                <!-- TELA 2: AUTENTICAÇÃO (ATUALIZADA COM DESLIZE E BIOMETRIA NATIVA) -->
                 <div id="screen-auth" class="view hidden">
                     <div style="text-align: center;">
                         <span class="badge">Segurança & Acesso</span>
@@ -849,19 +874,23 @@
                         <p class="subtitle">Desenhe seu padrão de segurança ou use a biometria para confirmar acesso.</p>
                     </div>
 
-                    <div class="pattern-lock-container" id="pattern-grid">
-                        <div class="pattern-dot" data-id="1" onclick="toggleDot(this)"></div>
-                        <div class="pattern-dot" data-id="2" onclick="toggleDot(this)"></div>
-                        <div class="pattern-dot" data-id="3" onclick="toggleDot(this)"></div>
-                        <div class="pattern-dot" data-id="4" onclick="toggleDot(this)"></div>
-                        <div class="pattern-dot" data-id="5" onclick="toggleDot(this)"></div>
-                        <div class="pattern-dot" data-id="6" onclick="toggleDot(this)"></div>
-                        <div class="pattern-dot" data-id="7" onclick="toggleDot(this)"></div>
-                        <div class="pattern-dot" data-id="8" onclick="toggleDot(this)"></div>
-                        <div class="pattern-dot" data-id="9" onclick="toggleDot(this)"></div>
+                    <!-- Eventos de touch adicionados para suportar deslize (swipe) -->
+                    <div class="pattern-lock-container" id="pattern-grid" 
+                         ontouchstart="handleTouchStart(event)" 
+                         ontouchmove="handleTouchMove(event)" 
+                         ontouchend="handleTouchEnd(event)">
+                        <div class="pattern-dot" data-id="1" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
+                        <div class="pattern-dot" data-id="2" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
+                        <div class="pattern-dot" data-id="3" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
+                        <div class="pattern-dot" data-id="4" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
+                        <div class="pattern-dot" data-id="5" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
+                        <div class="pattern-dot" data-id="6" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
+                        <div class="pattern-dot" data-id="7" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
+                        <div class="pattern-dot" data-id="8" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
+                        <div class="pattern-dot" data-id="9" onmousedown="toggleDot(this)" onmouseenter="handleMouseEnter(this)"></div>
                     </div>
 
-                    <p style="text-align: center; font-size: 0.52rem; color: var(--text-muted); margin: 0;">Toque em pelo menos 3 pontos para criar seu padrão ou clique em biometria.</p>
+                    <p style="text-align: center; font-size: 0.52rem; color: var(--text-muted); margin: 0;">Deslize entre pelo menos 3 pontos para criar seu padrão ou clique em biometria.</p>
 
                     <button onclick="startVoting(event)" style="background-color: #0f766e; border-color: #14b8a6;">Confirmar Padrão e Acessar Urna</button>
                     <button onclick="simulateBiometric()" style="background-color: #334155;">👆 Usar Biometria Facial / Digital</button>
@@ -1005,7 +1034,11 @@
         let currentMode = 'geral'; 
         let lastLoadedCategory = '';
         let lastLoadedKey = '';
+        
+        // VARIÁVEIS PARA O PADRÃO (DESLIZE)
         let selectedPattern = [];
+        let isDrawingPattern = false;
+
         let activeMediaInfo = null;
         let activeReportCargo = 'Presidente';
 
@@ -1173,7 +1206,6 @@
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         }
 
-        // CORREÇÃO FOTO 1: Filtro inteligente para "Starts With" (Começa com)
         function updateCityDatalist(context = 'register', typedValue = '') {
             let stateVal = '';
             let datalistElem = null;
@@ -1210,7 +1242,6 @@
                 sourceList = Object.values(citiesByStateCode).flat();
             }
 
-            // Filtra a lista para mostrar APENAS as que COMEÇAM com o que foi digitado
             if (typedValue) {
                 const lowerTyped = removeAccents(typedValue).toLowerCase();
                 sourceList = sourceList.filter(city => removeAccents(city).toLowerCase().startsWith(lowerTyped));
@@ -1326,27 +1357,120 @@
             activeMediaInfo = null;
             document.getElementById('screen-register').classList.add('hidden');
             document.getElementById('screen-auth').classList.remove('hidden');
+            selectedPattern = [];
+            document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
         }
 
-        function toggleDot(dotElement) {
+        // === NOVA LÓGICA DE DESLIZE DO PADRÃO DE PONTOS ===
+        
+        function activateDot(dotElement) {
             const id = dotElement.getAttribute('data-id');
-            if(dotElement.classList.contains('active')) {
-                dotElement.classList.remove('active');
-                selectedPattern = selectedPattern.filter(item => item !== id);
-            } else {
+            if(!dotElement.classList.contains('active')) {
                 dotElement.classList.add('active');
-                selectedPattern.push(id);
+                if(!selectedPattern.includes(id)) {
+                    selectedPattern.push(id);
+                }
             }
         }
 
-        function simulateBiometric() {
-            showToast('✅ Biometria confirmada!');
-            setTimeout(() => startVoting(), 600);
+        function toggleDot(dotElement) {
+            // Se clicar normal
+            activateDot(dotElement);
+            isDrawingPattern = true; // Inicia desenho para mouse ou touch se apertar
+        }
+
+        function handleMouseEnter(dotElement) {
+            if (isDrawingPattern) {
+                activateDot(dotElement);
+            }
+        }
+
+        // Lida com deslize no celular
+        function handleTouchStart(event) {
+            isDrawingPattern = true;
+            const touch = event.touches[0];
+            const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+            if(elem && elem.classList.contains('pattern-dot')) {
+                activateDot(elem);
+            }
+        }
+
+        function handleTouchMove(event) {
+            if (!isDrawingPattern) return;
+            event.preventDefault(); // Previne o scroll da tela enquanto desliza o padrão
+            const touch = event.touches[0];
+            const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+            if(elem && elem.classList.contains('pattern-dot')) {
+                activateDot(elem);
+            }
+        }
+
+        function handleTouchEnd(event) {
+            isDrawingPattern = false;
+        }
+
+        // Também para parar de desenhar com mouse solto
+        document.addEventListener('mouseup', () => {
+            isDrawingPattern = false;
+        });
+
+        // === IMPLEMENTAÇÃO DA BIOMETRIA REAL / WEBAUTHN ===
+        async function simulateBiometric() {
+            // Tenta invocar a API oficial de credenciais do dispositivo
+            if (window.PublicKeyCredential) {
+                try {
+                    // Isso invoca o Touch ID / Face ID / PIN de tela nativo do celular
+                    const publicKeyCredentialCreationOptions = {
+                        challenge: new Uint8Array(32),
+                        rp: { name: "Pesquisa Justa", id: window.location.hostname },
+                        user: {
+                            id: new Uint8Array(16),
+                            name: "eleitor@pesquisajusta",
+                            displayName: "Eleitor Autenticado"
+                        },
+                        pubKeyCredParams: [{alg: -7, type: "public-key"}],
+                        authenticatorSelection: {
+                            authenticatorAttachment: "platform", // Exige biometria do aparelho (Touch ID/Face ID/Senha de Tela)
+                            userVerification: "required"
+                        },
+                        timeout: 60000
+                    };
+                    
+                    showToast('Iniciando biometria do dispositivo...', false);
+                    
+                    // A chamada que abre a tela de senha/digital do celular
+                    await navigator.credentials.create({
+                        publicKey: publicKeyCredentialCreationOptions
+                    });
+                    
+                    showToast('✅ Autenticado com sucesso pelo dispositivo!');
+                    setTimeout(() => startVoting(), 600);
+
+                } catch (err) {
+                    console.error("Biometria cancelada ou falhou", err);
+                    // Fallback visual caso o usuário cancele ou o navegador bloqueie
+                    if(err.name === 'NotAllowedError') {
+                        showToast('❌ Autenticação cancelada pelo usuário.', true);
+                    } else {
+                        // Caso seja um ambiente de teste local sem HTTPS, simula sucesso
+                        showToast('✅ Biometria confirmada (Modo Simulação local)!');
+                        setTimeout(() => startVoting(), 600);
+                    }
+                }
+            } else {
+                // Navegador não suporta WebAuthn, faz a simulação que tínhamos antes
+                showToast('✅ Biometria confirmada (Simulação Ativada)!');
+                setTimeout(() => startVoting(), 600);
+            }
         }
 
         function startVoting(event) {
-            if(selectedPattern.length < 3 && event && event.currentTarget && event.currentTarget.innerText.includes('Padrão')) {
-                showToast('⚠️ Selecione ao menos 3 pontos no padrão.', true); return;
+            // Se clicou no botão "Confirmar Padrão", valida os pontos
+            if(event && event.currentTarget && event.currentTarget.innerText.includes('Padrão')) {
+                if(selectedPattern.length < 3) {
+                    showToast('⚠️ Desenhe/Deslize por pelo menos 3 pontos no padrão.', true); 
+                    return;
+                }
             }
             document.getElementById('screen-auth').classList.add('hidden');
             document.getElementById('screen-voting').classList.remove('hidden');
@@ -1522,7 +1646,6 @@
                 stackDiv.appendChild(bGeral);
                 macroContainer.appendChild(stackDiv);
 
-                // CORREÇÃO FOTOS 2 E 3 (NOME DA CIDADE NAS ZONAS DO PREFEITO)
                 const stateVal = document.getElementById('filter-state-select').value;
                 const cityVal = document.getElementById('filter-city-select').value.trim();
                 const ufCode = getUFCodeFromInput(stateVal) || 'AM';
@@ -1687,7 +1810,6 @@
                         <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="generateDynamicReport()"></select>
                     </div>
                     
-                    <!-- CORREÇÃO FOTO 4: Mostra Estado -> Município em cascata para Presidente quando "Por Município" -->
                     <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%; margin-bottom: 4px;">
                         <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
@@ -1702,7 +1824,6 @@
                     </div>
                     
                     <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
-                        <!-- CORREÇÃO FOTO 5: Nomenclatura explícita para evitar conflito/ambiguidade -->
                         <select id="rep-nivel" onchange="generateDynamicReport()" style="flex: 1; padding: 5px; font-size: 0.52rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                             <option value="Geral (Todo o Estado)">Geral (Todo o Estado)</option>
                             <option value="Geral (Apenas o Município)">Geral (Apenas o Município)</option>
@@ -1753,7 +1874,6 @@
                 if (nivel === 'Geral (Brasil)') {
                     // oculto
                 } else if (nivel === 'Por Município') {
-                    // Mostra as duas colunas corretas (Foto 4)
                     municipioRow.style.display = 'flex';
                 } else {
                     detalheSelect.style.display = 'block';
