@@ -18,7 +18,7 @@
             --highlight-yellow: #facc15;
         }
 
-        /* 1. ENCAIXE DINÂMICO E AJUSTE NATIVO FULL-SCREEN */
+        /* ESTRUTURA FULL-SCREEN NATIVA (100dvh) */
         html, body {
             height: 100dvh;
             width: 100vw;
@@ -31,7 +31,7 @@
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
-            overflow: hidden; /* Impede a rolagem global do navegador */
+            overflow: hidden;
         }
 
         .phone-frame {
@@ -192,7 +192,7 @@
         .special-vote-btn { background-color: #1e293b; border: 1px dashed var(--border); text-align: center; padding: 6px 4px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.52rem; color: var(--text-muted); }
         .special-vote-btn.selected { border-color: #10b981; background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
 
-        /* 3. PADRÃO DE PONTOS COM SUPORTE A SWIPE */
+        /* CONTAINER DO PADRÃO SWIPE */
         .pattern-lock-container {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 160px; margin: 8px auto;
             padding: 10px; background-color: #090d16; border: 1px solid var(--border); border-radius: 8px;
@@ -257,7 +257,7 @@
 </head>
 <body>
 
-    <!-- DATALISTS RESTAURADAS NA ÍNTEGRA -->
+    <!-- DATALISTS REGIONAIS E EXTERIOR -->
     <datalist id="states-datalist">
         <option value="Acre - AC"></option>
         <option value="Alagoas - AL"></option>
@@ -314,7 +314,7 @@
 
             <div class="screen-content">
                 
-                <!-- TELA 1: CADASTRO DEMOGRÁFICO (RESTAURADA INTEGRALMENTE) -->
+                <!-- TELA 1: CADASTRO DEMOGRÁFICO -->
                 <div id="screen-register" class="view">
                     
                     <div class="demographic-header-box">
@@ -472,7 +472,7 @@
                     <button onclick="backToRegisterFromMedia()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
                 </div>
 
-                <!-- TELA 2: AUTENTICAÇÃO COM SWIPE E WEBAUTHN NATIVO -->
+                <!-- TELA 2: AUTENTICAÇÃO -->
                 <div id="screen-auth" class="view hidden">
                     <div style="text-align: center;">
                         <span class="badge">Segurança & Acesso</span>
@@ -582,7 +582,7 @@
                     <button onclick="resetApp()" style="padding: 5px; background-color: #334155; font-size: 0.50rem; margin-top: 4px;">Sair / Reiniciar Teste</button>
                 </div>
 
-                <!-- TELA 6: MÓDULO INTERATIVO DE RELATÓRIO OFICIAL -->
+                <!-- TELA 6: MÓDULO INTERATIVO DE RELATÓRIO OFICIAL (COM DEMOGRAFIA: IDADE, ZONA, GÊNERO, COR) -->
                 <div id="screen-export" class="view hidden">
                     
                     <div style="text-align: center; margin-bottom: 4px;">
@@ -597,6 +597,7 @@
                         <button class="tab-btn" onclick="switchReportCargo('Prefeito', this)">Prefeito</button>
                     </div>
 
+                    <!-- CONTAINER DOS FILTROS GEOGRÁFICOS E DEMOGRÁFICOS DA TELA 6 -->
                     <div id="report-dynamic-filters" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px; width: 100%;"></div>
 
                     <div class="report-preview-box" id="report-content-box"></div>
@@ -628,7 +629,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT E BASE DE DADOS COMPLETA RESTAURADOS INTEGRALMENTE -->
+    <!-- SCRIPT DA APLICAÇÃO -->
     <script>
         let currentYear = 2026;
         let currentTurn = 1; 
@@ -644,6 +645,38 @@
 
         let activeMediaInfo = null;
         let activeReportCargo = 'Presidente';
+
+        // 1. MAPEAMENTO DE NOME E SIGLA DE ESTADOS PARA BUSCA 100% BLINDADA
+        const stateNameToCode = {
+            'AC': 'AC', 'ACRE': 'AC',
+            'AL': 'AL', 'ALAGOAS': 'AL',
+            'AP': 'AP', 'AMAPA': 'AP', 'AMAPÁ': 'AP',
+            'AM': 'AM', 'AMAZONAS': 'AM',
+            'BA': 'BA', 'BAHIA': 'BA',
+            'CE': 'CE', 'CEARA': 'CE', 'CEARÁ': 'CE',
+            'DF': 'DF', 'DISTRITO FEDERAL': 'DF',
+            'ES': 'ES', 'ESPIRITO SANTO': 'ES', 'ESPÍRITO SANTO': 'ES',
+            'GO': 'GO', 'GOIAS': 'GO', 'GOIÁS': 'GO',
+            'MA': 'MA', 'MARANHAO': 'MA', 'MARANHÃO': 'MA',
+            'MG': 'MG', 'MINAS GERAIS': 'MG',
+            'MS': 'MS', 'MATO GROSSO DO SUL': 'MS',
+            'MT': 'MT', 'MATO GROSSO': 'MT',
+            'PA': 'PA', 'PARA': 'PA', 'PARÁ': 'PA',
+            'PB': 'PB', 'PARAIBA': 'PB', 'PARAÍBA': 'PB',
+            'PE': 'PE', 'PERNAMBUCO': 'PE',
+            'PI': 'PI', 'PIAUI': 'PI', 'PIAUÍ': 'PI',
+            'PR': 'PR', 'PARANA': 'PR', 'PARANÁ': 'PR',
+            'RJ': 'RJ', 'RIO DE JANEIRO': 'RJ',
+            'RN': 'RN', 'RIO GRANDE DO NORTE': 'RN',
+            'RO': 'RO', 'RONDONIA': 'RO', 'RONDÔNIA': 'RO',
+            'RR': 'RR', 'RORAIMA': 'RR',
+            'RS': 'RS', 'RIO GRANDE DO SUL': 'RS',
+            'SC': 'SC', 'SANTA CATARINA': 'SC',
+            'SE': 'SE', 'SERGIPE': 'SE',
+            'SP': 'SP', 'SAO PAULO': 'SP', 'SÃO PAULO': 'SP',
+            'TO': 'TO', 'TOCANTINS': 'TO',
+            'ZZ': 'ZZ', 'EXTERIOR': 'ZZ', 'OUTROS PAÍSES': 'ZZ'
+        };
 
         const capitalsByState = {
             'AC': 'Rio Branco', 'AL': 'Maceió', 'AM': 'Manaus', 'AP': 'Macapá', 'BA': 'Salvador',
@@ -676,7 +709,7 @@
             'RJ': ['Angra dos Reis', 'Araruama', 'Barra Mansa', 'Belford Roxo', 'Cabo Frio', 'Campos dos Goytacazes', 'Duque de Caxias', 'Itaboraí', 'Itaguaí', 'Macaé', 'Magé', 'Maricá', 'Mesquita', 'Nilópolis', 'Niterói', 'Nova Friburgo', 'Nova Iguaçu', 'Petrópolis', 'Resende', 'Rio das Ostras', 'Rio de Janeiro', 'São Gonçalo', 'São João de Meriti', 'Teresópolis', 'Volta Redonda'],
             'RN': ['Açu', 'Apodi', 'Caicó', 'Ceará-Mirim', 'Currais Novos', 'João Câmara', 'Macaíba', 'Mossoró', 'Natal', 'Nova Cruz', 'Parnamirim', 'Santa Cruz', 'São Gonçalo do Amarante', 'São José de Mipibu'],
             'RO': ['Ariquemes', 'Cacoal', 'Guajará-Mirim', 'Jaru', 'Ji-Paraná', 'Porto Velho', 'Rolim de Moura', 'Vilhena'],
-            'RR': ['Alto Alegre', 'Amajari', 'Boa Vista', 'Bonfim', 'Cantá', 'Caracaraí', 'Caroebe', 'Iracema', 'Mucajaí', 'Normandia', 'Pacaraima', 'Rorainópolis', 'Uiramutã'],
+            'RR': ['Alto Alegre', 'Amajari', 'Boa Vista', 'Bonfim', 'Cantá', 'Caracaraí', 'Caroebe', 'Iracema', 'Mucajaí', 'Normandia', 'Pacaraima', 'Roraimópolis', 'Uiramutã'],
             'RS': ['Alvorada', 'Bagé', 'Bento Gonçalves', 'Cachoeirinha', 'Camaquã', 'Canoas', 'Caxias do Sul', 'Erechim', 'Gravataí', 'Guaíba', 'Ijuí', 'Lajeado', 'Novo Hamburgo', 'Passo Fundo', 'Pelotas', 'Porto Alegre', 'Rio Grande', 'Santa Cruz do Sul', 'Santa Maria', 'Sant\'Ana do Livramento', 'São Leopoldo', 'Sapucaia do Sul', 'Uruguaiana', 'Viamão'],
             'SC': ['Balneário Camboriú', 'Blumenau', 'Chapecó', 'Criciúma', 'Florianópolis', 'Itajaí', 'Joinville', 'Lages', 'São José', 'Tubarão'],
             'SE': ['Aracaju', 'Estância', 'Itabaiana', 'Lagarto', 'Nossa Senhora do Socorro', 'São Cristóvão', 'Simão Dias', 'Tobias Barreto'],
@@ -790,23 +823,34 @@
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
+        function removeAccents(str) {
+            if (!str) return '';
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        // FUNÇÃO DE BUSCA DE UF TOTALMENTE ROBUSTA
         function getUFCodeFromInput(textVal) {
             if (!textVal) return '';
-            const upper = textVal.toUpperCase().trim();
-            if (upper.includes('EXTERIOR') || upper.includes('OUTROS PAÍSES') || upper === 'ZZ') return 'ZZ';
+            const clean = removeAccents(textVal).toUpperCase().trim();
+            if (clean.includes('EXTERIOR') || clean.includes('OUTROS PAISES') || clean === 'ZZ') return 'ZZ';
             
-            const matchSigla = upper.match(/(?:-\s*|\b)([A-Z]{2})\b$/) || upper.match(/\b([A-Z]{2})\b/);
+            // Tenta casamento por sigla no final (ex: "Amazonas - AM")
+            const matchSigla = clean.match(/(?:-\s*|\b)([A-Z]{2})\b$/) || clean.match(/\b([A-Z]{2})\b/);
             if (matchSigla) {
                 for (let i = matchSigla.length - 1; i >= 1; i--) {
-                    if (citiesByStateCode[matchSigla[i]]) return matchSigla[i];
+                    const codeCandidate = matchSigla[i];
+                    if (stateNameToCode[codeCandidate]) return stateNameToCode[codeCandidate];
+                }
+            }
+
+            // Tenta casamento por nome completo do estado (ex: "Amazonas", "São Paulo")
+            for (const [key, code] of Object.entries(stateNameToCode)) {
+                const cleanKey = removeAccents(key).toUpperCase();
+                if (clean === cleanKey || clean.includes(cleanKey)) {
+                    return code;
                 }
             }
             return '';
-        }
-
-        function removeAccents(str) {
-            if (!str) return '';
-            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         }
 
         function updateCityDatalist(context = 'register', typedValue = '') {
@@ -823,7 +867,7 @@
                 datalistElem = document.getElementById('filter-cities-datalist');
                 cityInputElem = document.getElementById('filter-city-select');
             } else if (context === 'report') {
-                stateVal = document.getElementById('rep-estado').value;
+                stateVal = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
                 datalistElem = document.getElementById('rep-cities-datalist');
                 cityInputElem = document.getElementById('rep-city-report');
             }
@@ -964,7 +1008,7 @@
             document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
         }
 
-        // 3. CAPTURA DE TOUCH/SWIPE CORRIGIDA NO PADRÃO DE PONTOS
+        // GESTOS DE TOUCH/SWIPE NO PADRÃO DE PONTOS
         function activateDot(element) {
             if (!element) return;
             const id = element.getAttribute('data-id');
@@ -1019,7 +1063,7 @@
             isDrawingPattern = false;
         });
 
-        // 2. BIOMETRIA NATIVA REAL DO DISPOSITIVO (WEBAUTHN)
+        // BIOMETRIA WEBAUTHN NATIVA
         async function simulateBiometric() {
             if (window.PublicKeyCredential) {
                 try {
@@ -1289,7 +1333,7 @@
 
                 let activeMacro = "Geral Estado";
                 if (cityVal.length > 0) {
-                    if (removeAccents(cityVal) === removeAccents(capitalName)) {
+                    if (removeAccents(cityVal).toLowerCase() === removeAccents(capitalName).toLowerCase()) {
                         activeMacro = "Geral da Capital";
                     } else {
                         activeMacro = "Geral do Interior";
@@ -1393,75 +1437,115 @@
             renderReportFilters();
         }
 
+        // 2. RENDERIZAÇÃO DOS FILTROS GEOGRÁFICOS E DEMOGRÁFICOS (IDADE, ZONA, GÊNERO, COR) NA TELA 6
         function renderReportFilters() {
             const container = document.getElementById('report-dynamic-filters');
             container.innerHTML = '';
             
+            let geoInputsHTML = '';
+
             if (activeReportCargo === 'Presidente') {
-                container.innerHTML = `
-                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
-                        <select id="rep-nivel" onchange="updateReportSubfilters()" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                geoInputsHTML = `
+                    <div style="display: flex; gap: 4px; width: 100%;">
+                        <select id="rep-nivel" onchange="updateReportSubfilters()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                             <option value="Geral (Brasil)">Geral (Brasil)</option>
                             <option value="Por Região">Por Região</option>
                             <option value="Por Estado (UF)">Por Estado (UF)</option>
                             <option value="Por Município">Por Município</option>
                             <option value="Exterior (Consulados)">Exterior (Consulados)</option>
                         </select>
-                        <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="generateDynamicReport()"></select>
+                        <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="generateDynamicReport()"></select>
                     </div>
-                    
-                    <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%; margin-bottom: 4px;">
-                        <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                    <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%;">
+                        <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                        <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                     </div>
                 `;
             } else if (activeReportCargo === 'Governador' || activeReportCargo === 'Senador') {
-                container.innerHTML = `
-                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
-                        <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        
-                        <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                geoInputsHTML = `
+                    <div style="display: flex; gap: 4px; width: 100%;">
+                        <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                        <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                     </div>
-                    
-                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
-                        <select id="rep-nivel" onchange="generateDynamicReport()" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                    <div style="display: flex; gap: 4px; width: 100%;">
+                        <select id="rep-nivel" onchange="generateDynamicReport()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                             <option value="Geral (Todo o Estado)">Geral (Todo o Estado)</option>
                             <option value="Geral (Apenas o Município)">Geral (Apenas o Município)</option>
-                            <option value="Centro / Central (Município)">Centro / Central (Município)</option>
-                            <option value="Zona Norte (Município)">Zona Norte (Município)</option>
-                            <option value="Zona Sul (Município)">Zona Sul (Município)</option>
-                            <option value="Zona Leste (Município)">Zona Leste (Município)</option>
-                            <option value="Zona Oeste (Município)">Zona Oeste (Município)</option>
-                            <option value="Zona Rural / Distritos (Município)">Zona Rural / Distritos (Município)</option>
                         </select>
                     </div>
                 `;
             } else if (activeReportCargo === 'Prefeito') {
-                container.innerHTML = `
-                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
-                         <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                         
-                         <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                    </div>
-                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
-                        <select id="rep-nivel" onchange="generateDynamicReport()" style="flex: 1; padding: 4px; font-size: 0.50rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <option value="Geral Município">Geral Município</option>
-                            <option value="Centro / Central">Centro / Central</option>
-                            <option value="Zona Norte">Zona Norte</option>
-                            <option value="Zona Sul">Zona Sul</option>
-                            <option value="Zona Leste">Zona Leste</option>
-                            <option value="Zona Oeste">Zona Oeste</option>
-                            <option value="Zona Rural / Distritos">Zona Rural / Distritos</option>
-                        </select>
+                geoInputsHTML = `
+                    <div style="display: flex; gap: 4px; width: 100%;">
+                         <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." onchange="updateCityDatalist('report'); generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                         <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="updateCityDatalist('report', this.value)" oninput="handleCityTyped('report')" onchange="generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                     </div>
                 `;
             }
+
+            // ADICIONADOS OS CONTROLES DEMOGRÁFICOS PEDIDOS (IDADE, ZONA, GÊNERO, COR)
+            const demoInputsHTML = `
+                <div style="background-color: #090d16; border: 1px solid var(--border); padding: 5px; border-radius: 5px;">
+                    <div style="font-size: 0.44rem; color: #38bdf8; font-weight: bold; margin-bottom: 3px; text-transform: uppercase; text-align: center;">🎯 RECRUZAMENTO DEMOGRÁFICO DO RELATÓRIO</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;">
+                        <div>
+                            <label style="font-size: 0.42rem;">🎂 Por Idade / Faixa:</label>
+                            <select id="rep-idade" onchange="generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                <option value="Todas as Idades" selected>Todas as Idades</option>
+                                <option value="16 a 24 anos">16 a 24 anos</option>
+                                <option value="25 a 34 anos">25 a 34 anos</option>
+                                <option value="35 a 44 anos">35 a 44 anos</option>
+                                <option value="45 a 59 anos">45 a 59 anos</option>
+                                <option value="60+ anos (Idosos)">60+ anos (Idosos)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.42rem;">📍 Por Zona Urb./Rural:</label>
+                            <select id="rep-zona-demo" onchange="generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                <option value="Todas as Zonas" selected>Todas as Zonas</option>
+                                <option value="Zona Norte">Zona Norte</option>
+                                <option value="Zona Sul">Zona Sul</option>
+                                <option value="Zona Leste">Zona Leste</option>
+                                <option value="Zona Oeste">Zona Oeste</option>
+                                <option value="Zona Centro-Oeste">Zona Centro-Oeste</option>
+                                <option value="Zona Centro-Sul">Zona Centro-Sul</option>
+                                <option value="Centro / Central">Centro / Central</option>
+                                <option value="Zona Rural / Distritos">Zona Rural / Distritos</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.42rem;">👥 Por Gênero:</label>
+                            <select id="rep-genero" onchange="generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                <option value="Todos os Gêneros" selected>Todos os Gêneros</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                                <option value="LGBTQIA+">LGBTQIA+</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.42rem;">🎨 Por Cor / Raça (IBGE):</label>
+                            <select id="rep-cor" onchange="generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                <option value="Todas as Raças" selected>Todas as Raças</option>
+                                <option value="Branca">Branca</option>
+                                <option value="Preta">Preta</option>
+                                <option value="Parda">Parda</option>
+                                <option value="Amarela">Amarela</option>
+                                <option value="Indígena">Indígena</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = geoInputsHTML + demoInputsHTML;
             updateReportSubfilters();
         }
 
         function updateReportSubfilters() {
             if (activeReportCargo === 'Presidente') {
-                const nivel = document.getElementById('rep-nivel').value;
+                const nivelElem = document.getElementById('rep-nivel');
+                if(!nivelElem) return;
+                const nivel = nivelElem.value;
                 const detalheSelect = document.getElementById('rep-detalhe-select');
                 const municipioRow = document.getElementById('rep-presidente-municipio-row');
                 
@@ -1471,11 +1555,9 @@
                 detalheSelect.style.display = 'none';
                 municipioRow.style.display = 'none';
 
-                if (nivel === 'Geral (Brasil)') {
-                    // sem subfiltro
-                } else if (nivel === 'Por Município') {
+                if (nivel === 'Por Município') {
                     municipioRow.style.display = 'flex';
-                } else {
+                } else if (nivel !== 'Geral (Brasil)') {
                     detalheSelect.style.display = 'block';
                     let options = [];
                     
@@ -1499,13 +1581,21 @@
             generateDynamicReport();
         }
 
+        // GERAÇÃO DINÂMICA DO RELATÓRIO EXECUTIVO
         function generateDynamicReport() {
             let filterDesc = "";
-            let candA = 0, candB = 0;
-            let candAName = "", candBName = "";
-            
+            let candA = 48.5, candB = 41.2;
+            let candAName = "Candidato Alpha (PTX)", candBName = "Candidato Beta (PLZ)";
+
+            // LEITURA DOS NOVOS FILTROS DEMOGRÁFICOS
+            const idadeVal = document.getElementById('rep-idade') ? document.getElementById('rep-idade').value : 'Todas as Idades';
+            const zonaVal = document.getElementById('rep-zona-demo') ? document.getElementById('rep-zona-demo').value : 'Todas as Zonas';
+            const generoVal = document.getElementById('rep-genero') ? document.getElementById('rep-genero').value : 'Todos os Gêneros';
+            const corVal = document.getElementById('rep-cor') ? document.getElementById('rep-cor').value : 'Todas as Raças';
+
             if(activeReportCargo === 'Presidente') { 
-                const nivel = document.getElementById('rep-nivel').value;
+                const nivelElem = document.getElementById('rep-nivel');
+                const nivel = nivelElem ? nivelElem.value : 'Geral (Brasil)';
                 if (nivel === 'Por Município') {
                     const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
                     const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
@@ -1521,50 +1611,53 @@
                 candAName = "Candidato Alpha (PTX)"; candBName = "Candidato Beta (PLZ)";
             }
             else if(activeReportCargo === 'Governador') { 
-                const estado = document.getElementById('rep-estado').value || 'Geral Brasil';
+                const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
                 const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                const nivel = document.getElementById('rep-nivel').value;
+                const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral';
                 
-                filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li>`;
+                filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
                 if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
-                if(nivel && !nivel.includes('Geral (Todo o Estado)')) filterDesc += `<li><strong>Zona / Região:</strong> ${nivel}</li>`;
+                filterDesc += `<li><strong>Escopo:</strong> ${nivel}</li>`;
                 
                 candA = 51.0; candB = 38.0; 
                 candAName = "Candidato Delta (PSB)"; candBName = "Candidato Ômega (PSD)";
             }
             else if(activeReportCargo === 'Senador') { 
-                const estado = document.getElementById('rep-estado').value || 'Geral Brasil';
+                const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
                 const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                const nivel = document.getElementById('rep-nivel').value;
                 
-                filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li>`;
+                filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
                 if(city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
-                if(nivel && !nivel.includes('Geral (Todo o Estado)')) filterDesc += `<li><strong>Zona / Região:</strong> ${nivel}</li>`;
                 
                 candA = 34.0; candB = 28.0; 
                 candAName = "Candidato Um (MDB)"; candBName = "Candidato Dois (UNIÃO)";
             }
             else if(activeReportCargo === 'Prefeito') { 
-                const estado = document.getElementById('rep-estado').value || 'Não Selecionado';
+                const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Não Selecionado';
                 const cityElem = document.getElementById('rep-city-report');
                 const city = cityElem && cityElem.value ? cityElem.value : 'Não Selecionado';
-                const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral';
                 
-                filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li><li><strong>Município:</strong> ${city}</li><li><strong>Zona / Região:</strong> ${nivel}</li>`;
+                filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li><li><strong>Município:</strong> ${city}</li>`;
                 
                 candA = 46.0; candB = 40.0; 
                 candAName = "Candidato X (UNIÃO)"; candBName = "Candidato Y (PSD)";
             }
+
+            // Ajuste fino simulado conforme variações demográficas
+            if (generoVal === 'Feminino') { candA += 1.2; candB -= 1.0; }
+            else if (generoVal === 'Masculino') { candA -= 0.8; candB += 1.5; }
+            if (idadeVal.includes('16 a 24')) { candA += 2.0; candB -= 2.0; }
+            else if (idadeVal.includes('60+')) { candA -= 1.5; candB += 2.2; }
 
             const rest = (100 - candA - candB).toFixed(1);
 
             let mediaHeaderHTML = "";
             if (activeMediaInfo) {
                 mediaHeaderHTML = `
-                    <div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 6px; padding: 6px; margin-bottom: 8px; text-align: center;">
-                        <span style="font-size: 0.46rem; color: #059669; font-weight: bold; text-transform: uppercase; display: block;">🏢 DOCUMENTO LICENCIADO PARA IMPRENSA</span>
-                        <strong style="font-size: 0.62rem; color: #0f172a;">${activeMediaInfo.name}</strong>
-                        <span style="font-size: 0.48rem; color: #475569; display: block;">Segmento: ${activeMediaInfo.type} | Cobertura: ${activeMediaInfo.tier}</span>
+                    <div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 6px; padding: 5px; margin-bottom: 6px; text-align: center;">
+                        <span style="font-size: 0.44rem; color: #059669; font-weight: bold; text-transform: uppercase; display: block;">🏢 DOCUMENTO LICENCIADO PARA IMPRENSA</span>
+                        <strong style="font-size: 0.60rem; color: #0f172a;">${activeMediaInfo.name}</strong>
+                        <span style="font-size: 0.46rem; color: #475569; display: block;">Segmento: ${activeMediaInfo.type} | Cobertura: ${activeMediaInfo.tier}</span>
                     </div>
                 `;
             }
@@ -1572,29 +1665,37 @@
             let reportHTML = `
                 ${mediaHeaderHTML}
                 <h3>PESQUISA JUSTA — PLACAR ELEITORAL OFICIAL</h3>
-                <p style="text-align:center; font-size: 0.50rem; color: #64748b; margin-bottom: 6px;">Protocolo PesqEle: BR-02849/2026 | Turno: ${currentTurn}º</p>
+                <p style="text-align:center; font-size: 0.48rem; color: #64748b; margin-bottom: 4px;">Protocolo PesqEle: BR-02849/2026 | Turno: ${currentTurn}º</p>
                 <hr>
                 <div class="report-section-title">📊 CARGO ANALISADO: ${activeReportCargo.toUpperCase()}</div>
                 
-                <p style="font-size: 0.54rem; color: #334155; margin-bottom: 2px;"><strong>Filtros Aplicados:</strong></p>
-                <ul style="margin: 0 0 6px 15px; padding:0; font-size: 0.52rem; color: #475569;">
+                <p style="font-size: 0.52rem; color: #334155; margin-bottom: 2px;"><strong>Filtros Geográficos Aplicados:</strong></p>
+                <ul style="margin: 0 0 4px 12px; padding:0; font-size: 0.50rem; color: #475569;">
                     ${filterDesc}
+                </ul>
+
+                <p style="font-size: 0.52rem; color: #334155; margin-bottom: 2px;"><strong>Recortes Demográficos Selecionados:</strong></p>
+                <ul style="margin: 0 0 6px 12px; padding:0; font-size: 0.50rem; color: #475569;">
+                    <li><strong>Faixa Etária:</strong> ${idadeVal}</li>
+                    <li><strong>Zona Urbana/Rural:</strong> ${zonaVal}</li>
+                    <li><strong>Gênero:</strong> ${generoVal}</li>
+                    <li><strong>Cor / Raça (IBGE):</strong> ${corVal}</li>
                 </ul>
                 
                 <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 6px; border-radius: 6px;">
                     <p style="margin-top: 2px;">📺 <strong>Placar Telejornal / Intenção de Voto:</strong></p>
-                    <p>• 🟢 ${candAName}: <strong>${candA}%</strong></p>
-                    <p>• 🔵 ${candBName}: <strong>${candB}%</strong></p>
+                    <p>• 🟢 ${candAName}: <strong>${candA.toFixed(1)}%</strong></p>
+                    <p>• 🔵 ${candBName}: <strong>${candB.toFixed(1)}%</strong></p>
                     <p style="margin-bottom: 2px;">• ⚪ Brancos / Nulos / Indecisos: <strong>${rest}%</strong></p>
                 </div>
 
-                <div style="margin-top: 6px; background-color: #f1f5f9; padding: 5px; border-radius: 4px; font-size: 0.48rem; color: #475569;">
+                <div style="margin-top: 6px; background-color: #f1f5f9; padding: 5px; border-radius: 4px; font-size: 0.46rem; color: #475569;">
                     <strong>Ficha Técnica & Cobertura TSE:</strong><br>
-                    • Período de Campo: 5 dias (Amostra Ponderada)<br>
+                    • Período de Campo: 5 dias (Amostra Ponderada IBGE)<br>
                     • Margem de Erro: ± 1.5% (Confiança 95%)
                 </div>
                 
-                <p style="font-size: 0.46rem; color: #94a3b8; text-align: center; margin-top: 6px;">Amostra segmentada extraída oficialmente do sistema cego.</p>
+                <p style="font-size: 0.44rem; color: #94a3b8; text-align: center; margin-top: 6px;">Amostra segmentada extraída oficialmente do sistema cego.</p>
             `;
 
             document.getElementById('report-content-box').innerHTML = reportHTML;
