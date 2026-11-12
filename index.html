@@ -469,7 +469,7 @@
 
     <div id="global-alert" class="alert-box"></div>
 
-    <!-- ================= TELA 1: INÍCIO (LAYOUT WHATSAPP & BOTÕES RÁPIDOS) ================= -->
+    <!-- ================= TELA 1: INÍCIO (LAYOUT ORIGINAL APROVADO) ================= -->
     <div id="screen-home" class="screen active">
         <div class="card" style="text-align: center; gap: 14px;">
             <span class="section-pill">Canal Oficial Seguro</span>
@@ -479,10 +479,6 @@
             <button class="btn btn-green" onclick="iniciarFluxoWhatsApp()" style="background: #25d366; color: #fff; font-size: 1rem; padding: 14px;">
                 💬 Participar via WhatsApp / Token Seguro
             </button>
-
-            <div style="font-size: 0.75rem; color: var(--text-muted);">
-                ou utilize os acessos institucionais abaixo:
-            </div>
         </div>
 
         <div class="footer-access-grid">
@@ -680,7 +676,7 @@
         </div>
     </div>
 
-    <!-- ================= TELA 6: RELATÓRIOS & IMPRENSA ================= -->
+    <!-- ================= TELA 6: RELATÓRIOS & IMPRENSA (BUSCA FIXA) ================= -->
     <div id="screen-relatorios" class="screen">
         <div class="card">
             <span class="section-pill">Gerador Analítico</span>
@@ -793,14 +789,10 @@
 </div>
 
 <script>
-    // =========================================================================
-    // 1. CONEXÃO OFICIAL COM SUPABASE (PROJETO PESQUISA JUSTA)
-    // =========================================================================
     const SUPABASE_URL = "https://gynttrfcbzuzifgwjyvv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_1Bs8IshgOrbyuXOrtIDliA_RKbGmFR8";
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Estado Global da Aplicação
     let configAtual = { campo_aberto: true, turno_ativo: 1 };
     let eleitorAtual = {};
     let etapasUrna = ['president', 'governor', 'senator', 'mayor'];
