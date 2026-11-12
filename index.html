@@ -549,12 +549,12 @@
                         
                         <div id="geo-search-block">
                             <div style="display: flex; gap: 6px; margin-bottom: 2px;" id="geographic-labels-row">
-                                <label style="flex: 1; font-size: 0.48rem; color: var(--text-muted); font-weight: bold;">Estado / UF:</label>
-                                <label id="filter-second-label" style="flex: 1; font-size: 0.48rem; color: var(--text-muted); font-weight: bold;">Município / Capital:</label>
+                                <label style="flex: 0.95; font-size: 0.50rem; color: var(--text-muted); font-weight: 600;">Estado / UF</label>
+                                <label id="filter-second-label" style="flex: 1.05; font-size: 0.50rem; color: var(--text-muted); font-weight: 600;">Município / Capital</label>
                             </div>
-                            <div style="display: flex; gap: 6px; margin-bottom: 4px;" id="geographic-selectors-wrapper">
-                                <input type="text" id="filter-state-select" list="states-datalist" placeholder="Digite para buscar UF..." value="Amazonas - AM" oninput="GeoDatabase.handleStateTyped('results', true)" onchange="ScreenResults.onStateFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; font-size: 0.50rem; padding: 4px;">
-                                <input type="text" id="filter-city-select" list="filter-cities-datalist" placeholder="Pesquise a cidade..." value="Manaus" onfocus="GeoDatabase.updateCityDatalist('results', this.value)" oninput="GeoDatabase.handleCityTyped('results', true)" onchange="ScreenResults.onCityFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; font-size: 0.50rem; padding: 4px;">
+                            <div style="display: flex; gap: 6px; margin-bottom: 5px;" id="geographic-selectors-wrapper">
+                                <input type="text" id="filter-state-select" list="states-datalist" placeholder="Digite para buscar UF..." value="" oninput="GeoDatabase.handleStateTyped('results', false)" onchange="ScreenResults.onStateFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 0.95; font-size: 0.62rem; padding: 5px 4px;">
+                                <input type="text" id="filter-city-select" list="filter-cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="GeoDatabase.updateCityDatalist('results', this.value)" oninput="GeoDatabase.handleCityTyped('results', false)" onchange="ScreenResults.onCityFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1.05; font-size: 0.62rem; padding: 5px 4px;">
                             </div>
                         </div>
 
@@ -664,6 +664,8 @@
                 const bInput = document.getElementById('birthdate-input'); if (bInput) bInput.value = '';
                 const sInput = document.getElementById('state-input'); if (sInput) sInput.value = '';
                 const cInput = document.getElementById('city-input'); if (cInput) cInput.value = '';
+                const fsInput = document.getElementById('filter-state-select'); if (fsInput) fsInput.value = '';
+                const fcInput = document.getElementById('filter-city-select'); if (fcInput) fcInput.value = '';
                 
                 const zSelect = document.getElementById('zone-input'); if (zSelect) zSelect.selectedIndex = 0;
                 const eSelect = document.getElementById('education-input'); if (eSelect) eSelect.selectedIndex = 0;
@@ -791,6 +793,24 @@
                 return '';
             },
 
+            isExactStateOption(val) {
+                if (!val) return false;
+                const statesList = document.getElementById('states-datalist');
+                if (!statesList) return false;
+                return Array.from(statesList.options).some(opt => opt.value.toLowerCase() === val.trim().toLowerCase());
+            },
+
+            isExactCityOption(val, stateVal) {
+                if (!val) return false;
+                const cleanVal = this.removeAccents(val).toLowerCase().trim();
+                const code = this.getUFCodeFromInput(stateVal);
+                let sourceList = [];
+                if (code === 'ZZ') sourceList = this.internationalCountryList;
+                else if (code && this.citiesByStateCode[code]) sourceList = this.citiesByStateCode[code];
+                else sourceList = Object.values(this.citiesByStateCode).flat();
+                return sourceList.some(c => this.removeAccents(c).toLowerCase() === cleanVal);
+            },
+
             updateCityDatalist(context = 'register', typedValue = '') {
                 let stateVal = '';
                 let datalistElem = null;
@@ -846,8 +866,11 @@
 
             handleStateTyped(context = 'register', autoRender = false) {
                 this.updateCityDatalist(context, '');
-                if (context === 'results' && autoRender) {
-                    ScreenResults.renderFilterSections();
+                if (context === 'results') {
+                    const stElem = document.getElementById('filter-state-select');
+                    if (autoRender || (stElem && this.isExactStateOption(stElem.value))) {
+                        ScreenResults.onStateFilterChange();
+                    }
                 } else if (context === 'report' && autoRender) {
                     ScreenReport.generateDynamicReport();
                 }
@@ -855,16 +878,25 @@
 
             handleCityTyped(context = 'register', autoRender = false) {
                 let cityInputElem = null;
-                if (context === 'register') cityInputElem = document.getElementById('city-input');
-                else if (context === 'results') cityInputElem = document.getElementById('filter-city-select');
-                else if (context === 'report') cityInputElem = document.getElementById('rep-city-report');
+                let stateVal = '';
+                if (context === 'register') {
+                    cityInputElem = document.getElementById('city-input');
+                } else if (context === 'results') {
+                    cityInputElem = document.getElementById('filter-city-select');
+                    const stElem = document.getElementById('filter-state-select');
+                    if (stElem) stateVal = stElem.value;
+                } else if (context === 'report') {
+                    cityInputElem = document.getElementById('rep-city-report');
+                }
                 
                 if (cityInputElem) {
-                     this.updateCityDatalist(context, cityInputElem.value);
+                    this.updateCityDatalist(context, cityInputElem.value);
                 }
 
-                if (context === 'results' && autoRender) {
-                    ScreenResults.renderFilterSections();
+                if (context === 'results') {
+                    if (autoRender || (cityInputElem && this.isExactCityOption(cityInputElem.value, stateVal))) {
+                        ScreenResults.onCityFilterChange();
+                    }
                 } else if (context === 'report' && autoRender) {
                     ScreenReport.generateDynamicReport();
                 }
@@ -1277,35 +1309,54 @@
                 }
             },
 
-            onStateFilterChange() { this.renderFilterSections(); },
-            onCityFilterChange() { this.renderFilterSections(); },
+            onStateFilterChange() {
+                const ctElem = document.getElementById('filter-city-select');
+                if (ctElem) ctElem.value = '';
+                GeoDatabase.updateCityDatalist('results', '');
+                this.renderFilterSections();
+            },
+
+            onCityFilterChange() {
+                this.renderFilterSections();
+            },
 
             switchResultTab(category, btnElement) {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+                document.querySelectorAll('#result-tabs-container .tab-btn').forEach(b => b.classList.remove('active')); 
                 if (btnElement) btnElement.classList.add('active');
                 this.lastLoadedCategory = category;
                 this.renderFilterSections();
             },
 
             renderFilterSections() {
-                const filterBox = document.getElementById('main-filter-box');
                 const macroContainer = document.getElementById('macro-filters-container'); 
                 const microContainer = document.getElementById('micro-filters-container');
                 const dividerElem = document.getElementById('section-divider-elem'); 
                 const macroLabel = document.getElementById('macro-label');
-                const geoBlock = document.getElementById('geo-search-block');
+                const stElem = document.getElementById('filter-state-select');
+                const ctElem = document.getElementById('filter-city-select');
 
-                if (!filterBox || !macroContainer || !microContainer || !geoBlock || !macroLabel || !dividerElem) return;
+                if (!macroContainer || !microContainer || !macroLabel || !dividerElem) return;
 
                 macroContainer.innerHTML = ''; microContainer.innerHTML = '';
 
-                if (this.lastLoadedCategory === 'president' || this.lastLoadedCategory === 'president_2t') {
-                    filterBox.appendChild(geoBlock);
+                const stateVal = stElem ? stElem.value.trim() : '';
+                const cityVal = ctElem ? ctElem.value.trim() : '';
+                const ufCode = GeoDatabase.getUFCodeFromInput(stateVal);
 
+                if (this.lastLoadedCategory === 'president' || this.lastLoadedCategory === 'president_2t') {
                     macroLabel.style.display = 'block'; 
                     macroLabel.innerText = "Recorte Geográfico (Federal & Exterior):";
                     dividerElem.style.display = 'none';
                     microContainer.style.display = 'none';
+
+                    let activePresKey = this.presidentFilters[0];
+                    if (cityVal.length > 0) {
+                        activePresKey = cityVal;
+                    } else if (ufCode === 'ZZ') {
+                        activePresKey = "Exterior (Votação em Consulados)";
+                    } else if (stateVal.length > 0 && ufCode) {
+                        activePresKey = stateVal;
+                    }
 
                     const gridDiv = document.createElement('div');
                     gridDiv.style.display = 'grid';
@@ -1313,14 +1364,17 @@
                     gridDiv.style.gap = '4px';
                     gridDiv.style.marginTop = '4px';
 
-                    this.presidentFilters.forEach((f, i) => {
+                    this.presidentFilters.forEach((f) => {
                         const b = document.createElement('button'); 
-                        b.className = `stacked-filter-btn ${i===0?'active':''}`; 
+                        b.className = `stacked-filter-btn ${f === activePresKey ? 'active' : ''}`; 
                         b.innerText = f;
                         if (f === 'Região Sul') b.style.gridColumn = 'span 2';
                         b.onclick = (e) => { 
                             document.querySelectorAll('#macro-filters-container .stacked-filter-btn').forEach(x=>x.classList.remove('active')); 
                             e.currentTarget.classList.add('active'); 
+                            if (stElem) stElem.value = '';
+                            if (ctElem) ctElem.value = '';
+                            GeoDatabase.updateCityDatalist('results', '');
                             this.lastLoadedKey = f; 
                             this.renderSimulatedDataset(this.lastLoadedCategory, f); 
                         };
@@ -1328,12 +1382,10 @@
                     });
                     macroContainer.appendChild(gridDiv);
 
-                    this.lastLoadedKey = this.presidentFilters[0]; 
-                    this.renderSimulatedDataset(this.lastLoadedCategory, this.presidentFilters[0]);
+                    this.lastLoadedKey = activePresKey; 
+                    this.renderSimulatedDataset(this.lastLoadedCategory, activePresKey);
 
                 } else if (this.lastLoadedCategory === 'mayor' || this.lastLoadedCategory === 'mayor_2t') {
-                    filterBox.insertBefore(geoBlock, macroLabel);
-
                     macroLabel.style.display = 'block'; 
                     macroLabel.innerText = "Recorte Geográfico (Municipal):";
                     
@@ -1352,16 +1404,12 @@
                     stackDiv.appendChild(bGeral);
                     macroContainer.appendChild(stackDiv);
 
-                    const stElem = document.getElementById('filter-state-select');
-                    const ctElem = document.getElementById('filter-city-select');
-                    const stateVal = stElem ? stElem.value : '';
-                    const cityVal = ctElem ? ctElem.value.trim() : '';
-                    const ufCode = GeoDatabase.getUFCodeFromInput(stateVal) || 'AM';
-                    const capitalName = GeoDatabase.capitalsByState[ufCode] || 'Manaus';
+                    const effectiveUF = ufCode || 'AM';
+                    const capitalName = GeoDatabase.capitalsByState[effectiveUF] || 'Manaus';
                     const displayCity = cityVal.length > 0 ? cityVal : capitalName;
 
                     dividerElem.style.display = 'block';
-                    dividerElem.innerText = `📍 ZONAS DE ${displayCity.toUpperCase()} (${ufCode})`;
+                    dividerElem.innerText = `📍 ZONAS DE ${displayCity.toUpperCase()} (${effectiveUF})`;
                     microContainer.style.display = 'grid';
 
                     GeoDatabase.cityZonesAlphabetical.forEach((z) => {
@@ -1382,19 +1430,13 @@
                     this.renderSimulatedDataset(this.lastLoadedCategory, 'Geral do Município');
 
                 } else {
-                    filterBox.insertBefore(geoBlock, macroLabel);
-
                     macroLabel.style.display = 'block'; 
                     macroLabel.innerText = "Recorte Geográfico (Estadual):";
                     dividerElem.style.display = 'block';
                     microContainer.style.display = 'grid';
 
-                    const stElem = document.getElementById('filter-state-select');
-                    const ctElem = document.getElementById('filter-city-select');
-                    const stateVal = stElem ? stElem.value : '';
-                    const cityVal = ctElem ? ctElem.value.trim() : '';
-                    const ufCode = GeoDatabase.getUFCodeFromInput(stateVal) || 'AM';
-                    const capitalName = GeoDatabase.capitalsByState[ufCode] || 'Manaus';
+                    const effectiveUF = ufCode || 'AM';
+                    const capitalName = GeoDatabase.capitalsByState[effectiveUF] || 'Manaus';
 
                     let activeMacro = "Geral Estado";
                     if (cityVal.length > 0) {
@@ -1406,9 +1448,9 @@
                     }
 
                     if (cityVal.length > 0) {
-                        dividerElem.innerText = `📍 ZONAS DE ${cityVal.toUpperCase()} (${ufCode})`;
+                        dividerElem.innerText = `📍 ZONAS DE ${cityVal.toUpperCase()} (${effectiveUF})`;
                     } else {
-                        dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
+                        dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${effectiveUF})`;
                     }
 
                     const stackDiv = document.createElement('div');
@@ -1427,9 +1469,10 @@
 
                             if (f === 'Geral da Capital' && ctElem) {
                                 ctElem.value = capitalName;
-                                dividerElem.innerText = `📍 ZONAS DE ${capitalName.toUpperCase()} (${ufCode})`;
+                                dividerElem.innerText = `📍 ZONAS DE ${capitalName.toUpperCase()} (${effectiveUF})`;
                             } else if (f === 'Geral Estado') {
-                                dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${ufCode})`;
+                                if (ctElem) ctElem.value = '';
+                                dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${effectiveUF})`;
                             }
 
                             this.lastLoadedKey = f; 
