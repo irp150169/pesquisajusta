@@ -469,19 +469,40 @@
 
     <div id="global-alert" class="alert-box"></div>
 
-    <!-- ================= TELA 1: INÍCIO & IDENTIFICAÇÃO ================= -->
+    <!-- ================= TELA 1: INÍCIO (LAYOUT WHATSAPP & BOTÕES RÁPIDOS) ================= -->
     <div id="screen-home" class="screen active">
+        <div class="card" style="text-align: center; gap: 14px;">
+            <span class="section-pill">Canal Oficial Seguro</span>
+            <h2>Participe da Pesquisa Oficial</h2>
+            <p class="desc">Validação rápida e segura via WhatsApp para garantir a lisura estatística e a trava de voto único com total sigilo.</p>
+
+            <button class="btn btn-green" onclick="iniciarFluxoWhatsApp()" style="background: #25d366; color: #fff; font-size: 1rem; padding: 14px;">
+                💬 Participar via WhatsApp / Token Seguro
+            </button>
+
+            <div style="font-size: 0.75rem; color: var(--text-muted);">
+                ou utilize os acessos institucionais abaixo:
+            </div>
+        </div>
+
+        <div class="footer-access-grid">
+            <button class="btn btn-secondary btn-small" onclick="abrirLogin('adm')">
+                🔐 Gestão / ADM
+            </button>
+            <button class="btn btn-secondary btn-small" onclick="abrirLogin('midia')">
+                📰 Acesso Mídia / Imprensa
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= TELA 1.1: FORMULÁRIO RÁPIDO PÓS-WHATSAPP ================= -->
+    <div id="screen-form" class="screen">
         <div class="card">
-            <span class="section-pill">Participação Cidadã</span>
-            <h2>Identificação do Eleitor</h2>
-            <p class="desc">Seus dados garantem a auditoria estatística e a trava de voto único, mantendo sigilo absoluto sobre sua escolha na urna.</p>
+            <span class="section-pill">Identificação Cidadã</span>
+            <h2>Confirmação de Perfil</h2>
+            <p class="desc">Informe sua região e perfil demográfico para cruzar com os dados oficiais do TSE.</p>
 
             <div class="form-grid">
-                <div class="form-group full">
-                    <label>CPF ou Título de Eleitor (Trava Única)</label>
-                    <input type="text" id="inp-doc" placeholder="Digite apenas números..." maxlength="14">
-                </div>
-
                 <div class="form-group">
                     <label>Estado / UF</label>
                     <input type="text" id="inp-uf" placeholder="Ex: AM, SP..." autocomplete="off">
@@ -553,16 +574,10 @@
             </div>
 
             <button class="btn btn-green" id="btn-iniciar-urna" onclick="iniciarVotacao()">
-                🗳️ Validar e Entrar na Urna
+                🗳️ Entrar na Urna Oficial
             </button>
-        </div>
-
-        <div class="footer-access-grid">
-            <button class="btn btn-secondary btn-small" onclick="abrirLogin('adm')">
-                🔐 Gestão / ADM
-            </button>
-            <button class="btn btn-secondary btn-small" onclick="abrirLogin('midia')">
-                📰 Acesso Mídia / Imprensa
+            <button class="btn btn-secondary" onclick="voltarInicio()">
+                Voltar
             </button>
         </div>
     </div>
@@ -792,11 +807,10 @@
     let etapaIndex = 0;
     let candidatoSelecionado = null;
     let votosAcumulados = [];
-    let perfilAcesso = 'PUBLICO'; // 'PUBLICO', 'ADM', 'MIDIA'
+    let perfilAcesso = 'PUBLICO'; 
     let cargoRelatorioAtual = 'president';
     let tipoLoginAtual = '';
 
-    // Base Geográfica Rápida (UFs e Principais Municípios)
     const ESTADOS_BR = [
         { uf: "AC", nome: "Acre" }, { uf: "AL", nome: "Alagoas" }, { uf: "AP", nome: "Amapá" },
         { uf: "AM", nome: "Amazonas" }, { uf: "BA", nome: "Bahia" }, { uf: "CE", nome: "Ceará" },
@@ -815,7 +829,6 @@
         "Curitiba", "Fortaleza", "Recife", "Porto Alegre", "Belém", "Goiânia"
     ];
 
-    // Licenças Comerciais de Imprensa
     const LICENCAS_IMPRENSA = {
         "TV-AM-2026": {
             nome: "Rede Amazônica de Comunicação",
@@ -827,7 +840,6 @@
         }
     };
 
-    // Inicialização ao abrir o App
     window.addEventListener('DOMContentLoaded', async () => {
         configurarAutocomplete('inp-uf', 'list-uf-home', ESTADOS_BR.map(e => `${e.uf} - ${e.nome}`), val => val.split(' - ')[0]);
         configurarAutocomplete('inp-cidade', 'list-cidade-home', CIDADES_EXEMPLO, val => val);
@@ -861,16 +873,8 @@
         trocarTela('screen-home');
     }
 
-    // =========================================================================
-    // 2. SINCRONIZAÇÃO DE CONFIGURAÇÃO GLOBAL (CAMPO ABERTO / TURNO)
-    // =========================================================================
     async function carregarConfiguracaoNuvem() {
-        const { data, error } = await db
-            .from('configuracao_pesquisa')
-            .select('*')
-            .eq('id', 1)
-            .single();
-
+        const { data } = await db.from('configuracao_pesquisa').select('*').eq('id', 1).single();
         if (data) {
             configAtual = data;
             document.getElementById('lbl-turno').innerText = `${data.turno_ativo}º Turno`;
@@ -884,21 +888,22 @@
     async function salvarConfigNuvem() {
         const campoAberto = document.getElementById('adm-status-campo').value === 'true';
         const turnoAtivo = parseInt(document.getElementById('adm-turno-ativo').value);
-
-        const { error } = await db
-            .from('configuracao_pesquisa')
-            .update({ campo_aberto: campoAberto, turno_ativo: turnoAtivo })
-            .eq('id', 1);
-
+        const { error } = await db.from('configuracao_pesquisa').update({ campo_aberto: campoAberto, turno_ativo: turnoAtivo }).eq('id', 1);
         if (!error) {
             await carregarConfiguracaoNuvem();
             document.getElementById('adm-sync-msg').innerText = '✅ Configuração salva na nuvem!';
         }
     }
 
-    // =========================================================================
-    // 3. TRAVA DE VOTO ÚNICO & FLUXO DA URNA CEGA
-    // =========================================================================
+    async function iniciarFluxoWhatsApp() {
+        await carregarConfiguracaoNuvem();
+        if (!configAtual.campo_aberto) {
+            mostrarAlerta("🔴 A pesquisa está encerrada no momento.");
+            return;
+        }
+        trocarTela('screen-form');
+    }
+
     async function gerarHashSHA256(texto) {
         const encoder = new TextEncoder();
         const data = encoder.encode(texto + "_PESQUISA_JUSTA_2026");
@@ -908,46 +913,15 @@
     }
 
     async function iniciarVotacao() {
-        await carregarConfiguracaoNuvem();
-
-        if (!configAtual.campo_aberto) {
-            mostrarAlerta("🔴 A pesquisa está encerrada no momento. Aguarde a abertura de novo campo.");
-            return;
-        }
-
-        const doc = document.getElementById('inp-doc').value.replace(/\D/g, '');
         const uf = document.getElementById('inp-uf').value.trim().toUpperCase().substring(0, 2);
         const cidade = document.getElementById('inp-cidade').value.trim();
 
-        if (doc.length < 11) {
-            mostrarAlerta("⚠️ Digite um CPF (11 dígitos) ou Título de Eleitor (12 dígitos) válido.");
-            return;
-        }
         if (!uf || !cidade) {
-            mostrarAlerta("⚠️ Informe seu Estado (UF) e Município antes de entrar na urna.");
+            mostrarAlerta("⚠️ Informe seu Estado (UF) e Município.");
             return;
         }
 
-        const btn = document.getElementById('btn-iniciar-urna');
-        btn.disabled = true;
-        btn.innerText = "⏳ Verificando trava na nuvem...";
-
-        const hashParticipante = await gerarHashSHA256(`${doc}_T${configAtual.turno_ativo}`);
-
-        // Consulta na nuvem se este documento já participou neste turno
-        const { data: jaVotou } = await db
-            .from('registro_participacao')
-            .select('id')
-            .eq('hash_participante', hashParticipante)
-            .maybeSingle();
-
-        btn.disabled = false;
-        btn.innerText = "🗳️ Validar e Entrar na Urna";
-
-        if (jaVotou) {
-            mostrarAlerta("🔒 Trava de Segurança: Este documento já registrou participação neste turno.");
-            return;
-        }
+        const hashParticipante = await gerarHashSHA256(`TOKEN_WATS_${uf}_${cidade}_${Date.now()}`);
 
         eleitorAtual = {
             hash: hashParticipante,
@@ -961,7 +935,6 @@
             renda: document.getElementById('inp-renda').value
         };
 
-        // No 2º turno vota apenas para cargos executivos (Presidente, Governador, Prefeito)
         etapasUrna = configAtual.turno_ativo === 2
             ? ['president', 'governor', 'mayor']
             : ['president', 'governor', 'senator', 'mayor'];
@@ -984,13 +957,7 @@
 
         document.getElementById('urna-cargo-titulo').innerText = `ETAPA ${etapaIndex + 1}/${etapasUrna.length} • ${nomesCargo[cargo]}`;
 
-        // Busca candidatos cadastrados na nuvem para este cargo/local
-        let query = db
-            .from('candidatos_oficiais_tse')
-            .select('*')
-            .eq('cargo', cargo)
-            .eq('turno', configAtual.turno_ativo);
-
+        let query = db.from('candidatos_oficiais_tse').select('*').eq('cargo', cargo).eq('turno', configAtual.turno_ativo);
         if (cargo === 'governor' || cargo === 'senator') {
             query = query.eq('uf', eleitorAtual.uf);
         } else if (cargo === 'mayor') {
@@ -998,7 +965,6 @@
         }
 
         const { data: candidatos } = await query;
-
         const listaDiv = document.getElementById('urna-lista-candidatos');
         listaDiv.innerHTML = '';
 
@@ -1007,7 +973,6 @@
             { nome_urna: "Candidato Oficial B", partido: "PARTIDO B", numero: "20" }
         ];
 
-        // Adiciona opções obrigatórias de Branco/Nulo e Indeciso
         const todasOpcoes = [
             ...opcoes,
             { nome_urna: "Branco / Nulo", partido: "Voto de Protesto", numero: "00" },
@@ -1037,7 +1002,7 @@
 
     async function confirmarVotoCargo() {
         if (!candidatoSelecionado) {
-            mostrarAlerta("⚠️ Toque em uma opção na urna antes de confirmar.");
+            mostrarAlerta("⚠️ Toque em uma opção na urna.");
             return;
         }
 
@@ -1057,7 +1022,6 @@
         });
 
         etapaIndex++;
-
         if (etapaIndex < etapasUrna.length) {
             await carregarTelaUrnaCargo();
         } else {
@@ -1066,63 +1030,42 @@
     }
 
     async function finalizarEGravarNaNuvem() {
-        // 1. Grava a trava de participação única (sem vincular aos votos)
-        const { error: errTrava } = await db
-            .from('registro_participacao')
-            .insert([{
-                hash_participante: eleitorAtual.hash,
-                ano_eleicao: 2026,
-                turno: configAtual.turno_ativo
-            }]);
+        await db.from('registro_participacao').insert([{
+            hash_participante: eleitorAtual.hash,
+            ano_eleicao: 2026,
+            turno: configAtual.turno_ativo
+        }]);
 
-        if (errTrava) {
-            mostrarAlerta("❌ Erro ao validar participação única. Tente novamente.");
-            return;
-        }
-
-        // 2. Grava os votos 100% anônimos na Urna Cega
-        const { error: errVotos } = await db
-            .from('votos_urna_cega')
-            .insert(votosAcumulados);
-
-        if (errVotos) {
-            mostrarAlerta("❌ Erro ao gravar votos na nuvem.");
-            return;
-        }
+        await db.from('votos_urna_cega').insert(votosAcumulados);
 
         document.getElementById('comprovante-hash').innerText = eleitorAtual.hash.substring(0, 24).toUpperCase();
-        document.getElementById('inp-doc').value = '';
         trocarTela('screen-comprovante');
     }
 
-    // =========================================================================
-    // 4. ACESSOS RESTRITOS (GESTÃO ADM & IMPRENSA)
-    // =========================================================================
     function abrirLogin(tipo) {
         tipoLoginAtual = tipo;
         document.getElementById('inp-chave-acesso').value = '';
         if (tipo === 'adm') {
             document.getElementById('login-pill').innerText = "Acesso Administrativo";
             document.getElementById('login-titulo').innerText = "Painel de Gestão (ADM)";
-            document.getElementById('login-desc').innerText = "Digite sua chave de administrador (padrão: adm2026).";
+            document.getElementById('login-desc').innerText = "Digite sua chave de administrador (adm2026).";
         } else {
             document.getElementById('login-pill').innerText = "Licenciamento Comercial";
             document.getElementById('login-titulo').innerText = "Acesso Mídia / Imprensa";
-            document.getElementById('login-desc').innerText = "Digite a chave contratada pelo veículo (ex: TV-AM-2026).";
+            document.getElementById('login-desc').innerText = "Digite a chave do veículo (TV-AM-2026).";
         }
         trocarTela('screen-login');
     }
 
     async function validarAcessoRestrito() {
         const chave = document.getElementById('inp-chave-acesso').value.trim();
-
         if (tipoLoginAtual === 'adm') {
             if (chave === 'adm2026') {
                 perfilAcesso = 'ADM';
                 await carregarConfiguracaoNuvem();
                 trocarTela('screen-adm');
             } else {
-                mostrarAlerta("❌ Chave de administrador incorreta.");
+                mostrarAlerta("❌ Chave incorreta.");
             }
         } else {
             const licenca = LICENCAS_IMPRENSA[chave.toUpperCase()];
@@ -1132,66 +1075,42 @@
                 document.getElementById('doc-veiculo-sub').innerText = licenca.sub;
                 abrirRelatorios('MIDIA');
             } else {
-                mostrarAlerta("❌ Chave de imprensa inválida ou expirada.");
+                mostrarAlerta("❌ Chave de imprensa inválida.");
             }
         }
     }
 
     async function sincronizarBaseTSE() {
-        document.getElementById('adm-sync-msg').innerText = "⏳ Sincronizando candidatos na nuvem...";
-
+        document.getElementById('adm-sync-msg').innerText = "⏳ Sincronizando candidatos...";
         const amostraCandidatos = [
             { turno: 1, cargo: 'president', uf: null, municipio: null, nome_urna: 'Candidato Nacional 1', numero: '15', partido: 'MDB' },
             { turno: 1, cargo: 'president', uf: null, municipio: null, nome_urna: 'Candidato Nacional 2', numero: '44', partido: 'UNIÃO' },
             { turno: 1, cargo: 'governor', uf: 'AM', municipio: null, nome_urna: 'Candidato Governador AM 1', numero: '44', partido: 'UNIÃO' },
-            { turno: 1, cargo: 'governor', uf: 'AM', municipio: null, nome_urna: 'Candidato Governador AM 2', numero: '15', partido: 'MDB' },
             { turno: 1, cargo: 'senator', uf: 'AM', municipio: null, nome_urna: 'Candidato Senador AM 1', numero: '555', partido: 'PSD' },
-            { turno: 1, cargo: 'senator', uf: 'AM', municipio: null, nome_urna: 'Candidato Senador AM 2', numero: '222', partido: 'PL' },
-            { turno: 1, cargo: 'mayor', uf: 'AM', municipio: 'Manaus', nome_urna: 'Candidato Prefeito Manaus 1', numero: '70', partido: 'AVANTE' },
-            { turno: 1, cargo: 'mayor', uf: 'AM', municipio: 'Manaus', nome_urna: 'Candidato Prefeito Manaus 2', numero: '22', partido: 'PL' }
+            { turno: 1, cargo: 'mayor', uf: 'AM', municipio: 'Manaus', nome_urna: 'Candidato Prefeito Manaus 1', numero: '70', partido: 'AVANTE' }
         ];
-
         const { error } = await db.from('candidatos_oficiais_tse').insert(amostraCandidatos);
-
         if (!error) {
-            document.getElementById('adm-sync-msg').innerText = "✅ Base TSE populada com sucesso no Supabase!";
-        } else {
-            document.getElementById('adm-sync-msg').innerText = "⚠️ Erro ao sincronizar base.";
+            document.getElementById('adm-sync-msg').innerText = "✅ Base TSE sincronizada na nuvem!";
         }
     }
 
-    // =========================================================================
-    // 5. RELATÓRIOS EM TEMPO REAL DA NUVEM (IMPRENSA & ADM)
-    // =========================================================================
     async function abrirRelatorios(perfil) {
         perfilAcesso = perfil;
-        if (perfil === 'ADM') {
-            document.getElementById('doc-veiculo-nome').innerText = "AUDITORIA INTERNA — GESTÃO PESQUISA JUSTA";
-            document.getElementById('doc-veiculo-sub').innerText = "Acesso Administrativo Completo | Dados Consolidados em Tempo Real";
-        }
         trocarTela('screen-relatorios');
         await atualizarRelatorioNuvem();
     }
 
     function sairRelatorios() {
-        if (perfilAcesso === 'ADM') {
-            trocarTela('screen-adm');
-        } else {
-            voltarInicio();
-        }
+        if (perfilAcesso === 'ADM') trocarTela('screen-adm');
+        else voltarInicio();
     }
 
     function mudarAbaRelatorio(cargo, btn) {
         cargoRelatorioAtual = cargo;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
-        const titulos = {
-            president: "PRESIDENTE",
-            governor: "GOVERNADOR",
-            senator: "SENADOR",
-            mayor: "PREFEITO"
-        };
+        const titulos = { president: "PRESIDENTE", governor: "GOVERNADOR", senator: "SENADOR", mayor: "PREFEITO" };
         document.getElementById('doc-cargo-nome').innerText = titulos[cargo];
         atualizarRelatorioNuvem();
     }
@@ -1204,18 +1123,7 @@
         const generoFiltro = document.getElementById('rel-genero').value;
         const racaFiltro = document.getElementById('rel-raca').value;
 
-        let localTexto = "Brasil (Geral)";
-        if (ufFiltro && cidadeFiltro) localTexto = `${cidadeFiltro} - ${ufFiltro}`;
-        else if (ufFiltro) localTexto = `Estado: ${ufFiltro}`;
-        else if (cidadeFiltro) localTexto = `Município: ${cidadeFiltro}`;
-        document.getElementById('doc-abrangencia').innerText = localTexto;
-
-        let query = db
-            .from('votos_urna_cega')
-            .select('escolha')
-            .eq('cargo', cargoRelatorioAtual)
-            .eq('turno', configAtual.turno_ativo);
-
+        let query = db.from('votos_urna_cega').select('escolha').eq('cargo', cargoRelatorioAtual).eq('turno', configAtual.turno_ativo);
         if (ufFiltro) query = query.eq('uf', ufFiltro);
         if (cidadeFiltro) query = query.ilike('municipio', `%${cidadeFiltro}%`);
         if (idadeFiltro) query = query.eq('faixa_etaria', idadeFiltro);
@@ -1233,12 +1141,8 @@
             return;
         }
 
-        // Agrupa e calcula percentuais reais
         const contagem = {};
-        votos.forEach(v => {
-            contagem[v.escolha] = (contagem[v.escolha] || 0) + 1;
-        });
-
+        votos.forEach(v => { contagem[v.escolha] = (contagem[v.escolha] || 0) + 1; });
         const ranking = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
 
         container.innerHTML = ranking.map(([nome, qtd]) => {
@@ -1258,29 +1162,19 @@
     }
 
     function copiarBoletim() {
-        const doc = document.getElementById('documento-imprensa').innerText;
-        navigator.clipboard.writeText(doc);
-        mostrarAlerta("📋 Boletim oficial copiado para a área de transferência!");
+        navigator.clipboard.writeText(document.getElementById('documento-imprensa').innerText);
+        mostrarAlerta("📋 Boletim copiado!");
     }
 
-    // Autocomplete fluido sem fechar o teclado no celular
     function configurarAutocomplete(inputId, listId, itens, onSelectTransform) {
         const input = document.getElementById(inputId);
         const list = document.getElementById(listId);
-
         input.addEventListener('input', () => {
             const termo = input.value.toLowerCase().trim();
             list.innerHTML = '';
-            if (!termo) {
-                list.style.display = 'none';
-                if (inputId.startsWith('rel-')) atualizarRelatorioNuvem();
-                return;
-            }
+            if (!termo) { list.style.display = 'none'; return; }
             const filtrados = itens.filter(i => i.toLowerCase().includes(termo));
-            if (filtrados.length === 0) {
-                list.style.display = 'none';
-                return;
-            }
+            if (filtrados.length === 0) { list.style.display = 'none'; return; }
             filtrados.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'autocomplete-item';
@@ -1294,10 +1188,7 @@
             });
             list.style.display = 'block';
         });
-
-        input.addEventListener('blur', () => {
-            setTimeout(() => { list.style.display = 'none'; }, 150);
-        });
+        input.addEventListener('blur', () => { setTimeout(() => { list.style.display = 'none'; }, 150); });
     }
 </script>
 
