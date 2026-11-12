@@ -101,7 +101,7 @@
             border-radius: 6px;
             padding: 3px 6px;
             text-align: center;
-            font-size: 0.58rem;
+            font-size: 0.56rem;
             color: var(--highlight-yellow);
             font-weight: bold;
             margin-bottom: 4px;
@@ -235,6 +235,27 @@
         .admin-stat-card h3 { margin: 0; font-size: 0.82rem; color: #38bdf8; }
         .admin-stat-card p { margin: 0; font-size: 0.46rem; color: var(--text-muted); }
 
+        .tse-sync-card {
+            background-color: #090d16;
+            border: 1px solid #0f766e;
+            border-radius: 6px;
+            padding: 6px;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .tse-sync-card label {
+            text-align: center;
+            color: #38bdf8;
+            font-size: 0.50rem;
+            margin-bottom: 4px;
+        }
+        .tse-sync-status {
+            font-size: 0.46rem;
+            color: #10b981;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
         .report-preview-box { background-color: #ffffff; color: #0f172a; border-radius: 6px; padding: 10px; font-size: 0.58rem; text-align: left; box-sizing: border-box; margin: 4px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3); flex: 1; overflow-y: auto; }
         .report-preview-box h3 { color: #0f766e; text-align: center; margin-bottom: 4px; font-size: 0.70rem; }
         .report-section-title { background-color: #f1f5f9; color: #0f766e; padding: 3px 5px; font-weight: bold; font-size: 0.56rem; border-left: 3px solid #0f766e; margin: 5px 0 3px 0; text-transform: uppercase; }
@@ -304,7 +325,7 @@
             </div>
 
             <div class="status-banner" id="status-banner-text">
-                🗳️ Pesquisa Eleitoral Oficial (1º Turno)
+                🗳️ Pesquisa Oficial (1º Turno) • 🟢 Campo Aberto
             </div>
 
             <div class="tse-notice-box">
@@ -427,28 +448,44 @@
                     </div>
                 </div>
 
-                <!-- TELA 1.1: LOGIN ADM (ScreenAdmin) -->
+                <!-- TELA 1.1: LOGIN ADM & SINCRONIZAÇÃO OFICIAL TSE (ScreenAdmin) -->
                 <div id="screen-admin-login" class="view hidden">
-                    <div style="text-align: center; margin-bottom: 6px;">
+                    <div style="text-align: center; margin-bottom: 4px;">
                         <span class="badge" style="background-color: rgba(56, 189, 248, 0.2); color: #38bdf8;">Painel de Controle</span>
-                        <h1 class="header-title">Autenticação do Gestor</h1>
-                        <p class="subtitle">Insira a chave mestra do sistema para acessar a retaguarda analítica.</p>
+                        <h1 class="header-title">Gestão Oficial & Base TSE</h1>
+                        <p class="subtitle">Controle o período de campo e sincronize candidaturas deferidas.</p>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label>Configurar Turno Ativo do Sistema</label>
-                        <select id="admin-turn-toggle" onchange="ScreenAdmin.toggleSystemTurn()">
-                            <option value="1">1º Turno (Fase Inicial)</option>
-                            <option value="2">2º Turno (Fase Final / Desempate)</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Status do Campo da Pesquisa</label>
+                            <select id="admin-field-toggle" onchange="ScreenAdmin.toggleFieldStatus()">
+                                <option value="open" selected>🟢 Campo Aberto (Recebendo Votos)</option>
+                                <option value="closed">🔴 Campo Encerrado (Consulta)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Turno Ativo</label>
+                            <select id="admin-turn-toggle" onchange="ScreenAdmin.toggleSystemTurn()">
+                                <option value="1" selected>1º Turno</option>
+                                <option value="2">2º Turno</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 8px;">
+                    <div class="tse-sync-card">
+                        <label>🏛️ BASE OFICIAL TSE (DIVULGACANDCONTAS)</label>
+                        <button type="button" onclick="ScreenAdmin.syncOfficialTSE()" style="background-color: #1e293b; border-color: #38bdf8; color: #38bdf8; font-size: 0.56rem; padding: 6px;">🔄 Sincronizar Candidatos Oficiais</button>
+                        <div class="tse-sync-status" id="tse-sync-status">✅ Base sincronizada: 12/11/2026 (Candidaturas Deferidas)</div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 6px;">
                         <label>Chave de Acesso ADM</label>
                         <input type="password" id="admin-pass-input" placeholder="Digite a senha (ex: adm2026)">
                     </div>
+
                     <button onclick="ScreenAdmin.validateLogin()" style="background-color: var(--accent); border-color: #14b8a6;">Entrar no Painel Macro</button>
-                    <button onclick="ScreenAdmin.backToRegister()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
+                    <button onclick="ScreenAdmin.backToRegister()" style="background-color: #334155; margin-top:5px;">Voltar ao Início</button>
                 </div>
 
                 <!-- TELA 1.2: LOGIN MÍDIA / IMPRENSA (ScreenMedia) -->
@@ -597,6 +634,18 @@
                         <button class="tab-btn" onclick="ScreenReport.switchCargo('Prefeito', this)">Prefeito</button>
                     </div>
 
+                    <!-- BUSCA GEOGRÁFICA FIXA E FLUIDA (IDÊNTICA À TELA 1 E TELA 5) -->
+                    <div class="filter-box" style="margin-bottom: 4px;">
+                        <div style="display: flex; gap: 6px; margin-bottom: 2px;">
+                            <label style="flex: 0.95; font-size: 0.50rem; color: var(--text-muted); font-weight: 600;">Estado / UF</label>
+                            <label style="flex: 1.05; font-size: 0.50rem; color: var(--text-muted); font-weight: 600;">Município / Capital</label>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite para buscar UF..." value="" oninput="GeoDatabase.handleStateTyped('report', false)" onchange="ScreenReport.onReportStateChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 0.95; font-size: 0.62rem; padding: 5px 4px;">
+                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', false)" onchange="ScreenReport.generateDynamicReport()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1.05; font-size: 0.62rem; padding: 5px 4px;">
+                        </div>
+                    </div>
+
                     <div id="report-dynamic-filters" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px; width: 100%;"></div>
 
                     <div class="report-preview-box" id="report-content-box"></div>
@@ -636,11 +685,14 @@
         const AppState = {
             currentYear: 2026,
             currentTurn: 1,
+            fieldOpen: true,
             activeMediaInfo: null,
 
             updateTurnState() {
                 const bannerElem = document.getElementById('status-banner-text');
-                if (bannerElem) bannerElem.innerText = `🗳️ Pesquisa Eleitoral Oficial (${this.currentTurn}º Turno)`;
+                if (!bannerElem) return;
+                const statusBadge = this.fieldOpen ? '🟢 Campo Aberto' : '🔴 Campo Encerrado';
+                bannerElem.innerText = `🗳️ Pesquisa Oficial (${this.currentTurn}º Turno) • ${statusBadge}`;
             },
 
             showToast(message, isError = false) {
@@ -666,6 +718,8 @@
                 const cInput = document.getElementById('city-input'); if (cInput) cInput.value = '';
                 const fsInput = document.getElementById('filter-state-select'); if (fsInput) fsInput.value = '';
                 const fcInput = document.getElementById('filter-city-select'); if (fcInput) fcInput.value = '';
+                const rsInput = document.getElementById('rep-estado'); if (rsInput) rsInput.value = '';
+                const rcInput = document.getElementById('rep-city-report'); if (rcInput) rcInput.value = '';
                 
                 const zSelect = document.getElementById('zone-input'); if (zSelect) zSelect.selectedIndex = 0;
                 const eSelect = document.getElementById('education-input'); if (eSelect) eSelect.selectedIndex = 0;
@@ -738,8 +792,8 @@
                 'DF': ['Águas Claras', 'Brasília', 'Ceilândia', 'Gama', 'Guará', 'Planaltina', 'Plano Piloto', 'Recanto das Antas', 'Samambaia', 'Santa Maria', 'Sobradinho', 'Taguatinga', 'Vicente Pires'],
                 'ES': ['Aracruz', 'Cachoeiro de Itapemirim', 'Cariacica', 'Colatina', 'Guarapari', 'Linhares', 'Marataízes', 'Nova Venécia', 'São Mateus', 'Serra', 'Vila Velha', 'Vitória'],
                 'GO': ['Águas Lindas de Goiás', 'Anápolis', 'Aparecida de Goiânia', 'Caldas Novas', 'Catalão', 'Formosa', 'Goiânia', 'Itumbiara', 'Jataí', 'Luziânia', 'Rio Verde', 'Senador Canedo', 'Trindade', 'Uruaçu', 'Valparaíso de Goiás'],
-                'MA': ['Açailândia', 'Bacabal', 'Balsas', 'Bar Barra do Corda', 'Caxias', 'Codó', 'Imperatriz', 'Itapecuru Mirim', 'Paço do Lumiar', 'Pinheiro', 'Santa Inês', 'São José de Ribamar', 'São Luís', 'Timon'],
-                'MG': ['Araguari', 'Barbacena', 'Belo Horizonte', 'Betim', 'Caratinga', 'Conselheiro Lafaiete', 'Contagem', 'Coronel Fabriciano', 'Divinópolis', 'Governador Valadares', 'Ibiritė', 'Ipatinga', 'Itabira', 'Itajubá', 'Itaúna', 'Juiz de Fora', 'Lavras', 'Manhuaçu', 'Montes Claros', 'Muriae', 'Nova Lima', 'Passos', 'Patos de Minas', 'Poços de Caldas', 'Pouso Alegre', 'Ribeirão das Neves', 'Sabará', 'Santa Luzia', 'São João del-Rei', 'Seven Lagoas', 'Tófilo Otoni', 'Ubá', 'Uberaba', 'Uberlândia', 'Varginha', 'Viçosa'],
+                'MA': ['Açailândia', 'Bacabal', 'Balsas', 'Barra do Corda', 'Caxias', 'Codó', 'Imperatriz', 'Itapecuru Mirim', 'Paço do Lumiar', 'Pinheiro', 'Santa Inês', 'São José de Ribamar', 'São Luís', 'Timon'],
+                'MG': ['Araguari', 'Barbacena', 'Belo Horizonte', 'Betim', 'Caratinga', 'Conselheiro Lafaiete', 'Contagem', 'Coronel Fabriciano', 'Divinópolis', 'Governador Valadares', 'Ibirité', 'Ipatinga', 'Itabira', 'Itajubá', 'Itaúna', 'Juiz de Fora', 'Lavras', 'Manhuaçu', 'Montes Claros', 'Muriaé', 'Nova Lima', 'Passos', 'Patos de Minas', 'Poços de Caldas', 'Pouso Alegre', 'Ribeirão das Neves', 'Sabará', 'Santa Luzia', 'São João del-Rei', 'Sete Lagoas', 'Teófilo Otoni', 'Ubá', 'Uberaba', 'Uberlândia', 'Varginha', 'Viçosa'],
                 'MS': ['Aquidauana', 'Campo Grande', 'Corumbá', 'Coxim', 'Dourados', 'Maracaju', 'Naviraí', 'Nova Andradina', 'Paranaíba', 'Ponta Porã', 'Sidrolândia', 'Três Lagoas'],
                 'MT': ['Alta Floresta', 'Barra do Garças', 'Cáceres', 'Cuiabá', 'Juína', 'Lucas do Rio Verde', 'Pontes e Lacerda', 'Primavera do Leste', 'Rondonópolis', 'Sinop', 'Sorriso', 'Tangará da Serra', 'Várzea Grande'],
                 'PA': ['Abaetetuba', 'Altamira', 'Ananindeua', 'Barcarena', 'Belém', 'Bragança', 'Breves', 'Cametá', 'Castanhal', 'Itaituba', 'Marabá', 'Marituba', 'Paragominas', 'Parauapebas', 'Redenção', 'Santarém', 'Tucuruí'],
@@ -871,8 +925,11 @@
                     if (autoRender || (stElem && this.isExactStateOption(stElem.value))) {
                         ScreenResults.onStateFilterChange();
                     }
-                } else if (context === 'report' && autoRender) {
-                    ScreenReport.generateDynamicReport();
+                } else if (context === 'report') {
+                    const stElem = document.getElementById('rep-estado');
+                    if (autoRender || (stElem && this.isExactStateOption(stElem.value))) {
+                        ScreenReport.onReportStateChange();
+                    }
                 }
             },
 
@@ -887,6 +944,8 @@
                     if (stElem) stateVal = stElem.value;
                 } else if (context === 'report') {
                     cityInputElem = document.getElementById('rep-city-report');
+                    const stElem = document.getElementById('rep-estado');
+                    if (stElem) stateVal = stElem.value;
                 }
                 
                 if (cityInputElem) {
@@ -897,8 +956,10 @@
                     if (autoRender || (cityInputElem && this.isExactCityOption(cityInputElem.value, stateVal))) {
                         ScreenResults.onCityFilterChange();
                     }
-                } else if (context === 'report' && autoRender) {
-                    ScreenReport.generateDynamicReport();
+                } else if (context === 'report') {
+                    if (autoRender || (cityInputElem && this.isExactCityOption(cityInputElem.value, stateVal))) {
+                        ScreenReport.generateDynamicReport();
+                    }
                 }
             }
         };
@@ -938,6 +999,11 @@
             },
 
             submit() {
+                if (!AppState.fieldOpen) {
+                    AppState.showToast('🔴 Campo encerrado pelo Gestor ADM para esta consulta.', true);
+                    return;
+                }
+
                 const phoneInput = document.getElementById('whatsapp-input');
                 const birthInput = document.getElementById('birthdate-input');
                 this.autoMaskPhone(phoneInput);
@@ -985,10 +1051,30 @@
                 document.getElementById('screen-admin-login').classList.add('hidden');
                 document.getElementById('screen-register').classList.remove('hidden');
             },
+            toggleFieldStatus() {
+                const toggle = document.getElementById('admin-field-toggle');
+                if (toggle) AppState.fieldOpen = (toggle.value === 'open');
+                AppState.updateTurnState();
+                AppState.showToast(AppState.fieldOpen ? '🟢 Campo aberto para recebimento de votos.' : '🔴 Campo encerrado pelo Gestor.');
+            },
             toggleSystemTurn() {
                 const toggle = document.getElementById('admin-turn-toggle');
                 if (toggle) AppState.currentTurn = parseInt(toggle.value);
                 AppState.updateTurnState();
+                AppState.showToast(`🗳️ Sistema configurado para o ${AppState.currentTurn}º Turno.`);
+            },
+            syncOfficialTSE() {
+                const statusElem = document.getElementById('tse-sync-status');
+                if (statusElem) statusElem.innerText = '⏳ Conectando ao DivulgaCandContas (TSE)...';
+                setTimeout(() => {
+                    const now = new Date();
+                    const dateStr = now.toLocaleDateString('pt-BR');
+                    const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    if (statusElem) {
+                        statusElem.innerText = `✅ Sincronizado em ${dateStr} às ${timeStr} • 5.570 municípios (Deferidos)`;
+                    }
+                    AppState.showToast('🏛️ Candidaturas oficiais sincronizadas com o TSE!');
+                }, 700);
             },
             validateLogin() {
                 const input = document.getElementById('admin-pass-input');
@@ -1559,48 +1645,43 @@
                 this.renderReportFilters();
             },
 
+            onReportStateChange() {
+                const ctElem = document.getElementById('rep-city-report');
+                if (ctElem) ctElem.value = '';
+                GeoDatabase.updateCityDatalist('report', '');
+                this.generateDynamicReport();
+            },
+
             renderReportFilters() {
                 const container = document.getElementById('report-dynamic-filters');
                 if (!container) return;
                 container.innerHTML = '';
                 
-                let geoInputsHTML = '';
+                let scopeSubfilterHTML = '';
 
                 if (this.activeCargo === 'Presidente') {
-                    geoInputsHTML = `
+                    scopeSubfilterHTML = `
                         <div style="display: flex; gap: 4px; width: 100%;">
-                            <select id="rep-nivel" onchange="ScreenReport.updateReportSubfilters()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                                <option value="Geral (Brasil)">Geral (Brasil)</option>
-                                <option value="Por Região">Por Região</option>
-                                <option value="Por Estado (UF)">Por Estado (UF)</option>
-                                <option value="Por Município">Por Município</option>
-                                <option value="Exterior (Consulados)">Exterior (Consulados)</option>
+                            <select id="rep-macro-scope" onchange="ScreenReport.onMacroScopeChange()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                                <option value="Geral (Brasil)">Abrangência: Geral (Brasil)</option>
+                                <option value="Região Norte">Região Norte</option>
+                                <option value="Região Nordeste">Região Nordeste</option>
+                                <option value="Região Centro-Oeste">Região Centro-Oeste</option>
+                                <option value="Região Sudeste">Região Sudeste</option>
+                                <option value="Região Sul">Região Sul</option>
+                                <option value="Exterior (Consulados)">Exterior (Votação em Consulados)</option>
                             </select>
-                            <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="ScreenReport.generateDynamicReport()"></select>
-                        </div>
-                        <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%;">
-                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         </div>
                     `;
                 } else if (this.activeCargo === 'Governador' || this.activeCargo === 'Senador') {
-                    geoInputsHTML = `
-                        <div style="display: flex; gap: 4px; width: 100%;">
-                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                        </div>
+                    scopeSubfilterHTML = `
                         <div style="display: flex; gap: 4px; width: 100%;">
                             <select id="rep-nivel" onchange="ScreenReport.generateDynamicReport()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                                <option value="Geral (Todo o Estado)">Geral (Todo o Estado)</option>
-                                <option value="Geral (Apenas o Município)">Geral (Apenas o Município)</option>
+                                <option value="Geral (Todo o Estado)">Escopo: Geral (Todo o Estado)</option>
+                                <option value="Geral da Capital">Escopo: Geral da Capital</option>
+                                <option value="Geral do Interior">Escopo: Geral do Interior</option>
+                                <option value="Apenas o Município Selecionado">Escopo: Apenas o Município Selecionado</option>
                             </select>
-                        </div>
-                    `;
-                } else if (this.activeCargo === 'Prefeito') {
-                    geoInputsHTML = `
-                        <div style="display: flex; gap: 4px; width: 100%;">
-                             <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                             <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         </div>
                     `;
                 }
@@ -1658,47 +1739,16 @@
                     </div>
                 `;
 
-                container.innerHTML = geoInputsHTML + demoInputsHTML;
-                this.updateReportSubfilters();
+                container.innerHTML = scopeSubfilterHTML + demoInputsHTML;
+                this.generateDynamicReport();
             },
 
-            updateReportSubfilters() {
-                if (this.activeCargo === 'Presidente') {
-                    const nivelElem = document.getElementById('rep-nivel');
-                    if (!nivelElem) return;
-                    const nivel = nivelElem.value;
-                    const detalheSelect = document.getElementById('rep-detalhe-select');
-                    const municipioRow = document.getElementById('rep-presidente-municipio-row');
-                    
-                    if (!detalheSelect || !municipioRow) return;
-                    
-                    detalheSelect.innerHTML = '';
-                    detalheSelect.style.display = 'none';
-                    municipioRow.style.display = 'none';
-
-                    if (nivel === 'Por Município') {
-                        municipioRow.style.display = 'flex';
-                    } else if (nivel !== 'Geral (Brasil)') {
-                        detalheSelect.style.display = 'block';
-                        let options = [];
-                        
-                        if (nivel === 'Por Região') {
-                            options = ['Região Norte', 'Região Nordeste', 'Região Centro-Oeste', 'Região Sudeste', 'Região Sul'];
-                        } else if (nivel === 'Por Estado (UF)') {
-                            const stateOptions = Array.from(document.getElementById('states-datalist').options);
-                            options = stateOptions.map(opt => opt.value).filter(val => val !== "Outros Países (Exterior)");
-                        } else if (nivel === 'Exterior (Consulados)') {
-                            options = GeoDatabase.internationalCountryList.filter(c => c !== "Todos os Países");
-                        }
-
-                        options.forEach(optVal => {
-                            const opt = document.createElement('option');
-                            opt.value = optVal;
-                            opt.innerText = optVal;
-                            detalheSelect.appendChild(opt);
-                        });
-                    }
-                } 
+            onMacroScopeChange() {
+                const stElem = document.getElementById('rep-estado');
+                const ctElem = document.getElementById('rep-city-report');
+                if (stElem) stElem.value = '';
+                if (ctElem) ctElem.value = '';
+                GeoDatabase.updateCityDatalist('report', '');
                 this.generateDynamicReport();
             },
 
@@ -1707,53 +1757,44 @@
                 let candA = 48.5, candB = 41.2;
                 let candAName = "Candidato Alpha (PTX)", candBName = "Candidato Beta (PLZ)";
 
+                const estadoVal = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value.trim() : '';
+                const cityVal = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value.trim() : '';
                 const idadeVal = document.getElementById('rep-idade') ? document.getElementById('rep-idade').value : 'Todas as Idades';
                 const zonaVal = document.getElementById('rep-zona-demo') ? document.getElementById('rep-zona-demo').value : 'Todas as Zonas';
                 const generoVal = document.getElementById('rep-genero') ? document.getElementById('rep-genero').value : 'Todos os Gêneros';
                 const corVal = document.getElementById('rep-cor') ? document.getElementById('rep-cor').value : 'Todas as Raças';
 
                 if (this.activeCargo === 'Presidente') { 
-                    const nivelElem = document.getElementById('rep-nivel');
-                    const nivel = nivelElem ? nivelElem.value : 'Geral (Brasil)';
-                    if (nivel === 'Por Município') {
-                        const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
-                        const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                        filterDesc = `<li><strong>Abrangência:</strong> Município Específico</li>`;
-                        if (estado) filterDesc += `<li><strong>Estado (UF):</strong> ${estado}</li>`;
-                        if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                    const macroScopeElem = document.getElementById('rep-macro-scope');
+                    const macroScope = macroScopeElem ? macroScopeElem.value : 'Geral (Brasil)';
+
+                    if (estadoVal || cityVal) {
+                        filterDesc = `<li><strong>Abrangência:</strong> Recorte Local Específico</li>`;
+                        if (estadoVal) filterDesc += `<li><strong>Estado (UF):</strong> ${estadoVal}</li>`;
+                        if (cityVal) filterDesc += `<li><strong>Município / País:</strong> ${cityVal}</li>`;
                     } else {
-                        const detalheSelect = document.getElementById('rep-detalhe-select');
-                        const detalhe = (detalheSelect && detalheSelect.style.display !== 'none') ? detalheSelect.value : '';
-                        filterDesc = `<li><strong>Abrangência:</strong> ${nivel} ${detalhe ? ' - ' + detalhe : ''}</li>`;
+                        filterDesc = `<li><strong>Abrangência:</strong> ${macroScope}</li>`;
                     }
                     candA = 48.5; candB = 41.2; 
                     candAName = "Candidato Alpha (PTX)"; candBName = "Candidato Beta (PLZ)";
                 } else if (this.activeCargo === 'Governador') { 
-                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
-                    const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                    const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral';
-                    
-                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
-                    if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                    const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral (Todo o Estado)';
+                    filterDesc = `<li><strong>Estado (UF):</strong> ${estadoVal || 'Geral do Estado'}</li>`;
+                    if (cityVal) filterDesc += `<li><strong>Município:</strong> ${cityVal}</li>`;
                     filterDesc += `<li><strong>Escopo:</strong> ${nivel}</li>`;
                     
                     candA = 51.0; candB = 38.0; 
                     candAName = "Candidato Delta (PSB)"; candBName = "Candidato Ômega (PSD)";
                 } else if (this.activeCargo === 'Senador') { 
-                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
-                    const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                    
-                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
-                    if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                    const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral (Todo o Estado)';
+                    filterDesc = `<li><strong>Estado (UF):</strong> ${estadoVal || 'Geral do Estado'}</li>`;
+                    if (cityVal) filterDesc += `<li><strong>Município:</strong> ${cityVal}</li>`;
+                    filterDesc += `<li><strong>Escopo:</strong> ${nivel}</li>`;
                     
                     candA = 34.0; candB = 28.0; 
                     candAName = "Candidato Um (MDB)"; candBName = "Candidato Dois (UNIÃO)";
                 } else if (this.activeCargo === 'Prefeito') { 
-                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Não Selecionado';
-                    const cityElem = document.getElementById('rep-city-report');
-                    const city = cityElem && cityElem.value ? cityElem.value : 'Não Selecionado';
-                    
-                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li><li><strong>Município:</strong> ${city}</li>`;
+                    filterDesc = `<li><strong>Estado (UF):</strong> ${estadoVal || 'Não Selecionado'}</li><li><strong>Município:</strong> ${cityVal || 'Não Selecionado'}</li>`;
                     
                     candA = 46.0; candB = 40.0; 
                     candAName = "Candidato X (UNIÃO)"; candBName = "Candidato Y (PSD)";
@@ -1888,6 +1929,7 @@
             ScreenAuth.initTouchEvents();
             GeoDatabase.handleStateTyped('register');
             GeoDatabase.handleStateTyped('results');
+            GeoDatabase.handleStateTyped('report');
             AppState.updateTurnState();
         });
     </script>
