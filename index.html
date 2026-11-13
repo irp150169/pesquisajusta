@@ -1973,50 +1973,195 @@
             AppState.updateTurnState();
         });
     </script>
-    <!-- Motor de Busca IBGE - Pesquisa Justa -->
+   <!-- Motor de Busca IBGE + Status Automático Nacional - Pesquisa Justa -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const cidadeInput = document.querySelector('input[placeholder="Pesquise a cidade..."]');
-    const todosSelects = document.querySelectorAll('select');
-    let ufSelect = null;
-    
-    todosSelects.forEach(sel => {
-        if(sel.innerHTML.includes('Amazonas - AM') || sel.innerHTML.includes('São Paulo - SP')) {
-            ufSelect = sel;
+    // 1. MOTOR IBGE NA BARRA HORIZONTAL (5.570 MUNICÍPIOS + DF + EXTERIOR)
+    const ufInput = document.querySelector('input[placeholder*="buscar UF" i]') || document.querySelector('input[placeholder*="Estado" i]');
+    const cidadeInput = document.querySelector('input[placeholder*="cidade" i]');
+    const cacheIbge = {};
+
+    const mapaEstados = {
+        "acre": "AC", "alagoas": "AL", "amapa": "AP", "amazonas": "AM", "bahia": "BA",
+        "ceara": "CE", "distrito federal": "DF", "espirito santo": "ES", "goias": "GO",
+        "maranhao": "MA", "mato grosso": "MT", "mato grosso do sul": "MS", "minas gerais": "MG",
+        "para": "PA", "paraiba": "PB", "parana": "PR", "pernambuco": "PE", "piaui": "PI",
+        "rio de janeiro": "RJ", "rio grande do norte": "RN", "rio grande do sul": "RS",
+        "rondonia": "RO", "roraima": "RR", "santa catarina": "SC", "sao paulo": "SP",
+        "sergipe": "SE", "tocantins": "TO", "exterior": "ZZ"
+    };
+
+    function extrairSiglaUF(texto) {
+        if (!texto) return null;
+        const matchSigla = texto.match(/-\s*([A-Z]{2})\b/i);
+        if (matchSigla) return matchSigla[1].toUpperCase();
+        const limpo = texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        if (limpo.length === 2) return limpo.toUpperCase();
+        return mapaEstados[limpo] || null;
+    }
+
+    function obterDatalistCidades() {
+        const listId = cidadeInput.getAttribute('list');
+        let dl = listId ? document.getElementById(listId) : null;
+        if (!dl) {
+            dl = document.createElement('datalist');
+            dl.id = 'lista-municipios-ibge';
+            document.body.appendChild(dl);
+            cidadeInput.setAttribute('list', 'lista-municipios-ibge');
+        }
+        return dl;
+    }
+
+    async function carregarMunicipiosIBGE() {
+        if (!ufInput || !cidadeInput) return;
+        const uf = extrairSiglaUF(ufInput.value);
+        if (!uf) return;
+
+        if (uf === "ZZ") {
+            setTimeout(() => {
+                const dl = obterDatalistCidades();
+                dl.innerHTML = '<option value="Exterior / Outros Países"></option>';
+            }, 120);
+            return;
+        }
+
+        try {
+            if (!cacheIbge[uf]) {
+                const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+                const dados = await resp.json();
+                cacheIbge[uf] = dados.map(m => m.nome);
+            }
+            // Aguarda 120ms para prevalecer sobre qualquer lista curta antiga do código
+            setTimeout(() => {
+                const dl = obterDatalistCidades();
+                dl.innerHTML = '';
+                const frag = document.createDocumentFragment();
+                cacheIbge[uf].forEach(nome => {
+                    const opt = document.createElement('option');
+                    opt.value = nome;
+                    frag.appendChild(opt);
+                });
+                dl.appendChild(frag);
+            }, 120);
+        } catch (err) {
+            console.error('Erro ao carregar IBGE:', err);
+        }
+    }
+
+    if (ufInput && cidadeInput) {
+        // Garante opção Exterior - ZZ na lista de UFs
+        const ufListId = ufInput.getAttribute('list');
+        const ufDatalist = ufListId ? document.getElementById(ufListId) : null;
+        if (ufDatalist && !ufDatalist.innerHTML.includes('Exterior - ZZ')) {
+            const optZZ = document.createElement('option');
+            optZZ.value = 'Exterior - ZZ';
+            ufDatalist.appendChild(optZZ);
+        }
+
+        ufInput.addEventListener('input', carregarMunicipiosIBGE);
+        ufInput.addEventListener('change', carregarMunicipiosIBGE);
+        ufInput.addEventListener('blur', carregarMunicipiosIBGE);
+    }
+
+    // 2. CONTROLE AUTOMÁTICO NACIONAL (PESQUISA ATIVA / INATIVA)
+    const bannerStatus = document.getElementById('btn-pesquisa-ativa');
+    let pesquisaLiberada = true;
+
+    function aplicarVisualBanner(ativa) {
+        pesquisaLiberada = ativa;
+        if (!bannerStatus) return;
+        if (ativa) {
+            bannerStatus.textContent = 'PESQUISA ATIVA';
+            bannerStatus.style.backgroundColor = '#007944';
+            bannerStatus.style.borderColor = '#00bfa5';
+            bannerStatus.style.color = '#ffffff';
+        } else {
+            bannerStatus.textContent = 'PESQUISA INATIVA';
+            bannerStatus.style.backgroundColor = '#b91c1c';
+            bannerStatus.style.borderColor = '#ef5350';
+            bannerStatus.style.color = '#ffffff';
+        }
+    }
+
+    function avaliarCalendarioNacional() {
+        try {
+            const salvo = JSON.parse(localStorage.getItem('pj_calendario_nacional') || 'null');
+            if (salvo && salvo.inicio && salvo.fim) {
+                const agora = new Date().getTime();
+                const inicio = new Date(salvo.inicio).getTime();
+                const fim = new Date(salvo.fim).getTime();
+                aplicarVisualBanner(agora >= inicio && agora <= fim);
+                return;
+            }
+            if (salvo && typeof salvo.ativa === 'boolean') {
+                aplicarVisualBanner(salvo.ativa);
+                return;
+            }
+            aplicarVisualBanner(true);
+        } catch (e) {
+            aplicarVisualBanner(true);
+        }
+    }
+
+    avaliarCalendarioNacional();
+    setInterval(avaliarCalendarioNacional, 30000);
+
+    // Bloqueia avanço na tela inicial se a pesquisa estiver INATIVA
+    document.querySelectorAll('button').forEach(btn => {
+        if (btn.textContent && btn.textContent.includes('Prosseguir')) {
+            btn.addEventListener('click', (e) => {
+                if (!pesquisaLiberada) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                    alert('A pesquisa encontra-se INATIVA no momento. Aguarde a abertura do período oficial.');
+                }
+            }, true);
         }
     });
 
-    if (ufSelect && cidadeInput) {
-        const datalist = document.createElement('datalist');
-        datalist.id = 'lista-municipios-ibge';
-        document.body.appendChild(datalist);
-        
-        cidadeInput.setAttribute('list', 'lista-municipios-ibge');
-        
-        ufSelect.addEventListener('change', async (e) => {
-            datalist.innerHTML = '';
-            cidadeInput.value = ''; 
-            
-            const textoSelecionado = e.target.options[e.target.selectedIndex].text;
-            const ufMatch = textoSelecionado.match(/- ([A-Z]{2})/);
-            const uf = ufMatch ? ufMatch[1] : e.target.value;
-            
-            if (uf && uf.length === 2) {
-                try {
-                    const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
-                    const cidades = await response.json();
-                    
-                    cidades.forEach(cidade => {
-                        const option = document.createElement('option');
-                        option.value = cidade.nome;
-                        datalist.appendChild(option);
-                    });
-                } catch (error) {
-                    console.error('Erro IBGE:', error);
-                }
-            }
-        });
-    }
+    // Injeta o Agendamento Nacional Único dentro do Painel ADM sem alterar layouts
+    const observerAdm = new MutationObserver(() => {
+        if (document.getElementById('pj-agendamento-nacional-box')) return;
+        const botoesAdm = Array.from(document.querySelectorAll('button'));
+        const btnReferencia = botoesAdm.find(b =>
+            b.offsetParent !== null &&
+            (b.textContent.includes('Sincronizar') || b.textContent.includes('Salvar Configuração') || b.textContent.includes('1º Turno') || b.textContent.includes('2º Turno'))
+        );
+        if (btnReferencia && btnReferencia.parentElement) {
+            const salvo = JSON.parse(localStorage.getItem('pj_calendario_nacional') || '{}');
+            const box = document.createElement('div');
+            box.id = 'pj-agendamento-nacional-box';
+            box.style.cssText = 'margin: 14px 0; padding: 12px; border: 1px solid #00bfa5; border-radius: 8px; background: rgba(0, 77, 64, 0.25);';
+            box.innerHTML = `
+                <div style="font-weight: bold; color: #00bfa5; margin-bottom: 8px; font-size: 13px; text-transform: uppercase;">
+                    Calendário Nacional Único (Todos os Estados e 5.570 Municípios)
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                    <div style="flex: 1; min-width: 140px;">
+                        <label style="display:block; font-size: 11px; color: #ccc; margin-bottom: 3px;">Início Oficial</label>
+                        <input type="datetime-local" id="pj-data-inicio" value="${salvo.inicio || ''}" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff;">
+                    </div>
+                    <div style="flex: 1; min-width: 140px;">
+                        <label style="display:block; font-size: 11px; color: #ccc; margin-bottom: 3px;">Encerramento Oficial</label>
+                        <input type="datetime-local" id="pj-data-fim" value="${salvo.fim || ''}" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff;">
+                    </div>
+                </div>
+                <button type="button" id="pj-salvar-calendario" style="width: 100%; padding: 9px; background: #007944; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                    Salvar Período Nacional Automático
+                </button>
+            `;
+            btnReferencia.parentElement.appendChild(box);
+
+            document.getElementById('pj-salvar-calendario').addEventListener('click', () => {
+                const inicio = document.getElementById('pj-data-inicio').value;
+                const fim = document.getElementById('pj-data-fim').value;
+                localStorage.setItem('pj_calendario_nacional', JSON.stringify({ inicio, fim }));
+                avaliarCalendarioNacional();
+                alert('Calendário nacional salvo! O banner PESQUISA ATIVA / INATIVA será atualizado automaticamente conforme a data e hora.');
+            });
+        }
+    });
+    observerAdm.observe(document.body, { childList: true, subtree: true });
 });
 </script>
 </body>
