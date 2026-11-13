@@ -1973,15 +1973,16 @@
             AppState.updateTurnState();
         });
     </script>
-  <!-- Motor de Busca IBGE + Status Automático Nacional - Pesquisa Justa -->
+ <!-- Motor de Busca IBGE + Status Automático Nacional - Pesquisa Justa -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. MOTOR IBGE BLINDADO NA BARRA HORIZONTAL (5.570 MUNICÍPIOS + DF + EXTERIOR)
+    // 1. MOTOR IBGE BLINDADO COM FILTRO POR LETRAS INICIAIS (5.570 MUNICÍPIOS + DF + EXTERIOR)
     const ufInput = document.querySelector('input[placeholder*="buscar UF" i]') || document.querySelector('input[placeholder*="Estado" i]');
     const cidadeInput = document.querySelector('input[placeholder*="cidade" i]');
     const cacheIbge = {};
     const carregandoUF = {};
     let atualizandoDatalist = false;
+    let listaAtualEsperada = [];
 
     const mapaEstados = {
         "acre": "AC", "alagoas": "AL", "amapa": "AP", "amazonas": "AM", "bahia": "BA",
@@ -1993,11 +1994,15 @@ document.addEventListener("DOMContentLoaded", () => {
         "sergipe": "SE", "tocantins": "TO", "exterior": "ZZ"
     };
 
+    function normalizarTexto(str) {
+        return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    }
+
     function extrairSiglaUF(texto) {
         if (!texto) return null;
         const matchSigla = texto.match(/-\s*([A-Z]{2})\b/i);
         if (matchSigla) return matchSigla[1].toUpperCase();
-        const limpo = texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        const limpo = normalizarTexto(texto);
         if (limpo.length === 2) return limpo.toUpperCase();
         return mapaEstados[limpo] || null;
     }
@@ -2014,6 +2019,32 @@ document.addEventListener("DOMContentLoaded", () => {
         return dl;
     }
 
+    function aplicarListaFiltrada(dl, cidadesBase) {
+        const termoDigitado = normalizarTexto(cidadeInput.value);
+        const filtradas = termoDigitado
+            ? cidadesBase.filter(nome => normalizarTexto(nome).startsWith(termoDigitado))
+            : cidadesBase;
+
+        listaAtualEsperada = filtradas;
+
+        const precisaAtualizar =
+            dl.options.length !== filtradas.length ||
+            (filtradas.length > 0 && dl.options[0]?.value !== filtradas[0]);
+
+        if (precisaAtualizar) {
+            atualizandoDatalist = true;
+            dl.innerHTML = '';
+            const frag = document.createDocumentFragment();
+            filtradas.forEach(nome => {
+                const opt = document.createElement('option');
+                opt.value = nome;
+                frag.appendChild(opt);
+            });
+            dl.appendChild(frag);
+            atualizandoDatalist = false;
+        }
+    }
+
     async function garantirCidadesIBGE() {
         if (!ufInput || !cidadeInput) return;
         const uf = extrairSiglaUF(ufInput.value);
@@ -2022,11 +2053,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const dl = obterDatalistCidades();
 
         if (uf === "ZZ") {
-            if (dl.options.length !== 1 || dl.options[0].value !== "Exterior / Outros Países") {
-                atualizandoDatalist = true;
-                dl.innerHTML = '<option value="Exterior / Outros Países"></option>';
-                atualizandoDatalist = false;
-            }
+            aplicarListaFiltrada(dl, ["Exterior / Outros Países"]);
             return;
         }
 
@@ -2044,18 +2071,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Se o código antigo tentar substituir pela lista curta, restaura imediatamente os municípios do IBGE
-        if (cacheIbge[uf] && dl.options.length !== cacheIbge[uf].length) {
-            atualizandoDatalist = true;
-            dl.innerHTML = '';
-            const frag = document.createDocumentFragment();
-            cacheIbge[uf].forEach(nome => {
-                const opt = document.createElement('option');
-                opt.value = nome;
-                frag.appendChild(opt);
-            });
-            dl.appendChild(frag);
-            atualizandoDatalist = false;
+        if (cacheIbge[uf]) {
+            aplicarListaFiltrada(dl, cacheIbge[uf]);
         }
     }
 
@@ -2070,7 +2087,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const dlCidades = obterDatalistCidades();
         const vigiaLista = new MutationObserver(() => {
-            if (!atualizandoDatalist) {
+            if (!atualizandoDatalist && listaAtualEsperada.length > 0) {
                 garantirCidadesIBGE();
             }
         });
