@@ -1976,10 +1976,12 @@
    <!-- Motor de Busca IBGE + Status Automático Nacional - Pesquisa Justa -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. MOTOR IBGE NA BARRA HORIZONTAL (5.570 MUNICÍPIOS + DF + EXTERIOR)
+    // 1. MOTOR IBGE BLINDADO NA BARRA HORIZONTAL (5.570 MUNICÍPIOS + DF + EXTERIOR)
     const ufInput = document.querySelector('input[placeholder*="buscar UF" i]') || document.querySelector('input[placeholder*="Estado" i]');
     const cidadeInput = document.querySelector('input[placeholder*="cidade" i]');
     const cacheIbge = {};
+    const carregandoUF = {};
+    let atualizandoDatalist = false;
 
     const mapaEstados = {
         "acre": "AC", "alagoas": "AL", "amapa": "AP", "amazonas": "AM", "bahia": "BA",
@@ -2012,44 +2014,52 @@ document.addEventListener("DOMContentLoaded", () => {
         return dl;
     }
 
-    async function carregarMunicipiosIBGE() {
+    async function garantirCidadesIBGE() {
         if (!ufInput || !cidadeInput) return;
         const uf = extrairSiglaUF(ufInput.value);
         if (!uf) return;
 
+        const dl = obterDatalistCidades();
+
         if (uf === "ZZ") {
-            setTimeout(() => {
-                const dl = obterDatalistCidades();
+            if (dl.options.length !== 1 || dl.options[0].value !== "Exterior / Outros Países") {
+                atualizandoDatalist = true;
                 dl.innerHTML = '<option value="Exterior / Outros Países"></option>';
-            }, 120);
+                atualizandoDatalist = false;
+            }
             return;
         }
 
-        try {
-            if (!cacheIbge[uf]) {
+        if (!cacheIbge[uf]) {
+            if (carregandoUF[uf]) return;
+            carregandoUF[uf] = true;
+            try {
                 const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
                 const dados = await resp.json();
                 cacheIbge[uf] = dados.map(m => m.nome);
+            } catch (err) {
+                console.error('Erro ao carregar IBGE:', err);
+            } finally {
+                carregandoUF[uf] = false;
             }
-            // Aguarda 120ms para prevalecer sobre qualquer lista curta antiga do código
-            setTimeout(() => {
-                const dl = obterDatalistCidades();
-                dl.innerHTML = '';
-                const frag = document.createDocumentFragment();
-                cacheIbge[uf].forEach(nome => {
-                    const opt = document.createElement('option');
-                    opt.value = nome;
-                    frag.appendChild(opt);
-                });
-                dl.appendChild(frag);
-            }, 120);
-        } catch (err) {
-            console.error('Erro ao carregar IBGE:', err);
+        }
+
+        // Se o código antigo tentar substituir pela lista curta, restaura imediatamente os municípios do IBGE
+        if (cacheIbge[uf] && dl.options.length !== cacheIbge[uf].length) {
+            atualizandoDatalist = true;
+            dl.innerHTML = '';
+            const frag = document.createDocumentFragment();
+            cacheIbge[uf].forEach(nome => {
+                const opt = document.createElement('option');
+                opt.value = nome;
+                frag.appendChild(opt);
+            });
+            dl.appendChild(frag);
+            atualizandoDatalist = false;
         }
     }
 
     if (ufInput && cidadeInput) {
-        // Garante opção Exterior - ZZ na lista de UFs
         const ufListId = ufInput.getAttribute('list');
         const ufDatalist = ufListId ? document.getElementById(ufListId) : null;
         if (ufDatalist && !ufDatalist.innerHTML.includes('Exterior - ZZ')) {
@@ -2058,9 +2068,16 @@ document.addEventListener("DOMContentLoaded", () => {
             ufDatalist.appendChild(optZZ);
         }
 
-        ufInput.addEventListener('input', carregarMunicipiosIBGE);
-        ufInput.addEventListener('change', carregarMunicipiosIBGE);
-        ufInput.addEventListener('blur', carregarMunicipiosIBGE);
+        const dlCidades = obterDatalistCidades();
+        const vigiaLista = new MutationObserver(() => {
+            if (!atualizandoDatalist) {
+                garantirCidadesIBGE();
+            }
+        });
+        vigiaLista.observe(dlCidades, { childList: true });
+
+        ['input', 'change', 'blur'].forEach(ev => ufInput.addEventListener(ev, garantirCidadesIBGE));
+        ['focus', 'click', 'input'].forEach(ev => cidadeInput.addEventListener(ev, garantirCidadesIBGE));
     }
 
     // 2. CONTROLE AUTOMÁTICO NACIONAL (PESQUISA ATIVA / INATIVA)
@@ -2106,7 +2123,6 @@ document.addEventListener("DOMContentLoaded", () => {
     avaliarCalendarioNacional();
     setInterval(avaliarCalendarioNacional, 30000);
 
-    // Bloqueia avanço na tela inicial se a pesquisa estiver INATIVA
     document.querySelectorAll('button').forEach(btn => {
         if (btn.textContent && btn.textContent.includes('Prosseguir')) {
             btn.addEventListener('click', (e) => {
@@ -2119,7 +2135,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Injeta o Agendamento Nacional Único dentro do Painel ADM sem alterar layouts
     const observerAdm = new MutationObserver(() => {
         if (document.getElementById('pj-agendamento-nacional-box')) return;
         const botoesAdm = Array.from(document.querySelectorAll('button'));
