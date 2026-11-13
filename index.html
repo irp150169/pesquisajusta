@@ -324,6 +324,12 @@
                         <h1 class="header-title">Perfil Demográfico</h1>
                         <p class="subtitle" style="margin:0;">Dados obrigatórios para ponderação estatística oficial (IBGE / TSE).</p>
                     </div>
+                    <!-- Botão de Pesquisa Ativa -->
+<div style="margin-bottom: 15px; padding: 0 10px;">
+    <button type="button" id="btn-pesquisa-ativa" style="width: 100%; background-color: #004d40; border: 1px solid #00bfa5; color: #00bfa5; padding: 12px; border-radius: 6px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+        Pesquisa Ativa
+    </button>
+</div>
                     
                     <div class="form-row">
                         <div class="form-group" style="flex: 1.1;">
@@ -1967,5 +1973,51 @@
             AppState.updateTurnState();
         });
     </script>
+    <!-- Motor de Busca IBGE - Pesquisa Justa -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const cidadeInput = document.querySelector('input[placeholder="Pesquise a cidade..."]');
+    const todosSelects = document.querySelectorAll('select');
+    let ufSelect = null;
+    
+    todosSelects.forEach(sel => {
+        if(sel.innerHTML.includes('Amazonas - AM') || sel.innerHTML.includes('São Paulo - SP')) {
+            ufSelect = sel;
+        }
+    });
+
+    if (ufSelect && cidadeInput) {
+        const datalist = document.createElement('datalist');
+        datalist.id = 'lista-municipios-ibge';
+        document.body.appendChild(datalist);
+        
+        cidadeInput.setAttribute('list', 'lista-municipios-ibge');
+        
+        ufSelect.addEventListener('change', async (e) => {
+            datalist.innerHTML = '';
+            cidadeInput.value = ''; 
+            
+            const textoSelecionado = e.target.options[e.target.selectedIndex].text;
+            const ufMatch = textoSelecionado.match(/- ([A-Z]{2})/);
+            const uf = ufMatch ? ufMatch[1] : e.target.value;
+            
+            if (uf && uf.length === 2) {
+                try {
+                    const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+                    const cidades = await response.json();
+                    
+                    cidades.forEach(cidade => {
+                        const option = document.createElement('option');
+                        option.value = cidade.nome;
+                        datalist.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Erro IBGE:', error);
+                }
+            }
+        });
+    }
+});
+</script>
 </body>
 </html>
