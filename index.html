@@ -1973,16 +1973,55 @@
             AppState.updateTurnState();
         });
     </script>
- <!-- Motor de Busca IBGE + Status Automático Nacional - Pesquisa Justa -->
+ <!-- Motor de Busca IBGE (Estados, 5.570 Municípios e Outros Países) + Status Nacional - Pesquisa Justa -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. MOTOR IBGE BLINDADO COM FILTRO POR LETRAS INICIAIS (5.570 MUNICÍPIOS + DF + EXTERIOR)
-    const ufInput = document.querySelector('input[placeholder*="buscar UF" i]') || document.querySelector('input[placeholder*="Estado" i]');
-    const cidadeInput = document.querySelector('input[placeholder*="cidade" i]');
-    const cacheIbge = {};
-    const carregandoUF = {};
-    let atualizandoDatalist = false;
-    let listaAtualEsperada = [];
+    // 1. LISTA OFICIAL DE ESTADOS + OPÇÃO "OUTROS PAÍSES" NO FINAL
+    const ESTADOS_BRASIL = [
+        "Acre - AC", "Alagoas - AL", "Amapá - AP", "Amazonas - AM", "Bahia - BA",
+        "Ceará - CE", "Distrito Federal - DF", "Espírito Santo - ES", "Goiás - GO",
+        "Maranhão - MA", "Mato Grosso - MT", "Mato Grosso do Sul - MS", "Minas Gerais - MG",
+        "Pará - PA", "Paraíba - PB", "Paraná - PR", "Pernambuco - PE", "Piauí - PI",
+        "Rio de Janeiro - RJ", "Rio Grande do Norte - RN", "Rio Grande do Sul - RS",
+        "Rondônia - RO", "Roraima - RR", "Santa Catarina - SC", "São Paulo - SP",
+        "Sergipe - SE", "Tocantins - TO", "Outros Países"
+    ];
+
+    const PAISES_FALLBACK = [
+        "Afeganistão", "África do Sul", "Albânia", "Alemanha", "Andorra", "Angola",
+        "Antígua e Barbuda", "Arábia Saudita", "Argélia", "Argentina", "Armênia",
+        "Austrália", "Áustria", "Azerbaijão", "Bahamas", "Bangladesh", "Barbados",
+        "Barein", "Bélgica", "Belize", "Benin", "Bielorrússia", "Bolívia",
+        "Bósnia e Herzegovina", "Botsuana", "Brunei", "Bulgária", "Burkina Faso",
+        "Burundi", "Butão", "Cabo Verde", "Camarões", "Camboja", "Canadá", "Catar",
+        "Cazaquistão", "Chade", "Chile", "China", "Chipre", "Colômbia", "Comores",
+        "Congo", "Coreia do Norte", "Coreia do Sul", "Costa do Marfim", "Costa Rica",
+        "Croácia", "Cuba", "Dinamarca", "Djibuti", "Dominica", "Egito", "El Salvador",
+        "Emirados Árabes Unidos", "Equador", "Eritreia", "Eslováquia", "Eslovênia",
+        "Espanha", "Estados Unidos", "Estônia", "Eswatini", "Etiópia", "Fiji",
+        "Filipinas", "Finlândia", "França", "Gabão", "Gâmbia", "Gana", "Geórgia",
+        "Granada", "Grécia", "Guatemala", "Guiana", "Guiana Francesa", "Guiné",
+        "Guiné Equatorial", "Guiné-Bissau", "Haiti", "Holanda", "Honduras", "Hungria",
+        "Iêmen", "Ilhas Marshall", "Ilhas Salomão", "Índia", "Indonésia", "Irã",
+        "Iraque", "Irlanda", "Islândia", "Israel", "Itália", "Jamaica", "Japão",
+        "Jordânia", "Kuwait", "Laos", "Lesoto", "Letônia", "Líbano", "Libéria",
+        "Líbia", "Liechtenstein", "Lituânia", "Luxemburgo", "Macedônia do Norte",
+        "Madagascar", "Malásia", "Malaui", "Maldivas", "Mali", "Malta", "Marrocos",
+        "Maurício", "Mauritânia", "México", "Mianmar", "Micronésia", "Moçambique",
+        "Moldávia", "Mônaco", "Mongólia", "Montenegro", "Namíbia", "Nauru", "Nepal",
+        "Nicarágua", "Níger", "Nigéria", "Noruega", "Nova Zelândia", "Omã", "Palau",
+        "Palestina", "Panamá", "Papua-Nova Guiné", "Paquistão", "Paraguai", "Peru",
+        "Polônia", "Porto Rico", "Portugal", "Quênia", "Quirguistão", "Reino Unido",
+        "República Centro-Africana", "República Checa", "República Democrática do Congo",
+        "República Dominicana", "Romênia", "Ruanda", "Rússia", "Samoa", "San Marino",
+        "Santa Lúcia", "São Cristóvão e Neves", "São Tomé e Príncipe",
+        "São Vicente e Granadinas", "Seicheles", "Senegal", "Serra Leoa", "Sérvia",
+        "Singapura", "Síria", "Somália", "Sri Lanka", "Sudão", "Sudão do Sul",
+        "Suécia", "Suíça", "Suriname", "Tailândia", "Taiwan", "Tajiquistão",
+        "Tanzânia", "Timor-Leste", "Togo", "Tonga", "Trinidad e Tobago", "Tunísia",
+        "Turcomenistão", "Turquia", "Tuvalu", "Ucrânia", "Uganda", "Uruguai",
+        "Uzbequistão", "Vanuatu", "Vaticano", "Venezuela", "Vietnã", "Zâmbia", "Zimbábue"
+    ];
 
     const mapaEstados = {
         "acre": "AC", "alagoas": "AL", "amapa": "AP", "amazonas": "AM", "bahia": "BA",
@@ -1991,110 +2030,253 @@ document.addEventListener("DOMContentLoaded", () => {
         "para": "PA", "paraiba": "PB", "parana": "PR", "pernambuco": "PE", "piaui": "PI",
         "rio de janeiro": "RJ", "rio grande do norte": "RN", "rio grande do sul": "RS",
         "rondonia": "RO", "roraima": "RR", "santa catarina": "SC", "sao paulo": "SP",
-        "sergipe": "SE", "tocantins": "TO", "exterior": "ZZ"
+        "sergipe": "SE", "tocantins": "TO"
     };
 
-    function normalizarTexto(str) {
+    const ufInput = document.querySelector('input[placeholder*="buscar UF" i]') || document.querySelector('input[placeholder*="Estado" i]');
+    const cidadeInput = document.querySelector('input[placeholder*="cidade" i]');
+    const placeholderOriginalCidade = cidadeInput ? cidadeInput.getAttribute('placeholder') : 'Pesquise a cidade...';
+    const cacheIbge = {};
+    const carregandoUF = {};
+    let cachePaises = null;
+    let campoAtivo = null;
+
+    function normalizar(str) {
         return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
     }
 
     function extrairSiglaUF(texto) {
         if (!texto) return null;
+        const limpo = normalizar(texto);
+        if (limpo === "outros paises" || limpo === "exterior" || limpo === "exterior - zz" || limpo === "zz") {
+            return "OUTROS_PAISES";
+        }
         const matchSigla = texto.match(/-\s*([A-Z]{2})\b/i);
         if (matchSigla) return matchSigla[1].toUpperCase();
-        const limpo = normalizarTexto(texto);
         if (limpo.length === 2) return limpo.toUpperCase();
         return mapaEstados[limpo] || null;
     }
 
-    function obterDatalistCidades() {
-        const listId = cidadeInput.getAttribute('list');
-        let dl = listId ? document.getElementById(listId) : null;
-        if (!dl) {
-            dl = document.createElement('datalist');
-            dl.id = 'lista-municipios-ibge';
-            document.body.appendChild(dl);
-            cidadeInput.setAttribute('list', 'lista-municipios-ibge');
-        }
-        return dl;
-    }
+    // Barra horizontal própria acima do teclado (filtra estritamente pelas letras iniciais)
+    const barraHorizontal = document.createElement('div');
+    barraHorizontal.id = 'pj-barra-sugestoes';
+    barraHorizontal.style.cssText = [
+        'display: none',
+        'position: fixed',
+        'left: 0',
+        'right: 0',
+        'bottom: 0',
+        'z-index: 999999',
+        'background: #e5e7eb',
+        'border-top: 1px solid #cbd5e1',
+        'padding: 8px 10px',
+        'overflow-x: auto',
+        'white-space: nowrap',
+        'gap: 8px',
+        'box-shadow: 0 -4px 12px rgba(0,0,0,0.35)',
+        '-webkit-overflow-scrolling: touch'
+    ].join(';');
+    document.body.appendChild(barraHorizontal);
 
-    function aplicarListaFiltrada(dl, cidadesBase) {
-        const termoDigitado = normalizarTexto(cidadeInput.value);
-        const filtradas = termoDigitado
-            ? cidadesBase.filter(nome => normalizarTexto(nome).startsWith(termoDigitado))
-            : cidadesBase;
-
-        listaAtualEsperada = filtradas;
-
-        const precisaAtualizar =
-            dl.options.length !== filtradas.length ||
-            (filtradas.length > 0 && dl.options[0]?.value !== filtradas[0]);
-
-        if (precisaAtualizar) {
-            atualizandoDatalist = true;
-            dl.innerHTML = '';
-            const frag = document.createDocumentFragment();
-            filtradas.forEach(nome => {
-                const opt = document.createElement('option');
-                opt.value = nome;
-                frag.appendChild(opt);
-            });
-            dl.appendChild(frag);
-            atualizandoDatalist = false;
+    function posicionarBarra() {
+        if (barraHorizontal.style.display === 'none') return;
+        if (window.visualViewport) {
+            const vv = window.visualViewport;
+            const deslocamentoTeclado = Math.max(0, window.innerHeight - (vv.offsetTop + vv.height));
+            barraHorizontal.style.bottom = deslocamentoTeclado + 'px';
+        } else {
+            barraHorizontal.style.bottom = '0px';
         }
     }
 
-    async function garantirCidadesIBGE() {
-        if (!ufInput || !cidadeInput) return;
-        const uf = extrairSiglaUF(ufInput.value);
-        if (!uf) return;
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', posicionarBarra);
+        window.visualViewport.addEventListener('scroll', posicionarBarra);
+    }
+    window.addEventListener('resize', posicionarBarra);
 
-        const dl = obterDatalistCidades();
+    function fecharBarra() {
+        barraHorizontal.style.display = 'none';
+        barraHorizontal.innerHTML = '';
+    }
 
-        if (uf === "ZZ") {
-            aplicarListaFiltrada(dl, ["Exterior / Outros Países"]);
+    function renderizarOpcoes(lista, inputAlvo, aoSelecionar) {
+        barraHorizontal.innerHTML = '';
+        if (!lista || lista.length === 0) {
+            fecharBarra();
             return;
         }
 
-        if (!cacheIbge[uf]) {
-            if (carregandoUF[uf]) return;
-            carregandoUF[uf] = true;
-            try {
-                const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
-                const dados = await resp.json();
-                cacheIbge[uf] = dados.map(m => m.nome);
-            } catch (err) {
-                console.error('Erro ao carregar IBGE:', err);
-            } finally {
-                carregandoUF[uf] = false;
-            }
-        }
+        const frag = document.createDocumentFragment();
+        lista.slice(0, 80).forEach(item => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = item;
+            btn.style.cssText = [
+                'display: inline-block',
+                'background: #ffffff',
+                'color: #111827',
+                'border: 1px solid #9ca3af',
+                'border-radius: 8px',
+                'padding: 10px 16px',
+                'margin-right: 8px',
+                'font-size: 16px',
+                'font-weight: 600',
+                'cursor: pointer',
+                'box-shadow: 0 1px 2px rgba(0,0,0,0.12)'
+            ].join(';');
 
-        if (cacheIbge[uf]) {
-            aplicarListaFiltrada(dl, cacheIbge[uf]);
+            const escolher = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                inputAlvo.value = item;
+                inputAlvo.dispatchEvent(new Event('input', { bubbles: true }));
+                inputAlvo.dispatchEvent(new Event('change', { bubbles: true }));
+                fecharBarra();
+                if (aoSelecionar) aoSelecionar(item);
+            };
+
+            btn.addEventListener('pointerdown', escolher);
+            btn.addEventListener('mousedown', escolher);
+            frag.appendChild(btn);
+        });
+
+        barraHorizontal.appendChild(frag);
+        barraHorizontal.scrollLeft = 0;
+        barraHorizontal.style.display = 'flex';
+        posicionarBarra();
+    }
+
+    async function obterListaPaises() {
+        if (cachePaises) return cachePaises;
+        try {
+            const resp = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/paises?orderBy=nome');
+            const dados = await resp.json();
+            const unicos = new Set(PAISES_FALLBACK);
+            dados.forEach(p => {
+                if (p && p.nome && normalizar(p.nome) !== 'brasil') {
+                    unicos.add(p.nome);
+                }
+            });
+            cachePaises = Array.from(unicos).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        } catch (err) {
+            cachePaises = PAISES_FALLBACK;
+        }
+        return cachePaises;
+    }
+
+    async function obterMunicipiosUF(uf) {
+        if (!uf) return [];
+        if (uf === 'OUTROS_PAISES') return await obterListaPaises();
+        if (cacheIbge[uf]) return cacheIbge[uf];
+        if (carregandoUF[uf]) return [];
+
+        carregandoUF[uf] = true;
+        try {
+            const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+            const dados = await resp.json();
+            cacheIbge[uf] = dados
+                .map(m => m.nome)
+                .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+            return cacheIbge[uf];
+        } catch (err) {
+            console.error('Erro ao buscar municípios no IBGE:', err);
+            return [];
+        } finally {
+            carregandoUF[uf] = false;
         }
     }
 
-    if (ufInput && cidadeInput) {
-        const ufListId = ufInput.getAttribute('list');
-        const ufDatalist = ufListId ? document.getElementById(ufListId) : null;
-        if (ufDatalist && !ufDatalist.innerHTML.includes('Exterior - ZZ')) {
-            const optZZ = document.createElement('option');
-            optZZ.value = 'Exterior - ZZ';
-            ufDatalist.appendChild(optZZ);
+    function atualizarPlaceholderDestino(uf) {
+        if (!cidadeInput) return;
+        if (uf === 'OUTROS_PAISES') {
+            cidadeInput.setAttribute('placeholder', 'Pesquise o país...');
+        } else {
+            cidadeInput.setAttribute('placeholder', placeholderOriginalCidade);
+        }
+    }
+
+    function atualizarSugestoesEstado() {
+        if (!ufInput) return;
+        const termo = normalizar(ufInput.value);
+        const filtrados = termo
+            ? ESTADOS_BRASIL.filter(est => normalizar(est).startsWith(termo))
+            : ESTADOS_BRASIL;
+
+        renderizarOpcoes(filtrados, ufInput, (estadoEscolhido) => {
+            const sigla = extrairSiglaUF(estadoEscolhido);
+            atualizarPlaceholderDestino(sigla);
+            if (cidadeInput) cidadeInput.value = '';
+            if (sigla) obterMunicipiosUF(sigla);
+        });
+    }
+
+    async function atualizarSugestoesCidade() {
+        if (!cidadeInput || !ufInput) return;
+        const uf = extrairSiglaUF(ufInput.value);
+        atualizarPlaceholderDestino(uf);
+        if (!uf) {
+            fecharBarra();
+            return;
         }
 
-        const dlCidades = obterDatalistCidades();
-        const vigiaLista = new MutationObserver(() => {
-            if (!atualizandoDatalist && listaAtualEsperada.length > 0) {
-                garantirCidadesIBGE();
-            }
-        });
-        vigiaLista.observe(dlCidades, { childList: true });
+        const listaCompleta = await obterMunicipiosUF(uf);
+        if (campoAtivo !== cidadeInput) return;
 
-        ['input', 'change', 'blur'].forEach(ev => ufInput.addEventListener(ev, garantirCidadesIBGE));
-        ['focus', 'click', 'input'].forEach(ev => cidadeInput.addEventListener(ev, garantirCidadesIBGE));
+        const termo = normalizar(cidadeInput.value);
+        const filtradas = termo
+            ? listaCompleta.filter(item => normalizar(item).startsWith(termo))
+            : listaCompleta;
+
+        renderizarOpcoes(filtradas, cidadeInput, null);
+    }
+
+    if (ufInput && cidadeInput) {
+        ufInput.removeAttribute('list');
+        cidadeInput.removeAttribute('list');
+        ufInput.setAttribute('autocomplete', 'off');
+        cidadeInput.setAttribute('autocomplete', 'off');
+
+        ufInput.addEventListener('focus', () => {
+            campoAtivo = ufInput;
+            atualizarSugestoesEstado();
+        });
+        ufInput.addEventListener('click', () => {
+            campoAtivo = ufInput;
+            atualizarSugestoesEstado();
+        });
+        ufInput.addEventListener('input', () => {
+            campoAtivo = ufInput;
+            atualizarPlaceholderDestino(extrairSiglaUF(ufInput.value));
+            atualizarSugestoesEstado();
+        });
+        ufInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (document.activeElement !== ufInput && document.activeElement !== cidadeInput) {
+                    fecharBarra();
+                }
+            }, 180);
+        });
+
+        cidadeInput.addEventListener('focus', () => {
+            campoAtivo = cidadeInput;
+            atualizarSugestoesCidade();
+        });
+        cidadeInput.addEventListener('click', () => {
+            campoAtivo = cidadeInput;
+            atualizarSugestoesCidade();
+        });
+        cidadeInput.addEventListener('input', () => {
+            campoAtivo = cidadeInput;
+            atualizarSugestoesCidade();
+        });
+        cidadeInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (document.activeElement !== ufInput && document.activeElement !== cidadeInput) {
+                    fecharBarra();
+                }
+            }, 180);
+        });
     }
 
     // 2. CONTROLE AUTOMÁTICO NACIONAL (PESQUISA ATIVA / INATIVA)
