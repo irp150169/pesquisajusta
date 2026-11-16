@@ -1522,7 +1522,39 @@
                     await this.salvarVotosNaNuvem();
                 }
             },
+async carregarCandidatosReais(cargo, uf, municipio) {
+  if (!supabaseClient) return null;
+  try {
+    let query = supabaseClient
+      .from('candidatos')
+      .select('id, nome, numero, partido, foto_url')
+      .eq('cargo', cargo)
+      .eq('ativo', true)
+      .order('numero', { ascending: true });
 
+    if (cargo === 'president') {
+      query = query.eq('uf', 'BR');
+    } else if (cargo === 'mayor') {
+      query = query.eq('uf', uf).ilike('municipio', municipio || '');
+    } else {
+      query = query.eq('uf', uf);
+    }
+
+    const { data, error } = await query;
+    if (error || !data || data.length === 0) return null;
+
+    return data.map(c => ({
+      id: c.id,
+      name: c.nome,
+      number: c.numero,
+      party: c.partido,
+      photo: c.foto_url || ''
+    }));
+  } catch (err) {
+    console.warn('Usando lista local de candidatos:', err);
+    return null;
+  }
+},
             async salvarVotosNaNuvem() {
                 if (!supabaseClient) {
                     console.warn("Supabase não inicializado. Voto computado apenas localmente.");
