@@ -1696,6 +1696,7 @@
                     stackDiv.style.marginTop = '4px';
                     const bGeral = document.createElement('button');
                     bGeral.className = 'stacked-filter-btn active';
+                    bGeral.style.width = '100%';
                     bGeral.innerText = 'Geral do Município';
                     bGeral.onclick = (e) => {
                         document.querySelectorAll('.stacked-filter-btn').forEach(x=>x.classList.remove('active'));
