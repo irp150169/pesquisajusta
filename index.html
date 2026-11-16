@@ -231,14 +231,15 @@
             border-radius: 6px; font-size: 0.66rem; font-weight: bold; cursor: pointer; margin-top: auto; flex-shrink: 0;
         }
 
-        #candidates-container { display: flex; flex-direction: column; gap: 5px; overflow-y: auto; flex: 1; margin-bottom: 4px; }
+       .ballot-scroll-area { display: flex; flex-direction: column; overflow-y: auto; flex: 1; min-height: 0; margin-bottom: 6px; }
+        #candidates-container { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; }
         .candidate-card { background-color: #090d16; border: 2px solid var(--border); border-radius: 6px; padding: 6px 8px; display: flex; align-items: center; cursor: pointer; }
         .candidate-card.selected { border-color: #10b981; background-color: rgba(16, 185, 129, 0.08); box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3); }
         .candidate-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; border: 1px solid var(--border); }
         .candidate-info h4 { margin: 0 0 1px 0; font-size: 0.70rem; }
         .candidate-info p { margin: 0; font-size: 0.50rem; color: var(--text-muted); }
 
-        .special-votes-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 5px 0; flex-shrink: 0; }
+        .special-votes-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 8px 0 4px 0; flex-shrink: 0; }
         .special-vote-btn { background-color: #1e293b; border: 1px dashed var(--border); text-align: center; padding: 6px 4px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.52rem; color: var(--text-muted); }
         .special-vote-btn.selected { border-color: #10b981; background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
 
@@ -528,6 +529,7 @@
                         <p class="subtitle" id="voting-subtitle">Selecione 1 opção</p>
                     </div>
 
+               <div class="ballot-scroll-area">
                     <div id="candidates-container"></div>
 
                     <div class="special-votes-wrapper">
@@ -535,6 +537,7 @@
                         <div class="special-vote-btn" onclick="ScreenVoting.handleSpecialVote('Votos Nulos', event)">Nulo</div>
                         <div class="special-vote-btn" onclick="ScreenVoting.handleSpecialVote('Indecisos / Não Sabe', event)">Indeciso</div>
                     </div>
+                 </div>
 
                     <button id="btn-next-vote" onclick="ScreenVoting.nextVotingStep()" style="background-color: #0f766e; border-color: #14b8a6;" disabled>Confirmar e Avançar</button>
                 </div>
