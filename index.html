@@ -167,7 +167,7 @@
         .subtitle { font-size: 0.52rem; color: var(--text-muted); text-align: center; margin-bottom: 4px; }
 
         .form-row { display: flex; gap: 6px; margin-bottom: 5px; flex-shrink: 0; }
-        .form-group { flex: 1; min-width: 0; }
+        .form-group { flex: 1; min-width: 0; position: relative; }
         label { display: block; font-size: 0.50rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 600; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         input, select {
@@ -176,6 +176,52 @@
             text-align: center; text-align-last: center;
         }
         input:focus, select:focus { outline: none; border-color: var(--focus-ring); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25); }
+
+        /* LISTA SUSPENSA VERTICAL UNIFICADA (ESTADOS, MUNICÍPIOS IBGE E PAÍSES) */
+        .pj-vertical-dropdown {
+            position: fixed;
+            background-color: #090d16;
+            border: 1px solid #38bdf8;
+            border-radius: 6px;
+            max-height: 215px;
+            overflow-y: auto;
+            z-index: 999999;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.85);
+            display: none;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch;
+        }
+        .pj-vertical-dropdown-item {
+            padding: 9px 10px;
+            font-size: 0.68rem;
+            color: #f8fafc;
+            border-bottom: 1px solid #1e293b;
+            cursor: pointer;
+            text-align: left;
+            background-color: #090d16;
+            user-select: none;
+        }
+        .pj-vertical-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .pj-vertical-dropdown-item:hover,
+        .pj-vertical-dropdown-item:active {
+            background-color: #0f766e;
+            color: #ffffff;
+        }
+        .pj-vertical-dropdown-item.pj-special-country-item {
+            border-top: 1px dashed #38bdf8;
+            color: #38bdf8;
+            font-weight: bold;
+            background-color: #0d1526;
+        }
+        .pj-vertical-dropdown-status {
+            padding: 9px 10px;
+            font-size: 0.62rem;
+            color: #94a3b8;
+            text-align: center;
+            font-style: italic;
+        }
 
         .checkbox-group { display: flex; align-items: center; gap: 6px; font-size: 0.48rem; color: var(--text-main); line-height: 1.2; margin: 4px 0; flex-shrink: 0; }
         .checkbox-group input { width: 14px; height: 14px; margin: 0; accent-color: var(--accent); cursor: pointer; }
@@ -260,42 +306,6 @@
 </head>
 <body>
 
-    <!-- DATALISTS REGIONAIS E EXTERIOR -->
-    <datalist id="states-datalist">
-        <option value="Acre - AC"></option>
-        <option value="Alagoas - AL"></option>
-        <option value="Amapá - AP"></option>
-        <option value="Amazonas - AM"></option>
-        <option value="Bahia - BA"></option>
-        <option value="Ceará - CE"></option>
-        <option value="Distrito Federal - DF"></option>
-        <option value="Espírito Santo - ES"></option>
-        <option value="Goiás - GO"></option>
-        <option value="Maranhão - MA"></option>
-        <option value="Mato Grosso - MT"></option>
-        <option value="Mato Grosso do Sul - MS"></option>
-        <option value="Minas Gerais - MG"></option>
-        <option value="Pará - PA"></option>
-        <option value="Paraíba - PB"></option>
-        <option value="Paraná - PR"></option>
-        <option value="Pernambuco - PE"></option>
-        <option value="Piauí - PI"></option>
-        <option value="Rio de Janeiro - RJ"></option>
-        <option value="Rio Grande do Norte - RN"></option>
-        <option value="Rio Grande do Sul - RS"></option>
-        <option value="Rondônia - RO"></option>
-        <option value="Roraima - RR"></option>
-        <option value="Santa Catarina - SC"></option>
-        <option value="São Paulo - SP"></option>
-        <option value="Sergipe - SE"></option>
-        <option value="Tocantins - TO"></option>
-        <option value="Outros Países (Exterior)"></option>
-    </datalist>
-
-    <datalist id="cities-datalist"></datalist>
-    <datalist id="filter-cities-datalist"></datalist>
-    <datalist id="rep-cities-datalist"></datalist>
-
     <div class="phone-frame">
         <div id="toast-container">Mensagem</div>
 
@@ -324,12 +334,13 @@
                         <h1 class="header-title">Perfil Demográfico</h1>
                         <p class="subtitle" style="margin:0;">Dados obrigatórios para ponderação estatística oficial (IBGE / TSE).</p>
                     </div>
+
                     <!-- Botão de Status Nacional da Pesquisa -->
-<div style="margin-bottom: 15px; padding: 0 10px;">
-    <div id="btn-pesquisa-ativa" style="width: 100%; height: 44px; min-height: 44px; max-height: 44px; box-sizing: border-box; background-color: #007944; border: 1px solid #00bfa5; color: #ffffff; padding: 0 12px; border-radius: 6px; font-size: 18px; line-height: 1; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; user-select: none;">
-        PESQUISA ATIVA
-    </div>
-</div>
+                    <div style="margin-bottom: 10px; padding: 0 4px;">
+                        <div id="btn-pesquisa-ativa" style="width: 100%; height: 44px; min-height: 44px; max-height: 44px; box-sizing: border-box; background-color: #007944; border: 1px solid #00bfa5; color: #ffffff; padding: 0 12px; border-radius: 6px; font-size: 18px; line-height: 1; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; user-select: none;">
+                            PESQUISA ATIVA
+                        </div>
+                    </div>
                     
                     <div class="form-row">
                         <div class="form-group" style="flex: 1.1;">
@@ -344,12 +355,12 @@
 
                     <div class="form-row">
                         <div class="form-group" style="flex: 0.95;">
-                            <label>Estado / UF</label>
-                            <input type="text" id="state-input" list="states-datalist" placeholder="Digite para buscar UF..." value="" oninput="GeoDatabase.handleStateTyped('register')" onchange="GeoDatabase.handleStateTyped('register')" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();">
+                            <label>Estado / UF / País</label>
+                            <input type="text" id="state-input" autocomplete="off" placeholder="Selecione ou digite..." value="">
                         </div>
                         <div class="form-group" style="flex: 1.05;">
-                            <label id="city-label-text">Município / Capital</label>
-                            <input type="text" id="city-input" list="cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="GeoDatabase.updateCityDatalist('register', this.value)" oninput="GeoDatabase.handleCityTyped('register', false)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();">
+                            <label id="city-label-text">Município / Capital / País</label>
+                            <input type="text" id="city-input" autocomplete="off" placeholder="Pesquise a cidade..." value="">
                         </div>
                     </div>
 
@@ -558,12 +569,12 @@
                         
                         <div id="geo-search-block">
                             <div style="display: flex; gap: 6px; margin-bottom: 2px;" id="geographic-labels-row">
-                                <label style="flex: 0.95; font-size: 0.50rem; color: var(--text-muted); font-weight: 600;">Estado / UF</label>
-                                <label id="filter-second-label" style="flex: 1.05; font-size: 0.50rem; color: var(--text-muted); font-weight: 600;">Município / Capital</label>
+                                <label style="flex: 0.95; font-size: 0.50rem; color: var(--text-muted); font-weight: 600;">Estado / UF / País</label>
+                                <label id="filter-second-label" style="flex: 1.05; font-size: 0.50rem; color: var(--text-muted); font-weight: 600;">Município / Capital / País</label>
                             </div>
                             <div style="display: flex; gap: 6px; margin-bottom: 5px;" id="geographic-selectors-wrapper">
-                                <input type="text" id="filter-state-select" list="states-datalist" placeholder="Digite para buscar UF..." value="" oninput="GeoDatabase.handleStateTyped('results', false)" onchange="ScreenResults.onStateFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 0.95; font-size: 0.62rem; padding: 5px 4px;">
-                                <input type="text" id="filter-city-select" list="filter-cities-datalist" placeholder="Pesquise a cidade..." value="" onfocus="GeoDatabase.updateCityDatalist('results', this.value)" oninput="GeoDatabase.handleCityTyped('results', false)" onchange="ScreenResults.onCityFilterChange()" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1.05; font-size: 0.62rem; padding: 5px 4px;">
+                                <input type="text" id="filter-state-select" autocomplete="off" placeholder="Selecione ou digite..." value="" style="flex: 0.95; font-size: 0.62rem; padding: 5px 4px;">
+                                <input type="text" id="filter-city-select" autocomplete="off" placeholder="Pesquise a cidade..." value="" style="flex: 1.05; font-size: 0.62rem; padding: 5px 4px;">
                             </div>
                         </div>
 
@@ -637,13 +648,12 @@
         </div>
     </div>
 
-    <!-- SCRIPT DA APLICAÇÃO COM INTEGRAÇÃO SUPABASE -->
+    <!-- SCRIPT DA APLICAÇÃO COM INTEGRAÇÃO SUPABASE E MOTOR IBGE VERTICAL -->
     <script>
         /* ==========================================================================
            0. INICIALIZAÇÃO DO SUPABASE (PROJETO GYNTRFCBZUZIFGWJYVV)
            ========================================================================== */
         const SUPABASE_URL = 'https://gynttrfcbzuzifgwjyvv.supabase.co';
-        // Substitua abaixo pela sua chave Anon / Public real do painel do Supabase se necessário:
         const SUPABASE_ANON_KEY = 'sb_publishable_1Bs8IshgOrbyuXOrtIDliA_RKbGmFR8'; 
         
         let supabaseClient = null;
@@ -690,9 +700,12 @@
                 const wInput = document.getElementById('whatsapp-input'); if (wInput) wInput.value = '';
                 const bInput = document.getElementById('birthdate-input'); if (bInput) bInput.value = '';
                 const sInput = document.getElementById('state-input'); if (sInput) sInput.value = '';
-                const cInput = document.getElementById('city-input'); if (cInput) cInput.value = '';
+                const cInput = document.getElementById('city-input'); if (cInput) { cInput.value = ''; cInput.placeholder = 'Pesquise a cidade...'; }
+                const cLabel = document.getElementById('city-label-text'); if (cLabel) cLabel.innerText = 'Município / Capital / País';
+
                 const fsInput = document.getElementById('filter-state-select'); if (fsInput) fsInput.value = '';
-                const fcInput = document.getElementById('filter-city-select'); if (fcInput) fcInput.value = '';
+                const fcInput = document.getElementById('filter-city-select'); if (fcInput) { fcInput.value = ''; fcInput.placeholder = 'Pesquise a cidade...'; }
+                const fcLabel = document.getElementById('filter-second-label'); if (fcLabel) fcLabel.innerText = 'Município / Capital / País';
                 
                 const zSelect = document.getElementById('zone-input'); if (zSelect) zSelect.selectedIndex = 0;
                 const eSelect = document.getElementById('education-input'); if (eSelect) eSelect.selectedIndex = 0;
@@ -700,6 +713,8 @@
                 const gSelect = document.getElementById('gender-input'); if (gSelect) gSelect.selectedIndex = 0;
                 const rSelect = document.getElementById('race-input'); if (rSelect) rSelect.selectedIndex = 0;
                 const lgCheck = document.getElementById('lgpd-check'); if (lgCheck) lgCheck.checked = false;
+
+                GeoDatabase.closeDropdown();
 
                 document.getElementById('screen-results').classList.add('hidden');
                 document.getElementById('screen-export').classList.add('hidden');
@@ -712,9 +727,19 @@
         };
 
         /* ==========================================================================
-           2. BANCO DE DADOS GEOGRÁFICO E MAPEAMENTOS BLINDADOS (GeoDatabase)
+           2. BANCO DE DADOS GEOGRÁFICO IBGE + DROPDOWN VERTICAL UNIFICADO (GeoDatabase)
            ========================================================================== */
         const GeoDatabase = {
+            statesAndCountriesOption: [
+                "Acre - AC", "Alagoas - AL", "Amapá - AP", "Amazonas - AM", "Bahia - BA",
+                "Ceará - CE", "Distrito Federal - DF", "Espírito Santo - ES", "Goiás - GO",
+                "Maranhão - MA", "Mato Grosso - MT", "Mato Grosso do Sul - MS", "Minas Gerais - MG",
+                "Pará - PA", "Paraíba - PB", "Paraná - PR", "Pernambuco - PE", "Piauí - PI",
+                "Rio de Janeiro - RJ", "Rio Grande do Norte - RN", "Rio Grande do Sul - RS",
+                "Rondônia - RO", "Roraima - RR", "Santa Catarina - SC", "São Paulo - SP",
+                "Sergipe - SE", "Tocantins - TO", "Outros Países"
+            ],
+
             stateNameToCode: {
                 'AC': 'AC', 'ACRE': 'AC',
                 'AL': 'AL', 'ALAGOAS': 'AL',
@@ -743,7 +768,7 @@
                 'SE': 'SE', 'SERGIPE': 'SE',
                 'SP': 'SP', 'SAO PAULO': 'SP', 'SÃO PAULO': 'SP',
                 'TO': 'TO', 'TOCANTINS': 'TO',
-                'ZZ': 'ZZ', 'EXTERIOR': 'ZZ', 'OUTROS PAÍSES': 'ZZ'
+                'ZZ': 'ZZ', 'EXTERIOR': 'ZZ', 'OUTROS PAISES': 'ZZ', 'OUTROS PAÍSES': 'ZZ'
             },
 
             capitalsByState: {
@@ -755,34 +780,34 @@
                 'SE': 'Aracaju', 'SP': 'São Paulo', 'TO': 'Palmas'
             },
 
-            citiesByStateCode: {
-                'AC': ['Acrelândia', 'Assis Brasil', 'Brasiléia', 'Bujari', 'Capixaba', 'Cruzeiro do Sul', 'Epitaciolândia', 'Feijó', 'Jordão', 'Mâncio Lima', 'Manoel Urbano', 'Marechal Thaumaturgo', 'Plácido de Castro', 'Porto Acre', 'Porto Walter', 'Rio Branco', 'Rodrigues Alves', 'Santa Rosa do Purus', 'Sena Madureira', 'Senador Guiomard', 'Tarauacá', 'Xapuri'],
-                'AL': ['Anadia', 'Arapiraca', 'Atalaia', 'Barra de Santo Antônio', 'Barra de São Miguel', 'Batalha', 'Belo Monte', 'Boca da Mata', 'Branquinha', 'Cacimbinhas', 'Cajueiro', 'Campestre', 'Campo Alegre', 'Campo Grande', 'Canapi', 'Capela', 'Carneiros', 'Chã Preta', 'Coité do Nóia', 'Colônia Leopoldina', 'Coqueiro Seco', 'Coruripe', 'Craíbas', 'Delmiro Gouveia', 'Dois Riachos', 'Japaratinga', 'Jaramataia', 'Jequiá da Praia', 'Joaquim Gomes', 'Jundiá', 'Junqueiro', 'Lagoa da Canoa', 'Limoeiro de Anadia', 'Maceió', 'Major Izidoro', 'Maragogi', 'Maravilha', 'Marechal Deodoro', 'Maribondo', 'Mar Vermelho', 'Mata Grande', 'Matriz de Camaragibe', 'Messias', 'Minador do Negrão', 'Monteirópolis', 'Murici', 'Novo Lino', 'Olho d\'Água das Flores', 'Olho d\'Água do Casado', 'Olho d\'Água Grande', 'Olivença', 'Ouro Branco', 'Palestina', 'Palmeira dos Índios', 'Pão de Açúcar', 'Pariconha', 'Paripueira', 'Passo de Camaragibe', 'Paulo Jacinto', 'Penedo', 'Piaçabuçu', 'Pilar', 'Pindoba', 'Piranhas', 'Poço das Trincheiras', 'Porto Calvo', 'Porto de Pedras', 'Porto Real do Colégio', 'Quebrangulo', 'Rio Largo', 'Roteiro', 'Santa Luzia do Norte', 'Santana do Ipanema', 'Santana do Mundaú', 'São Brás', 'São José da Tapera', 'São José da Laje', 'São Luís do Quitunde', 'São Miguel dos Campos', 'São Miguel dos Milagres', 'São Sebastião', 'Satuba', 'Senador Rui Palmeira', 'Tanque d\'Arca', 'Taquarana', 'Teotônio Vilela', 'Traipu', 'União dos Palmares', 'Viçosa'],
-                'AM': ['Alvarães', 'Amaturá', 'Anamã', 'Anori', 'Apuí', 'Atalaia do Norte', 'Autazes', 'Barcelos', 'Barreirinha', 'Benjamin Constant', 'Beruri', 'Boa Vista do Ramos', 'Boca do Acre', 'Borba', 'Caapiranga', 'Canutama', 'Carauari', 'Careiro', 'Careiro da Várzea', 'Coari', 'Codajás', 'Eirunepé', 'Envira', 'Fonte Boa', 'Guajará', 'Humaitá', 'Ipixuna', 'Iranduba', 'Itacoatiara', 'Itamarati', 'Itapiranga', 'Japurá', 'Juruá', 'Jutaí', 'Lábrea', 'Manacapuru', 'Manaquiri', 'Manaus', 'Manicoré', 'Maraã', 'Maués', 'Nhamundá', 'Nova Olinda do Norte', 'Novo Airão', 'Novo Aripuanã', 'Parintins', 'Pauini', 'Presidente Figueiredo', 'Rio Preto da Eva', 'Santa Isabel do Rio Negro', 'Santo Antônio do Içá', 'São Gabriel da Cachoeira', 'São Paulo de Olivença', 'São Sebastião do Uatumã', 'Silves', 'Tabatinga', 'Tapauá', 'Tefé', 'Tonantins', 'Uarini', 'Urucará', 'Urucurituba'],
-                'AP': ['Amapá', 'Calçoene', 'Cutias', 'Ferreira Gomes', 'Itaubal', 'Laranjal do Jari', 'Macapá', 'Mazagão', 'Oiapoque', 'Pedra Branca do Amapari', 'Pracuúba', 'Santana', 'Serra do Navio', 'Tartarugalzinho', 'Vitória do Jari'],
-                'BA': ['Alcobaca', 'Barreiras', 'Bom Jesus da Lapa', 'Brumado', 'Camaçari', 'Eunápolis', 'Feira de Santana', 'Guanambi', 'Ilhéus', 'Irecê', 'Itabuna', 'Itapetinga', 'Jacobina', 'Jequié', 'Juazeiro', 'Lauro de Freitas', 'Luís Eduardo Magalhães', 'Paulo Afonso', 'Porto Seguro', 'Salvador', 'Santo Antônio de Jesus', 'Seabra', 'Teixeira de Freitas', 'Valença', 'Vitória da Conquista'],
-                'CE': ['Aracati', 'Barbalha', 'Baturité', 'Camocim', 'Caucaia', 'Crateús', 'Crato', 'Eusébio', 'Fortaleza', 'Iguatu', 'Itapipoca', 'Juazeiro do Norte', 'Limoeiro do Norte', 'Maracanaú', 'Maranguape', 'Quixadá', 'Quixeramobim', 'Sobral', 'Tianguá', 'Tauá'],
-                'DF': ['Águas Claras', 'Brasília', 'Ceilândia', 'Gama', 'Guará', 'Planaltina', 'Plano Piloto', 'Recanto das Antas', 'Samambaia', 'Santa Maria', 'Sobradinho', 'Taguatinga', 'Vicente Pires'],
-                'ES': ['Aracruz', 'Cachoeiro de Itapemirim', 'Cariacica', 'Colatina', 'Guarapari', 'Linhares', 'Marataízes', 'Nova Venécia', 'São Mateus', 'Serra', 'Vila Velha', 'Vitória'],
-                'GO': ['Águas Lindas de Goiás', 'Anápolis', 'Aparecida de Goiânia', 'Caldas Novas', 'Catalão', 'Formosa', 'Goiânia', 'Itumbiara', 'Jataí', 'Luziânia', 'Rio Verde', 'Senador Canedo', 'Trindade', 'Uruaçu', 'Valparaíso de Goiás'],
-                'MA': ['Açailândia', 'Bacabal', 'Balsas', 'Bar Barra do Corda', 'Caxias', 'Codó', 'Imperatriz', 'Itapecuru Mirim', 'Paço do Lumiar', 'Pinheiro', 'Santa Inês', 'São José de Ribamar', 'São Luís', 'Timon'],
-                'MG': ['Araguari', 'Barbacena', 'Belo Horizonte', 'Betim', 'Caratinga', 'Conselheiro Lafaiete', 'Contagem', 'Coronel Fabriciano', 'Divinópolis', 'Governador Valadares', 'Ibiritė', 'Ipatinga', 'Itabira', 'Itajubá', 'Itaúna', 'Juiz de Fora', 'Lavras', 'Manhuaçu', 'Montes Claros', 'Muriae', 'Nova Lima', 'Passos', 'Patos de Minas', 'Poços de Caldas', 'Pouso Alegre', 'Ribeirão das Neves', 'Sabará', 'Santa Luzia', 'São João del-Rei', 'Seven Lagoas', 'Tófilo Otoni', 'Ubá', 'Uberaba', 'Uberlândia', 'Varginha', 'Viçosa'],
-                'MS': ['Aquidauana', 'Campo Grande', 'Corumbá', 'Coxim', 'Dourados', 'Maracaju', 'Naviraí', 'Nova Andradina', 'Paranaíba', 'Ponta Porã', 'Sidrolândia', 'Três Lagoas'],
-                'MT': ['Alta Floresta', 'Barra do Garças', 'Cáceres', 'Cuiabá', 'Juína', 'Lucas do Rio Verde', 'Pontes e Lacerda', 'Primavera do Leste', 'Rondonópolis', 'Sinop', 'Sorriso', 'Tangará da Serra', 'Várzea Grande'],
-                'PA': ['Abaetetuba', 'Altamira', 'Ananindeua', 'Barcarena', 'Belém', 'Bragança', 'Breves', 'Cametá', 'Castanhal', 'Itaituba', 'Marabá', 'Marituba', 'Paragominas', 'Parauapebas', 'Redenção', 'Santarém', 'Tucuruí'],
-                'PB': ['Bayeux', 'Cabedelo', 'Cajazeiras', 'Campina Grande', 'Guarabira', 'João Pessoa', 'Mamanguape', 'Monteiro', 'Patos', 'Santa Rita', 'Sousa'],
-                'PE': ['Abreu e Lima', 'Araripina', 'Cabo de Santo Agostinho', 'Camaragibe', 'Caruaru', 'Garanhuns', 'Goiana', 'Igarassu', 'Ipojuca', 'Jaboatão dos Guararapes', 'Olinda', 'Ouricuri', 'Paulista', 'Petrolina', 'Recife', 'Salgueiro', 'Serra Talhada', 'Timbaúba', 'Vitória de Santo Antão'],
-                'PI': ['Altos', 'Barras', 'Bom Jesus', 'Campo Maior', 'Esperantina', 'Floriano', 'José de Freitas', 'Parnaíba', 'Picos', 'Piripiri', 'São Raimundo Nonato', 'Teresina', 'União'],
-                'PR': ['Apucarana', 'Arapongas', 'Araucária', 'Campo Largo', 'Cascavel', 'Castro', 'Cianorte', 'Colombo', 'Curitiba', 'Fazenda Rio Grande', 'Foz do Iguaçu', 'Francisco Beltrão', 'Guarapuava', 'Londrina', 'Marechal Cândido Rondon', 'Maringá', 'Paranaguá', 'Paranavaí', 'Pato Branco', 'Pinhais', 'Piraquara', 'Ponta Grossa', 'São José dos Pinhais', 'Toledo', 'Umuarama'],
-                'RJ': ['Angra dos Reis', 'Araruama', 'Barra Mansa', 'Belford Roxo', 'Cabo Frio', 'Campos dos Goytacazes', 'Duque de Caxias', 'Itaboraí', 'Itaguaí', 'Macaé', 'Magé', 'Maricá', 'Mesquita', 'Nilópolis', 'Niterói', 'Nova Friburgo', 'Nova Iguaçu', 'Petrópolis', 'Resende', 'Rio das Ostras', 'Rio de Janeiro', 'São Gonçalo', 'São João de Meriti', 'Teresópolis', 'Volta Redonda'],
-                'RN': ['Açu', 'Apodi', 'Caicó', 'Ceará-Mirim', 'Currais Novos', 'João Câmara', 'Macaíba', 'Mossoró', 'Natal', 'Nova Cruz', 'Parnamirim', 'Santa Cruz', 'São Gonçalo do Amarante', 'São José de Mipibu'],
-                'RO': ['Ariquemes', 'Cacoal', 'Guajará-Mirim', 'Jaru', 'Ji-Paraná', 'Porto Velho', 'Rolim de Moura', 'Vilhena'],
-                'RR': ['Alto Alegre', 'Amajari', 'Boa Vista', 'Bonfim', 'Cantá', 'Caracaraí', 'Caroebe', 'Iracema', 'Mucajaí', 'Normandia', 'Pacaraima', 'Rorainópolis', 'Uiramutã'],
-                'RS': ['Alvorada', 'Bagé', 'Bento Gonçalves', 'Cachoeirinha', 'Camaquã', 'Canoas', 'Caxias do Sul', 'Erechim', 'Gravataí', 'Guaíba', 'Ijuí', 'Lajeado', 'Novo Hamburgo', 'Passo Fundo', 'Pelotas', 'Porto Alegre', 'Rio Grande', 'Santa Cruz do Sul', 'Santa Maria', 'Sant\'Ana do Livramento', 'São Leopoldo', 'Sapucaia do Sul', 'Uruguaiana', 'Viamão'],
-                'SC': ['Balneário Camboriú', 'Blumenau', 'Chapecó', 'Criciúma', 'Florianópolis', 'Itajaí', 'Joinville', 'Lages', 'São José', 'Tubarão'],
-                'SE': ['Aracaju', 'Estância', 'Itabaiana', 'Lagarto', 'Nossa Senhora do Socorro', 'São Cristóvão', 'Simão Dias', 'Tobias Barreto'],
-                'SP': ['Americana', 'Araçatuba', 'Araraquara', 'Bauru', 'Campinas', 'Carapicuíba', 'Diadema', 'Franca', 'Guarulhos', 'Itaquaquecetuba', 'Jundiaí', 'Limeira', 'Mauá', 'Mogi das Cruzes', 'Osasco', 'Piracicaba', 'Praia Grande', 'Presidente Prudente', 'Ribeirão Preto', 'Santo André', 'Santos', 'São Bernardo do Campo', 'São José do Rio Preto', 'São José dos Campos', 'São Paulo', 'Sorocaba', 'Sumaré', 'Taubaté'],
-                'TO': ['Araguaína', 'Araguatins', 'Colinas do Tocantins', 'Guaraí', 'Gurupi', 'Miracema do Tocantins', 'Palmas', 'Paraíso do Tocantins', 'Porto Nacional', 'Tocantinópolis']
+            fallbackCitiesByStateCode: {
+                'AC': ['Rio Branco', 'Cruzeiro do Sul', 'Sena Madureira', 'Tarauacá'],
+                'AL': ['Maceió', 'Arapiraca', 'Rio Largo', 'Palmeira dos Índios'],
+                'AM': ['Manaus', 'Parintins', 'Itacoatiara', 'Manacapuru', 'Coari', 'Tefé'],
+                'AP': ['Macapá', 'Santana', 'Laranjal do Jari'],
+                'BA': ['Salvador', 'Feira de Santana', 'Vitória da Conquista', 'Camaçari', 'Itabuna', 'Juazeiro'],
+                'CE': ['Fortaleza', 'Caucaia', 'Juazeiro do Norte', 'Maracanaú', 'Sobral'],
+                'DF': ['Brasília'],
+                'ES': ['Vitória', 'Vila Velha', 'Serra', 'Cariacica', 'Cachoeiro de Itapemirim'],
+                'GO': ['Goiânia', 'Aparecida de Goiânia', 'Anápolis', 'Rio Verde', 'Luziânia'],
+                'MA': ['São Luís', 'Imperatriz', 'São José de Ribamar', 'Timon', 'Caxias'],
+                'MG': ['Belo Horizonte', 'Uberlândia', 'Contagem', 'Juiz de Fora', 'Betim', 'Montes Claros'],
+                'MS': ['Campo Grande', 'Dourados', 'Três Lagoas', 'Corumbá'],
+                'MT': ['Cuiabá', 'Várzea Grande', 'Rondonópolis', 'Sinop', 'Tangará da Serra'],
+                'PA': ['Belém', 'Ananindeua', 'Santarém', 'Marabá', 'Parauapebas', 'Castanhal'],
+                'PB': ['João Pessoa', 'Campina Grande', 'Santa Rita', 'Patos'],
+                'PE': ['Recife', 'Jaboatão dos Guararapes', 'Olinda', 'Caruaru', 'Petrolina'],
+                'PI': ['Teresina', 'Parnaíba', 'Picos', 'Piripiri'],
+                'PR': ['Curitiba', 'Londrina', 'Maringá', 'Ponta Grossa', 'Cascavel', 'Foz do Iguaçu'],
+                'RJ': ['Rio de Janeiro', 'São Gonçalo', 'Duque de Caxias', 'Nova Iguaçu', 'Niterói', 'Campos dos Goytacazes'],
+                'RN': ['Natal', 'Mossoró', 'Parnamirim', 'São Gonçalo do Amarante'],
+                'RO': ['Porto Velho', 'Ji-Paraná', 'Ariquemes', 'Vilhena', 'Cacoal'],
+                'RR': ['Boa Vista', 'Rorainópolis', 'Caracaraí'],
+                'RS': ['Porto Alegre', 'Caxias do Sul', 'Canoas', 'Pelotas', 'Santa Maria', 'Gravataí'],
+                'SC': ['Florianópolis', 'Joinville', 'Blumenau', 'São José', 'Chapecó', 'Itajaí'],
+                'SE': ['Aracaju', 'Nossa Senhora do Socorro', 'Lagarto', 'Itabaiana'],
+                'SP': ['São Paulo', 'Guarulhos', 'Campinas', 'São Bernardo do Campo', 'Santo André', 'Osasco', 'Sorocaba', 'Ribeirão Preto', 'São José dos Campos', 'Holambra', 'Hortolândia'],
+                'TO': ['Palmas', 'Araguaína', 'Gurupi', 'Porto Nacional']
             },
 
             cityZonesAlphabetical: [
@@ -792,12 +817,54 @@
             ],
 
             internationalCountryList: [
-                "Todos os Países", "Alemanha", "Angola", "Argentina", "Austrália", "Áustria", "Bélgica", "Bolívia", "Canadá", "Chile", "China", "Colômbia", "Coreia do Sul", "Dinamarca", "Emirados Árabes Unidos", "Espanha", "Estados Unidos (EUA)", "França", "Holanda", "Irlanda", "Israel", "Itália", "Japão", "México", "Moçambique", "Noruega", "Nova Zelândia", "Paraguai", "Peru", "Portugal", "Reino Unido", "Suíça", "Uruguai", "Venezuela"
+                "Afeganistão", "África do Sul", "Albânia", "Alemanha", "Andorra", "Angola",
+                "Antígua e Barbuda", "Arábia Saudita", "Argélia", "Argentina", "Armênia",
+                "Austrália", "Áustria", "Azerbaijão", "Bahamas", "Bangladesh", "Barbados",
+                "Barein", "Bélgica", "Belize", "Benin", "Bielorrússia", "Bolívia",
+                "Bósnia e Herzegovina", "Botsuana", "Brunei", "Bulgária", "Burkina Faso",
+                "Burundi", "Butão", "Cabo Verde", "Camarões", "Camboja", "Canadá", "Catar",
+                "Cazaquistão", "Chade", "Chile", "China", "Chipre", "Colômbia", "Comores",
+                "Congo", "Coreia do Norte", "Coreia do Sul", "Costa do Marfim", "Costa Rica",
+                "Croácia", "Cuba", "Dinamarca", "Djibuti", "Dominica", "Egito", "El Salvador",
+                "Emirados Árabes Unidos", "Equador", "Eritreia", "Eslováquia", "Eslovênia",
+                "Espanha", "Estados Unidos (EUA)", "Estônia", "Eswatini", "Etiópia", "Fiji",
+                "Filipinas", "Finlândia", "França", "Gabão", "Gâmbia", "Gana", "Geórgia",
+                "Granada", "Grécia", "Guatemala", "Guiana", "Guiana Francesa", "Guiné",
+                "Guiné Equatorial", "Guiné-Bissau", "Haiti", "Holanda", "Honduras", "Hungria",
+                "Iêmen", "Ilhas Marshall", "Ilhas Salomão", "Índia", "Indonésia", "Irã",
+                "Iraque", "Irlanda", "Islândia", "Israel", "Itália", "Jamaica", "Japão",
+                "Jordânia", "Kuwait", "Laos", "Lesoto", "Letônia", "Líbano", "Libéria",
+                "Líbia", "Liechtenstein", "Lituânia", "Luxemburgo", "Macedônia do Norte",
+                "Madagascar", "Malásia", "Malaui", "Maldivas", "Mali", "Malta", "Marrocos",
+                "Maurício", "Mauritânia", "México", "Mianmar", "Micronésia", "Moçambique",
+                "Moldávia", "Mônaco", "Mongólia", "Montenegro", "Namíbia", "Nauru", "Nepal",
+                "Nicarágua", "Níger", "Nigéria", "Noruega", "Nova Zelândia", "Omã", "Palau",
+                "Palestina", "Panamá", "Papua-Nova Guiné", "Paquistão", "Paraguai", "Peru",
+                "Polônia", "Porto Rico", "Portugal", "Quênia", "Quirguistão", "Reino Unido",
+                "República Centro-Africana", "República Checa", "República Democrática do Congo",
+                "República Dominicana", "Romênia", "Ruanda", "Rússia", "Samoa", "San Marino",
+                "Santa Lúcia", "São Cristóvão e Neves", "São Tomé e Príncipe",
+                "São Vicente e Granadinas", "Seicheles", "Senegal", "Serra Leoa", "Sérvia",
+                "Singapura", "Síria", "Somália", "Sri Lanka", "Sudão", "Sudão do Sul",
+                "Suécia", "Suíça", "Suriname", "Tailândia", "Taiwan", "Tajiquistão",
+                "Tanzânia", "Timor-Leste", "Togo", "Tonga", "Trinidad e Tobago", "Tunísia",
+                "Turcomenistão", "Turquia", "Tuvalu", "Ucrânia", "Uganda", "Uruguai",
+                "Uzbequistão", "Vanuatu", "Vaticano", "Venezuela", "Vietnã", "Zâmbia", "Zimbábue"
             ],
+
+            ibgeCache: {},
+            ibgeLoading: {},
+            countriesCache: null,
+            dropdownEl: null,
+            activeInputEl: null,
 
             removeAccents(str) {
                 if (!str) return '';
                 return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            },
+
+            normalize(str) {
+                return this.removeAccents(str).toLowerCase().trim();
             },
 
             getUFCodeFromInput(textVal) {
@@ -815,118 +882,264 @@
 
                 for (const [key, code] of Object.entries(this.stateNameToCode)) {
                     const cleanKey = this.removeAccents(key).toUpperCase();
-                    if (clean === cleanKey || clean.includes(cleanKey)) return code;
+                    if (clean === cleanKey || clean.startsWith(cleanKey)) return code;
                 }
                 return '';
             },
 
-            isExactStateOption(val) {
-                if (!val) return false;
-                const statesList = document.getElementById('states-datalist');
-                if (!statesList) return false;
-                return Array.from(statesList.options).some(opt => opt.value.toLowerCase() === val.trim().toLowerCase());
-            },
+            ensureDropdownElement() {
+                if (!this.dropdownEl) {
+                    const div = document.createElement('div');
+                    div.id = 'pj-vertical-dropdown';
+                    div.className = 'pj-vertical-dropdown';
+                    document.body.appendChild(div);
+                    this.dropdownEl = div;
 
-            isExactCityOption(val, stateVal) {
-                if (!val) return false;
-                const cleanVal = this.removeAccents(val).toLowerCase().trim();
-                const code = this.getUFCodeFromInput(stateVal);
-                let sourceList = [];
-                if (code === 'ZZ') sourceList = this.internationalCountryList;
-                else if (code && this.citiesByStateCode[code]) sourceList = this.citiesByStateCode[code];
-                else sourceList = Object.values(this.citiesByStateCode).flat();
-                return sourceList.some(c => this.removeAccents(c).toLowerCase() === cleanVal);
-            },
+                    document.addEventListener('pointerdown', (e) => {
+                        if (this.dropdownEl && this.dropdownEl.style.display === 'block') {
+                            if (!this.dropdownEl.contains(e.target) && e.target !== this.activeInputEl) {
+                                this.closeDropdown();
+                            }
+                        }
+                    });
 
-            updateCityDatalist(context = 'register', typedValue = '') {
-                let stateVal = '';
-                let datalistElem = null;
-                let cityInputElem = null;
-
-                if (context === 'register') {
-                    const stElem = document.getElementById('state-input');
-                    if (stElem) stateVal = stElem.value;
-                    datalistElem = document.getElementById('cities-datalist');
-                    cityInputElem = document.getElementById('city-input');
-                } else if (context === 'results') {
-                    const stElem = document.getElementById('filter-state-select');
-                    if (stElem) stateVal = stElem.value;
-                    datalistElem = document.getElementById('filter-cities-datalist');
-                    cityInputElem = document.getElementById('filter-city-select');
-                } else if (context === 'report') {
-                    const stElem = document.getElementById('rep-estado');
-                    if (stElem) stateVal = stElem.value;
-                    datalistElem = document.getElementById('rep-cities-datalist');
-                    cityInputElem = document.getElementById('rep-city-report');
+                    window.addEventListener('resize', () => this.repositionDropdown());
+                    if (window.visualViewport) {
+                        window.visualViewport.addEventListener('resize', () => this.repositionDropdown());
+                    }
                 }
+                return this.dropdownEl;
+            },
 
-                if (!datalistElem || !cityInputElem) return;
+            repositionDropdown() {
+                if (!this.dropdownEl || !this.activeInputEl || this.dropdownEl.style.display !== 'block') return;
+                const rect = this.activeInputEl.getBoundingClientRect();
+                const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                const spaceBelow = viewportHeight - rect.bottom - 8;
 
-                const code = this.getUFCodeFromInput(stateVal);
-                datalistElem.innerHTML = '';
+                this.dropdownEl.style.left = rect.left + 'px';
+                this.dropdownEl.style.width = rect.width + 'px';
 
-                let sourceList = [];
-                if (code === 'ZZ') {
-                    cityInputElem.placeholder = "Pesquise o país...";
-                    sourceList = this.internationalCountryList;
-                } else if (code && this.citiesByStateCode[code]) {
-                    cityInputElem.placeholder = "Pesquise a cidade...";
-                    sourceList = this.citiesByStateCode[code];
+                if (spaceBelow >= 110) {
+                    this.dropdownEl.style.top = (rect.bottom + 2) + 'px';
+                    this.dropdownEl.style.bottom = 'auto';
+                    this.dropdownEl.style.maxHeight = Math.min(220, spaceBelow) + 'px';
                 } else {
-                    cityInputElem.placeholder = "Pesquise a cidade...";
-                    sourceList = Object.values(this.citiesByStateCode).flat();
+                    this.dropdownEl.style.top = (rect.bottom + 2) + 'px';
+                    this.dropdownEl.style.maxHeight = '145px';
+                }
+            },
+
+            closeDropdown() {
+                if (this.dropdownEl) {
+                    this.dropdownEl.style.display = 'none';
+                    this.dropdownEl.innerHTML = '';
+                }
+                this.activeInputEl = null;
+            },
+
+            showLoadingDropdown(inputEl, message = 'Carregando lista IBGE...') {
+                const dd = this.ensureDropdownElement();
+                this.activeInputEl = inputEl;
+                dd.innerHTML = `<div class="pj-vertical-dropdown-status">${message}</div>`;
+                dd.style.display = 'block';
+                this.repositionDropdown();
+            },
+
+            openVerticalDropdown(inputEl, items, onSelectCallback) {
+                const dd = this.ensureDropdownElement();
+                this.activeInputEl = inputEl;
+                dd.innerHTML = '';
+
+                if (!items || items.length === 0) {
+                    dd.innerHTML = `<div class="pj-vertical-dropdown-status">Nenhum resultado encontrado</div>`;
+                    dd.style.display = 'block';
+                    this.repositionDropdown();
+                    return;
                 }
 
-                if (typedValue) {
-                    const lowerTyped = this.removeAccents(typedValue).toLowerCase();
-                    sourceList = sourceList.filter(city => this.removeAccents(city).toLowerCase().startsWith(lowerTyped));
-                }
+                const frag = document.createDocumentFragment();
+                items.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'pj-vertical-dropdown-item';
+                    if (item === 'Outros Países') {
+                        row.classList.add('pj-special-country-item');
+                    }
+                    row.textContent = item;
 
-                const fragment = document.createDocumentFragment();
-                sourceList.forEach(item => {
-                    const opt = document.createElement('option');
-                    opt.value = item;
-                    fragment.appendChild(opt);
+                    const selectItem = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        inputEl.value = item;
+                        this.closeDropdown();
+                        if (onSelectCallback) onSelectCallback(item);
+                    };
+
+                    row.addEventListener('pointerdown', selectItem);
+                    row.addEventListener('mousedown', selectItem);
+                    frag.appendChild(row);
                 });
-                datalistElem.appendChild(fragment);
+
+                dd.appendChild(frag);
+                dd.scrollTop = 0;
+                dd.style.display = 'block';
+                this.repositionDropdown();
             },
 
-            handleStateTyped(context = 'register', autoRender = false) {
-                this.updateCityDatalist(context, '');
-                if (context === 'results') {
-                    const stElem = document.getElementById('filter-state-select');
-                    if (autoRender || (stElem && this.isExactStateOption(stElem.value))) {
-                        ScreenResults.onStateFilterChange();
-                    }
-                } else if (context === 'report' && autoRender) {
-                    ScreenReport.generateDynamicReport();
+            async fetchCountries() {
+                if (this.countriesCache) return this.countriesCache;
+                try {
+                    const resp = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/paises?orderBy=nome');
+                    const data = await resp.json();
+                    const set = new Set(this.internationalCountryList);
+                    data.forEach(p => {
+                        if (p && p.nome && this.normalize(p.nome) !== 'brasil') {
+                            set.add(p.nome);
+                        }
+                    });
+                    this.countriesCache = Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                } catch (e) {
+                    this.countriesCache = this.internationalCountryList;
                 }
+                return this.countriesCache;
             },
 
-            handleCityTyped(context = 'register', autoRender = false) {
-                let cityInputElem = null;
-                let stateVal = '';
+            async fetchCitiesForUF(uf) {
+                if (!uf) return [];
+                if (uf === 'ZZ') return await this.fetchCountries();
+                if (this.ibgeCache[uf]) return this.ibgeCache[uf];
+
+                if (this.ibgeLoading[uf]) {
+                    return await this.ibgeLoading[uf];
+                }
+
+                this.ibgeLoading[uf] = (async () => {
+                    try {
+                        const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+                        const data = await resp.json();
+                        const list = data.map(m => m.nome).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                        this.ibgeCache[uf] = list;
+                        return list;
+                    } catch (err) {
+                        console.error('Erro IBGE:', err);
+                        return this.fallbackCitiesByStateCode[uf] || [];
+                    } finally {
+                        delete this.ibgeLoading[uf];
+                    }
+                })();
+
+                return await this.ibgeLoading[uf];
+            },
+
+            updateDestinationLabels(context, ufCode) {
                 if (context === 'register') {
-                    cityInputElem = document.getElementById('city-input');
-                } else if (context === 'results') {
-                    cityInputElem = document.getElementById('filter-city-select');
-                    const stElem = document.getElementById('filter-state-select');
-                    if (stElem) stateVal = stElem.value;
-                } else if (context === 'report') {
-                    cityInputElem = document.getElementById('rep-city-report');
-                }
-                
-                if (cityInputElem) {
-                    this.updateCityDatalist(context, cityInputElem.value);
-                }
-
-                if (context === 'results') {
-                    if (autoRender || (cityInputElem && this.isExactCityOption(cityInputElem.value, stateVal))) {
-                        ScreenResults.onCityFilterChange();
+                    const lbl = document.getElementById('city-label-text');
+                    const inp = document.getElementById('city-input');
+                    if (ufCode === 'ZZ') {
+                        if (lbl) lbl.innerText = 'País de Votação';
+                        if (inp) inp.placeholder = 'Pesquise o país...';
+                    } else {
+                        if (lbl) lbl.innerText = 'Município / Capital / País';
+                        if (inp) inp.placeholder = 'Pesquise a cidade...';
                     }
-                } else if (context === 'report' && autoRender) {
-                    ScreenReport.generateDynamicReport();
+                } else if (context === 'results') {
+                    const lbl = document.getElementById('filter-second-label');
+                    const inp = document.getElementById('filter-city-select');
+                    if (ufCode === 'ZZ') {
+                        if (lbl) lbl.innerText = 'País de Votação';
+                        if (inp) inp.placeholder = 'Pesquise o país...';
+                    } else {
+                        if (lbl) lbl.innerText = 'Município / Capital / País';
+                        if (inp) inp.placeholder = 'Pesquise a cidade...';
+                    }
+                } else if (context === 'report') {
+                    const inp = document.getElementById('rep-city-report');
+                    if (inp) {
+                        inp.placeholder = ufCode === 'ZZ' ? 'Pesquise o país...' : 'Pesquise a cidade...';
+                    }
                 }
+            },
+
+            bindStateAndCityInputs(stateId, cityId, context) {
+                const stEl = document.getElementById(stateId);
+                const ctEl = document.getElementById(cityId);
+                if (!stEl || !ctEl || stEl.dataset.pjBound === '1') return;
+
+                stEl.dataset.pjBound = '1';
+                ctEl.dataset.pjBound = '1';
+                stEl.removeAttribute('list');
+                ctEl.removeAttribute('list');
+
+                const openStateList = (filterByText) => {
+                    const typed = filterByText ? this.normalize(stEl.value) : '';
+                    const filtered = typed
+                        ? this.statesAndCountriesOption.filter(opt => this.normalize(opt).startsWith(typed))
+                        : this.statesAndCountriesOption;
+
+                    this.openVerticalDropdown(stEl, filtered, (selectedState) => {
+                        const uf = this.getUFCodeFromInput(selectedState);
+                        ctEl.value = '';
+                        this.updateDestinationLabels(context, uf);
+                        if (uf) this.fetchCitiesForUF(uf);
+
+                        if (context === 'results') {
+                            ScreenResults.onStateFilterChange();
+                        } else if (context === 'report') {
+                            ScreenReport.generateDynamicReport();
+                        }
+                    });
+                };
+
+                const openCityList = async (filterByText) => {
+                    const uf = this.getUFCodeFromInput(stEl.value);
+                    if (!uf) {
+                        this.openVerticalDropdown(ctEl, ['Selecione primeiro o Estado / UF / País'], () => {
+                            stEl.focus();
+                        });
+                        return;
+                    }
+
+                    if (uf !== 'ZZ' && !this.ibgeCache[uf]) {
+                        this.showLoadingDropdown(ctEl, 'Carregando municípios do IBGE...');
+                    }
+
+                    const fullList = await this.fetchCitiesForUF(uf);
+                    if (document.activeElement !== ctEl && this.activeInputEl !== ctEl) return;
+
+                    const typed = filterByText ? this.normalize(ctEl.value) : '';
+                    const filtered = typed
+                        ? fullList.filter(item => this.normalize(item).startsWith(typed))
+                        : fullList;
+
+                    this.openVerticalDropdown(ctEl, filtered, () => {
+                        if (context === 'results') {
+                            ScreenResults.onCityFilterChange();
+                        } else if (context === 'report') {
+                            ScreenReport.generateDynamicReport();
+                        }
+                    });
+                };
+
+                stEl.addEventListener('focus', () => openStateList(false));
+                stEl.addEventListener('click', () => openStateList(false));
+                stEl.addEventListener('input', () => {
+                    const uf = this.getUFCodeFromInput(stEl.value);
+                    this.updateDestinationLabels(context, uf);
+                    openStateList(true);
+                });
+
+                ctEl.addEventListener('focus', () => openCityList(false));
+                ctEl.addEventListener('click', () => openCityList(false));
+                ctEl.addEventListener('input', () => {
+                    openCityList(true);
+                    if (context === 'report') ScreenReport.generateDynamicReport();
+                });
+            },
+
+            initAllGeoInputs() {
+                this.bindStateAndCityInputs('state-input', 'city-input', 'register');
+                this.bindStateAndCityInputs('filter-state-select', 'filter-city-select', 'results');
+                this.bindStateAndCityInputs('rep-estado', 'rep-city-report', 'report');
             }
         };
 
@@ -983,8 +1196,8 @@
 
                 if (!phone) { AppState.showToast('⚠️ Informe seu (DDD) WhatsApp.', true); return; }
                 if (!birth) { AppState.showToast('⚠️ Data de nascimento obrigatória.', true); return; }
-                if (!state) { AppState.showToast('⚠️ Selecione ou digite o Estado / UF.', true); return; }
-                if (!city) { AppState.showToast('⚠️ Digite ou selecione o Município.', true); return; }
+                if (!state) { AppState.showToast('⚠️ Selecione ou digite o Estado / UF / País.', true); return; }
+                if (!city) { AppState.showToast('⚠️ Digite ou selecione o Município / País.', true); return; }
                 if (!zone) { AppState.showToast('⚠️ Selecione a Zona / Região.', true); return; }
                 if (!education) { AppState.showToast('⚠️ Selecione o grau de Escolaridade.', true); return; }
                 if (!income) { AppState.showToast('⚠️ Selecione a faixa de Renda Familiar.', true); return; }
@@ -992,7 +1205,8 @@
                 if (!race) { AppState.showToast('⚠️ Selecione a Cor / Raça (IBGE).', true); return; }
                 if (!lgpd) { AppState.showToast('⚠️ Marque a autorização LGPD/TSE.', true); return; }
 
-                // Salva os dados temporariamente no AppState para envio posterior à urna
+                GeoDatabase.closeDropdown();
+
                 AppState.eleitorTemp = {
                     whatsapp: phone,
                     nascimento: birth,
@@ -1018,6 +1232,7 @@
            ========================================================================== */
         const ScreenAdmin = {
             openLogin() {
+                GeoDatabase.closeDropdown();
                 document.getElementById('screen-register').classList.add('hidden');
                 document.getElementById('screen-admin-login').classList.remove('hidden');
             },
@@ -1037,6 +1252,7 @@
                     AppState.activeMediaInfo = null;
                     document.getElementById('screen-admin-login').classList.add('hidden');
                     document.getElementById('screen-results').classList.remove('hidden');
+                    GeoDatabase.initAllGeoInputs();
                     ScreenResults.setupResultTabs();
                     AppState.showToast('✅ Acesso ADM liberado!');
                 } else AppState.showToast('❌ Chave incorreta. Tente "adm2026".', true);
@@ -1051,6 +1267,7 @@
                 'MIDIA-NACIONAL': { name: 'Agência Nacional de Notícias', type: 'Veículo Nacional de Imprensa', tier: 'Licenciamento Nacional' }
             },
             openLogin() {
+                GeoDatabase.closeDropdown();
                 document.getElementById('screen-register').classList.add('hidden');
                 document.getElementById('screen-media-login').classList.remove('hidden');
             },
@@ -1295,10 +1512,8 @@
                 if (this.currentStep < this.activeBallots.length) {
                     this.renderBallot();
                 } else {
-                    // Último voto concluído: envia os dados consolidados para o Supabase
                     document.getElementById('screen-voting').classList.add('hidden');
                     document.getElementById('screen-success').classList.remove('hidden');
-
                     await this.salvarVotosNaNuvem();
                 }
             },
@@ -1326,12 +1541,12 @@
                     };
 
                     const { data, error } = await supabaseClient
-                        .from('pesquisas_votos') // Nome da tabela no seu Supabase
+                        .from('pesquisas_votos')
                         .insert([payload]);
 
                     if (error) {
                         console.error('Erro ao inserir no Supabase:', error.message);
-                        AppState.showToast('⚠️ Voto registrado na urna cego (Modo Offline).', true);
+                        AppState.showToast('⚠️ Voto registrado na urna cega (Modo Offline).', true);
                     } else {
                         console.log('Voto salvo com sucesso no Supabase!', data);
                         AppState.showToast('🛡️ Voto sincronizado com a nuvem com sucesso!');
@@ -1344,6 +1559,7 @@
             goToResults() {
                 document.getElementById('screen-success').classList.add('hidden');
                 document.getElementById('screen-results').classList.remove('hidden');
+                GeoDatabase.initAllGeoInputs();
                 ScreenResults.setupResultTabs();
             }
         };
@@ -1394,7 +1610,6 @@
             onStateFilterChange() {
                 const ctElem = document.getElementById('filter-city-select');
                 if (ctElem) ctElem.value = '';
-                GeoDatabase.updateCityDatalist('results', '');
                 this.renderFilterSections();
             },
 
@@ -1403,6 +1618,7 @@
             },
 
             switchResultTab(category, btnElement) {
+                GeoDatabase.closeDropdown();
                 document.querySelectorAll('#result-tabs-container .tab-btn').forEach(b => b.classList.remove('active')); 
                 if (btnElement) btnElement.classList.add('active');
                 this.lastLoadedCategory = category;
@@ -1456,7 +1672,7 @@
                             e.currentTarget.classList.add('active'); 
                             if (stElem) stElem.value = '';
                             if (ctElem) ctElem.value = '';
-                            GeoDatabase.updateCityDatalist('results', '');
+                            GeoDatabase.updateDestinationLabels('results', '');
                             this.lastLoadedKey = f; 
                             this.renderSimulatedDataset(this.lastLoadedCategory, f); 
                         };
@@ -1629,12 +1845,14 @@
             activeCargo: 'Presidente',
 
             openExportReport() {
+                GeoDatabase.closeDropdown();
                 document.getElementById('screen-results').classList.add('hidden');
                 document.getElementById('screen-export').classList.remove('hidden');
                 this.renderReportFilters(); 
             },
 
             switchCargo(cargo, btnElement) {
+                GeoDatabase.closeDropdown();
                 document.querySelectorAll('#report-cargo-tabs .tab-btn').forEach(b => b.classList.remove('active'));
                 if (btnElement) btnElement.classList.add('active');
                 this.activeCargo = cargo;
@@ -1661,15 +1879,15 @@
                             <select id="rep-detalhe-select" style="display: none; flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;" onchange="ScreenReport.generateDynamicReport()"></select>
                         </div>
                         <div id="rep-presidente-municipio-row" style="display: none; gap: 4px; width: 100%;">
-                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-estado" autocomplete="off" placeholder="Estado / UF / País..." style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-city-report" autocomplete="off" placeholder="Município / País..." style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         </div>
                     `;
                 } else if (this.activeCargo === 'Governador' || this.activeCargo === 'Senador') {
                     geoInputsHTML = `
                         <div style="display: flex; gap: 4px; width: 100%;">
-                            <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                            <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite a Cidade..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-estado" autocomplete="off" placeholder="Estado / UF / País..." style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                            <input type="text" id="rep-city-report" autocomplete="off" placeholder="Pesquise a cidade..." style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         </div>
                         <div style="display: flex; gap: 4px; width: 100%;">
                             <select id="rep-nivel" onchange="ScreenReport.generateDynamicReport()" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
@@ -1681,8 +1899,8 @@
                 } else if (this.activeCargo === 'Prefeito') {
                     geoInputsHTML = `
                         <div style="display: flex; gap: 4px; width: 100%;">
-                             <input type="text" id="rep-estado" list="states-datalist" placeholder="Digite o Estado/UF..." oninput="GeoDatabase.handleStateTyped('report', true)" onchange="GeoDatabase.handleStateTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
-                             <input type="text" id="rep-city-report" list="rep-cities-datalist" placeholder="Digite o Município..." onfocus="GeoDatabase.updateCityDatalist('report', this.value)" oninput="GeoDatabase.handleCityTyped('report', true)" onchange="GeoDatabase.handleCityTyped('report', true)" onclick="this.value=''; this.dispatchEvent(new Event('input')); this.showPicker && this.showPicker();" style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                             <input type="text" id="rep-estado" autocomplete="off" placeholder="Estado / UF / País..." style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
+                             <input type="text" id="rep-city-report" autocomplete="off" placeholder="Pesquise o município..." style="flex: 1; padding: 4px; font-size: 0.48rem; background-color: #090d16; color: var(--text-main); border: 1px solid var(--border); border-radius: 4px;">
                         </div>
                     `;
                 }
@@ -1741,6 +1959,7 @@
                 `;
 
                 container.innerHTML = geoInputsHTML + demoInputsHTML;
+                GeoDatabase.bindStateAndCityInputs('rep-estado', 'rep-city-report', 'report');
                 this.updateReportSubfilters();
             },
 
@@ -1760,6 +1979,7 @@
 
                     if (nivel === 'Por Município') {
                         municipioRow.style.display = 'flex';
+                        GeoDatabase.bindStateAndCityInputs('rep-estado', 'rep-city-report', 'report');
                     } else if (nivel !== 'Geral (Brasil)') {
                         detalheSelect.style.display = 'block';
                         let options = [];
@@ -1767,10 +1987,9 @@
                         if (nivel === 'Por Região') {
                             options = ['Região Norte', 'Região Nordeste', 'Região Centro-Oeste', 'Região Sudeste', 'Região Sul'];
                         } else if (nivel === 'Por Estado (UF)') {
-                            const stateOptions = Array.from(document.getElementById('states-datalist').options);
-                            options = stateOptions.map(opt => opt.value).filter(val => val !== "Outros Países (Exterior)");
+                            options = GeoDatabase.statesAndCountriesOption.filter(val => val !== "Outros Países");
                         } else if (nivel === 'Exterior (Consulados)') {
-                            options = GeoDatabase.internationalCountryList.filter(c => c !== "Todos os Países");
+                            options = GeoDatabase.internationalCountryList;
                         }
 
                         options.forEach(optVal => {
@@ -1801,8 +2020,8 @@
                         const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
                         const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
                         filterDesc = `<li><strong>Abrangência:</strong> Município Específico</li>`;
-                        if (estado) filterDesc += `<li><strong>Estado (UF):</strong> ${estado}</li>`;
-                        if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                        if (estado) filterDesc += `<li><strong>Estado / País:</strong> ${estado}</li>`;
+                        if (city) filterDesc += `<li><strong>Município / País:</strong> ${city}</li>`;
                     } else {
                         const detalheSelect = document.getElementById('rep-detalhe-select');
                         const detalhe = (detalheSelect && detalheSelect.style.display !== 'none') ? detalheSelect.value : '';
@@ -1955,6 +2174,7 @@
             },
 
             backToResults() {
+                GeoDatabase.closeDropdown();
                 document.getElementById('screen-export').classList.add('hidden');
                 if (AppState.activeMediaInfo) document.getElementById('screen-register').classList.remove('hidden');
                 else document.getElementById('screen-results').classList.remove('hidden');
@@ -1964,419 +2184,112 @@
         };
 
         /* ==========================================================================
-           INICIALIZAÇÃO DO APLICATIVO E EVENTOS GLOBAIS
+           9. CONTROLE AUTOMÁTICO NACIONAL (PESQUISA ATIVA / INATIVA + CALENDÁRIO ADM)
+           ========================================================================== */
+        const NationalSchedule = {
+            pesquisaLiberada: true,
+
+            aplicarVisualBanner(ativa) {
+                this.pesquisaLiberada = ativa;
+                const bannerStatus = document.getElementById('btn-pesquisa-ativa');
+                if (!bannerStatus) return;
+                if (ativa) {
+                    bannerStatus.textContent = 'PESQUISA ATIVA';
+                    bannerStatus.style.backgroundColor = '#007944';
+                    bannerStatus.style.borderColor = '#00bfa5';
+                    bannerStatus.style.color = '#ffffff';
+                } else {
+                    bannerStatus.textContent = 'PESQUISA INATIVA';
+                    bannerStatus.style.backgroundColor = '#b91c1c';
+                    bannerStatus.style.borderColor = '#ef5350';
+                    bannerStatus.style.color = '#ffffff';
+                }
+            },
+
+            avaliarCalendario() {
+                try {
+                    const salvo = JSON.parse(localStorage.getItem('pj_calendario_nacional') || 'null');
+                    if (salvo && salvo.inicio && salvo.fim) {
+                        const agora = new Date().getTime();
+                        const inicio = new Date(salvo.inicio).getTime();
+                        const fim = new Date(salvo.fim).getTime();
+                        this.aplicarVisualBanner(agora >= inicio && agora <= fim);
+                        return;
+                    }
+                    if (salvo && typeof salvo.ativa === 'boolean') {
+                        this.aplicarVisualBanner(salvo.ativa);
+                        return;
+                    }
+                    this.aplicarVisualBanner(true);
+                } catch (e) {
+                    this.aplicarVisualBanner(true);
+                }
+            },
+
+            init() {
+                this.avaliarCalendario();
+                setInterval(() => this.avaliarCalendario(), 30000);
+
+                document.querySelectorAll('button').forEach(btn => {
+                    if (btn.textContent && btn.textContent.includes('Prosseguir')) {
+                        btn.addEventListener('click', (e) => {
+                            if (!this.pesquisaLiberada) {
+                                e.stopImmediatePropagation();
+                                e.preventDefault();
+                                AppState.showToast('⚠️ Pesquisa INATIVA no momento. Aguarde a abertura oficial.', true);
+                            }
+                        }, true);
+                    }
+                });
+
+                const loginAdmScreen = document.getElementById('screen-admin-login');
+                if (loginAdmScreen && !document.getElementById('pj-agendamento-nacional-box')) {
+                    const salvo = JSON.parse(localStorage.getItem('pj_calendario_nacional') || '{}');
+                    const box = document.createElement('div');
+                    box.id = 'pj-agendamento-nacional-box';
+                    box.style.cssText = 'margin: 6px 0; padding: 8px; border: 1px solid #00bfa5; border-radius: 6px; background: rgba(0, 77, 64, 0.25);';
+                    box.innerHTML = `
+                        <div style="font-weight: bold; color: #00bfa5; margin-bottom: 5px; font-size: 0.52rem; text-transform: uppercase; text-align: center;">
+                            Calendário Nacional Único (5.570 Municípios + Exterior)
+                        </div>
+                        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+                            <div style="flex: 1;">
+                                <label style="font-size: 0.44rem;">Início Oficial</label>
+                                <input type="datetime-local" id="pj-data-inicio" value="${salvo.inicio || ''}" style="font-size: 0.50rem; padding: 4px;">
+                            </div>
+                            <div style="flex: 1;">
+                                <label style="font-size: 0.44rem;">Encerramento Oficial</label>
+                                <input type="datetime-local" id="pj-data-fim" value="${salvo.fim || ''}" style="font-size: 0.50rem; padding: 4px;">
+                            </div>
+                        </div>
+                        <button type="button" id="pj-salvar-calendario" style="padding: 6px; background: #007944; border-color: #00bfa5; font-size: 0.52rem;">
+                            Salvar Período Nacional Automático
+                        </button>
+                    `;
+                    const passInput = document.getElementById('admin-pass-input');
+                    if (passInput && passInput.parentElement) {
+                        passInput.parentElement.insertAdjacentElement('afterend', box);
+                        document.getElementById('pj-salvar-calendario').addEventListener('click', () => {
+                            const inicio = document.getElementById('pj-data-inicio').value;
+                            const fim = document.getElementById('pj-data-fim').value;
+                            localStorage.setItem('pj_calendario_nacional', JSON.stringify({ inicio, fim }));
+                            this.avaliarCalendario();
+                            AppState.showToast('✅ Calendário nacional salvo e sincronizado!');
+                        });
+                    }
+                }
+            }
+        };
+
+        /* ==========================================================================
+           10. INICIALIZAÇÃO DO APLICATIVO E EVENTOS GLOBAIS
            ========================================================================== */
         document.addEventListener('DOMContentLoaded', () => {
             ScreenAuth.initTouchEvents();
-            GeoDatabase.handleStateTyped('register');
-            GeoDatabase.handleStateTyped('results');
+            GeoDatabase.initAllGeoInputs();
+            NationalSchedule.init();
             AppState.updateTurnState();
         });
     </script>
- <!-- Motor de Busca IBGE (Estados, 5.570 Municípios e Outros Países) + Status Nacional - Pesquisa Justa -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. LISTA OFICIAL DE ESTADOS + OPÇÃO "OUTROS PAÍSES" NO FINAL
-    const ESTADOS_BRASIL = [
-        "Acre - AC", "Alagoas - AL", "Amapá - AP", "Amazonas - AM", "Bahia - BA",
-        "Ceará - CE", "Distrito Federal - DF", "Espírito Santo - ES", "Goiás - GO",
-        "Maranhão - MA", "Mato Grosso - MT", "Mato Grosso do Sul - MS", "Minas Gerais - MG",
-        "Pará - PA", "Paraíba - PB", "Paraná - PR", "Pernambuco - PE", "Piauí - PI",
-        "Rio de Janeiro - RJ", "Rio Grande do Norte - RN", "Rio Grande do Sul - RS",
-        "Rondônia - RO", "Roraima - RR", "Santa Catarina - SC", "São Paulo - SP",
-        "Sergipe - SE", "Tocantins - TO", "Outros Países"
-    ];
-
-    const PAISES_FALLBACK = [
-        "Afeganistão", "África do Sul", "Albânia", "Alemanha", "Andorra", "Angola",
-        "Antígua e Barbuda", "Arábia Saudita", "Argélia", "Argentina", "Armênia",
-        "Austrália", "Áustria", "Azerbaijão", "Bahamas", "Bangladesh", "Barbados",
-        "Barein", "Bélgica", "Belize", "Benin", "Bielorrússia", "Bolívia",
-        "Bósnia e Herzegovina", "Botsuana", "Brunei", "Bulgária", "Burkina Faso",
-        "Burundi", "Butão", "Cabo Verde", "Camarões", "Camboja", "Canadá", "Catar",
-        "Cazaquistão", "Chade", "Chile", "China", "Chipre", "Colômbia", "Comores",
-        "Congo", "Coreia do Norte", "Coreia do Sul", "Costa do Marfim", "Costa Rica",
-        "Croácia", "Cuba", "Dinamarca", "Djibuti", "Dominica", "Egito", "El Salvador",
-        "Emirados Árabes Unidos", "Equador", "Eritreia", "Eslováquia", "Eslovênia",
-        "Espanha", "Estados Unidos", "Estônia", "Eswatini", "Etiópia", "Fiji",
-        "Filipinas", "Finlândia", "França", "Gabão", "Gâmbia", "Gana", "Geórgia",
-        "Granada", "Grécia", "Guatemala", "Guiana", "Guiana Francesa", "Guiné",
-        "Guiné Equatorial", "Guiné-Bissau", "Haiti", "Holanda", "Honduras", "Hungria",
-        "Iêmen", "Ilhas Marshall", "Ilhas Salomão", "Índia", "Indonésia", "Irã",
-        "Iraque", "Irlanda", "Islândia", "Israel", "Itália", "Jamaica", "Japão",
-        "Jordânia", "Kuwait", "Laos", "Lesoto", "Letônia", "Líbano", "Libéria",
-        "Líbia", "Liechtenstein", "Lituânia", "Luxemburgo", "Macedônia do Norte",
-        "Madagascar", "Malásia", "Malaui", "Maldivas", "Mali", "Malta", "Marrocos",
-        "Maurício", "Mauritânia", "México", "Mianmar", "Micronésia", "Moçambique",
-        "Moldávia", "Mônaco", "Mongólia", "Montenegro", "Namíbia", "Nauru", "Nepal",
-        "Nicarágua", "Níger", "Nigéria", "Noruega", "Nova Zelândia", "Omã", "Palau",
-        "Palestina", "Panamá", "Papua-Nova Guiné", "Paquistão", "Paraguai", "Peru",
-        "Polônia", "Porto Rico", "Portugal", "Quênia", "Quirguistão", "Reino Unido",
-        "República Centro-Africana", "República Checa", "República Democrática do Congo",
-        "República Dominicana", "Romênia", "Ruanda", "Rússia", "Samoa", "San Marino",
-        "Santa Lúcia", "São Cristóvão e Neves", "São Tomé e Príncipe",
-        "São Vicente e Granadinas", "Seicheles", "Senegal", "Serra Leoa", "Sérvia",
-        "Singapura", "Síria", "Somália", "Sri Lanka", "Sudão", "Sudão do Sul",
-        "Suécia", "Suíça", "Suriname", "Tailândia", "Taiwan", "Tajiquistão",
-        "Tanzânia", "Timor-Leste", "Togo", "Tonga", "Trinidad e Tobago", "Tunísia",
-        "Turcomenistão", "Turquia", "Tuvalu", "Ucrânia", "Uganda", "Uruguai",
-        "Uzbequistão", "Vanuatu", "Vaticano", "Venezuela", "Vietnã", "Zâmbia", "Zimbábue"
-    ];
-
-    const mapaEstados = {
-        "acre": "AC", "alagoas": "AL", "amapa": "AP", "amazonas": "AM", "bahia": "BA",
-        "ceara": "CE", "distrito federal": "DF", "espirito santo": "ES", "goias": "GO",
-        "maranhao": "MA", "mato grosso": "MT", "mato grosso do sul": "MS", "minas gerais": "MG",
-        "para": "PA", "paraiba": "PB", "parana": "PR", "pernambuco": "PE", "piaui": "PI",
-        "rio de janeiro": "RJ", "rio grande do norte": "RN", "rio grande do sul": "RS",
-        "rondonia": "RO", "roraima": "RR", "santa catarina": "SC", "sao paulo": "SP",
-        "sergipe": "SE", "tocantins": "TO"
-    };
-
-    const ufInput = document.querySelector('input[placeholder*="buscar UF" i]') || document.querySelector('input[placeholder*="Estado" i]');
-    const cidadeInput = document.querySelector('input[placeholder*="cidade" i]');
-    const placeholderOriginalCidade = cidadeInput ? cidadeInput.getAttribute('placeholder') : 'Pesquise a cidade...';
-    const cacheIbge = {};
-    const carregandoUF = {};
-    let cachePaises = null;
-    let campoAtivo = null;
-
-    function normalizar(str) {
-        return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-    }
-
-    function extrairSiglaUF(texto) {
-        if (!texto) return null;
-        const limpo = normalizar(texto);
-        if (limpo === "outros paises" || limpo === "exterior" || limpo === "exterior - zz" || limpo === "zz") {
-            return "OUTROS_PAISES";
-        }
-        const matchSigla = texto.match(/-\s*([A-Z]{2})\b/i);
-        if (matchSigla) return matchSigla[1].toUpperCase();
-        if (limpo.length === 2) return limpo.toUpperCase();
-        return mapaEstados[limpo] || null;
-    }
-
-    // Barra horizontal própria acima do teclado (filtra estritamente pelas letras iniciais)
-    const barraHorizontal = document.createElement('div');
-    barraHorizontal.id = 'pj-barra-sugestoes';
-    barraHorizontal.style.cssText = [
-        'display: none',
-        'position: fixed',
-        'left: 0',
-        'right: 0',
-        'bottom: 0',
-        'z-index: 999999',
-        'background: #e5e7eb',
-        'border-top: 1px solid #cbd5e1',
-        'padding: 8px 10px',
-        'overflow-x: auto',
-        'white-space: nowrap',
-        'gap: 8px',
-        'box-shadow: 0 -4px 12px rgba(0,0,0,0.35)',
-        '-webkit-overflow-scrolling: touch'
-    ].join(';');
-    document.body.appendChild(barraHorizontal);
-
-    function posicionarBarra() {
-        if (barraHorizontal.style.display === 'none') return;
-        if (window.visualViewport) {
-            const vv = window.visualViewport;
-            const deslocamentoTeclado = Math.max(0, window.innerHeight - (vv.offsetTop + vv.height));
-            barraHorizontal.style.bottom = deslocamentoTeclado + 'px';
-        } else {
-            barraHorizontal.style.bottom = '0px';
-        }
-    }
-
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', posicionarBarra);
-        window.visualViewport.addEventListener('scroll', posicionarBarra);
-    }
-    window.addEventListener('resize', posicionarBarra);
-
-    function fecharBarra() {
-        barraHorizontal.style.display = 'none';
-        barraHorizontal.innerHTML = '';
-    }
-
-    function renderizarOpcoes(lista, inputAlvo, aoSelecionar) {
-        barraHorizontal.innerHTML = '';
-        if (!lista || lista.length === 0) {
-            fecharBarra();
-            return;
-        }
-
-        const frag = document.createDocumentFragment();
-        lista.slice(0, 80).forEach(item => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.textContent = item;
-            btn.style.cssText = [
-                'display: inline-block',
-                'background: #ffffff',
-                'color: #111827',
-                'border: 1px solid #9ca3af',
-                'border-radius: 8px',
-                'padding: 10px 16px',
-                'margin-right: 8px',
-                'font-size: 16px',
-                'font-weight: 600',
-                'cursor: pointer',
-                'box-shadow: 0 1px 2px rgba(0,0,0,0.12)'
-            ].join(';');
-
-            const escolher = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                inputAlvo.value = item;
-                inputAlvo.dispatchEvent(new Event('input', { bubbles: true }));
-                inputAlvo.dispatchEvent(new Event('change', { bubbles: true }));
-                fecharBarra();
-                if (aoSelecionar) aoSelecionar(item);
-            };
-
-            btn.addEventListener('pointerdown', escolher);
-            btn.addEventListener('mousedown', escolher);
-            frag.appendChild(btn);
-        });
-
-        barraHorizontal.appendChild(frag);
-        barraHorizontal.scrollLeft = 0;
-        barraHorizontal.style.display = 'flex';
-        posicionarBarra();
-    }
-
-    async function obterListaPaises() {
-        if (cachePaises) return cachePaises;
-        try {
-            const resp = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/paises?orderBy=nome');
-            const dados = await resp.json();
-            const unicos = new Set(PAISES_FALLBACK);
-            dados.forEach(p => {
-                if (p && p.nome && normalizar(p.nome) !== 'brasil') {
-                    unicos.add(p.nome);
-                }
-            });
-            cachePaises = Array.from(unicos).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-        } catch (err) {
-            cachePaises = PAISES_FALLBACK;
-        }
-        return cachePaises;
-    }
-
-    async function obterMunicipiosUF(uf) {
-        if (!uf) return [];
-        if (uf === 'OUTROS_PAISES') return await obterListaPaises();
-        if (cacheIbge[uf]) return cacheIbge[uf];
-        if (carregandoUF[uf]) return [];
-
-        carregandoUF[uf] = true;
-        try {
-            const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
-            const dados = await resp.json();
-            cacheIbge[uf] = dados
-                .map(m => m.nome)
-                .sort((a, b) => a.localeCompare(b, 'pt-BR'));
-            return cacheIbge[uf];
-        } catch (err) {
-            console.error('Erro ao buscar municípios no IBGE:', err);
-            return [];
-        } finally {
-            carregandoUF[uf] = false;
-        }
-    }
-
-    function atualizarPlaceholderDestino(uf) {
-        if (!cidadeInput) return;
-        if (uf === 'OUTROS_PAISES') {
-            cidadeInput.setAttribute('placeholder', 'Pesquise o país...');
-        } else {
-            cidadeInput.setAttribute('placeholder', placeholderOriginalCidade);
-        }
-    }
-
-    function atualizarSugestoesEstado() {
-        if (!ufInput) return;
-        const termo = normalizar(ufInput.value);
-        const filtrados = termo
-            ? ESTADOS_BRASIL.filter(est => normalizar(est).startsWith(termo))
-            : ESTADOS_BRASIL;
-
-        renderizarOpcoes(filtrados, ufInput, (estadoEscolhido) => {
-            const sigla = extrairSiglaUF(estadoEscolhido);
-            atualizarPlaceholderDestino(sigla);
-            if (cidadeInput) cidadeInput.value = '';
-            if (sigla) obterMunicipiosUF(sigla);
-        });
-    }
-
-    async function atualizarSugestoesCidade() {
-        if (!cidadeInput || !ufInput) return;
-        const uf = extrairSiglaUF(ufInput.value);
-        atualizarPlaceholderDestino(uf);
-        if (!uf) {
-            fecharBarra();
-            return;
-        }
-
-        const listaCompleta = await obterMunicipiosUF(uf);
-        if (campoAtivo !== cidadeInput) return;
-
-        const termo = normalizar(cidadeInput.value);
-        const filtradas = termo
-            ? listaCompleta.filter(item => normalizar(item).startsWith(termo))
-            : listaCompleta;
-
-        renderizarOpcoes(filtradas, cidadeInput, null);
-    }
-
-    if (ufInput && cidadeInput) {
-        ufInput.removeAttribute('list');
-        cidadeInput.removeAttribute('list');
-        ufInput.setAttribute('autocomplete', 'off');
-        cidadeInput.setAttribute('autocomplete', 'off');
-
-        ufInput.addEventListener('focus', () => {
-            campoAtivo = ufInput;
-            atualizarSugestoesEstado();
-        });
-        ufInput.addEventListener('click', () => {
-            campoAtivo = ufInput;
-            atualizarSugestoesEstado();
-        });
-        ufInput.addEventListener('input', () => {
-            campoAtivo = ufInput;
-            atualizarPlaceholderDestino(extrairSiglaUF(ufInput.value));
-            atualizarSugestoesEstado();
-        });
-        ufInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                if (document.activeElement !== ufInput && document.activeElement !== cidadeInput) {
-                    fecharBarra();
-                }
-            }, 180);
-        });
-
-        cidadeInput.addEventListener('focus', () => {
-            campoAtivo = cidadeInput;
-            atualizarSugestoesCidade();
-        });
-        cidadeInput.addEventListener('click', () => {
-            campoAtivo = cidadeInput;
-            atualizarSugestoesCidade();
-        });
-        cidadeInput.addEventListener('input', () => {
-            campoAtivo = cidadeInput;
-            atualizarSugestoesCidade();
-        });
-        cidadeInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                if (document.activeElement !== ufInput && document.activeElement !== cidadeInput) {
-                    fecharBarra();
-                }
-            }, 180);
-        });
-    }
-
-    // 2. CONTROLE AUTOMÁTICO NACIONAL (PESQUISA ATIVA / INATIVA)
-    const bannerStatus = document.getElementById('btn-pesquisa-ativa');
-    let pesquisaLiberada = true;
-
-    function aplicarVisualBanner(ativa) {
-        pesquisaLiberada = ativa;
-        if (!bannerStatus) return;
-        if (ativa) {
-            bannerStatus.textContent = 'PESQUISA ATIVA';
-            bannerStatus.style.backgroundColor = '#007944';
-            bannerStatus.style.borderColor = '#00bfa5';
-            bannerStatus.style.color = '#ffffff';
-        } else {
-            bannerStatus.textContent = 'PESQUISA INATIVA';
-            bannerStatus.style.backgroundColor = '#b91c1c';
-            bannerStatus.style.borderColor = '#ef5350';
-            bannerStatus.style.color = '#ffffff';
-        }
-    }
-
-    function avaliarCalendarioNacional() {
-        try {
-            const salvo = JSON.parse(localStorage.getItem('pj_calendario_nacional') || 'null');
-            if (salvo && salvo.inicio && salvo.fim) {
-                const agora = new Date().getTime();
-                const inicio = new Date(salvo.inicio).getTime();
-                const fim = new Date(salvo.fim).getTime();
-                aplicarVisualBanner(agora >= inicio && agora <= fim);
-                return;
-            }
-            if (salvo && typeof salvo.ativa === 'boolean') {
-                aplicarVisualBanner(salvo.ativa);
-                return;
-            }
-            aplicarVisualBanner(true);
-        } catch (e) {
-            aplicarVisualBanner(true);
-        }
-    }
-
-    avaliarCalendarioNacional();
-    setInterval(avaliarCalendarioNacional, 30000);
-
-    document.querySelectorAll('button').forEach(btn => {
-        if (btn.textContent && btn.textContent.includes('Prosseguir')) {
-            btn.addEventListener('click', (e) => {
-                if (!pesquisaLiberada) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    alert('A pesquisa encontra-se INATIVA no momento. Aguarde a abertura do período oficial.');
-                }
-            }, true);
-        }
-    });
-
-    const observerAdm = new MutationObserver(() => {
-        if (document.getElementById('pj-agendamento-nacional-box')) return;
-        const botoesAdm = Array.from(document.querySelectorAll('button'));
-        const btnReferencia = botoesAdm.find(b =>
-            b.offsetParent !== null &&
-            (b.textContent.includes('Sincronizar') || b.textContent.includes('Salvar Configuração') || b.textContent.includes('1º Turno') || b.textContent.includes('2º Turno'))
-        );
-        if (btnReferencia && btnReferencia.parentElement) {
-            const salvo = JSON.parse(localStorage.getItem('pj_calendario_nacional') || '{}');
-            const box = document.createElement('div');
-            box.id = 'pj-agendamento-nacional-box';
-            box.style.cssText = 'margin: 14px 0; padding: 12px; border: 1px solid #00bfa5; border-radius: 8px; background: rgba(0, 77, 64, 0.25);';
-            box.innerHTML = `
-                <div style="font-weight: bold; color: #00bfa5; margin-bottom: 8px; font-size: 13px; text-transform: uppercase;">
-                    Calendário Nacional Único (Todos os Estados e 5.570 Municípios)
-                </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
-                    <div style="flex: 1; min-width: 140px;">
-                        <label style="display:block; font-size: 11px; color: #ccc; margin-bottom: 3px;">Início Oficial</label>
-                        <input type="datetime-local" id="pj-data-inicio" value="${salvo.inicio || ''}" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff;">
-                    </div>
-                    <div style="flex: 1; min-width: 140px;">
-                        <label style="display:block; font-size: 11px; color: #ccc; margin-bottom: 3px;">Encerramento Oficial</label>
-                        <input type="datetime-local" id="pj-data-fim" value="${salvo.fim || ''}" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff;">
-                    </div>
-                </div>
-                <button type="button" id="pj-salvar-calendario" style="width: 100%; padding: 9px; background: #007944; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
-                    Salvar Período Nacional Automático
-                </button>
-            `;
-            btnReferencia.parentElement.appendChild(box);
-
-            document.getElementById('pj-salvar-calendario').addEventListener('click', () => {
-                const inicio = document.getElementById('pj-data-inicio').value;
-                const fim = document.getElementById('pj-data-fim').value;
-                localStorage.setItem('pj_calendario_nacional', JSON.stringify({ inicio, fim }));
-                avaliarCalendarioNacional();
-                alert('Calendário nacional salvo! O banner PESQUISA ATIVA / INATIVA será atualizado automaticamente conforme a data e hora.');
-            });
-        }
-    });
-    observerAdm.observe(document.body, { childList: true, subtree: true });
-});
-</script>
 </body>
 </html>
