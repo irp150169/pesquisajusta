@@ -1552,7 +1552,9 @@ async carregarCandidatosReais(cargo, uf, municipio) {
       query = query.eq('uf', uf);
     }
 
-    const { data, error } = await query;
+    const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ data: null, error: 'timeout' }), 3000));
+    const { data, error } = await Promise.race([query, timeoutPromise]);
+
     if (error || !data || data.length === 0) return null;
 
     return data.map(c => ({
