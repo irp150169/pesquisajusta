@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pesquisa Justa - Sistema de Opinião Pública</title>
-    
+    <title>Pesquisa Justa - Sistema de Opinião Pública</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-512.png">
     <!-- BIBLIOTECA OFICIAL DO SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -468,7 +470,7 @@
 
                     <div class="form-group" style="margin-bottom: 8px;">
                         <label>Chave de Acesso ADM</label>
-                        <input type="password" id="admin-pass-input" placeholder="Digite a senha (ex: adm2026)">
+                        <input type="password" id="admin-pass-input" placeholder="Digite a chave de acesso">
                     </div>
                     <button onclick="ScreenAdmin.validateLogin()" style="background-color: var(--accent); border-color: #14b8a6;">Entrar no Painel Macro</button>
                     <button onclick="ScreenAdmin.backToRegister()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
@@ -1611,22 +1613,22 @@ async carregarCandidatosReais(cargo, uf, municipio) {
             }
         };
 
-        /* ==========================================================================
-           7. MÓDULO DA TELA 5: PAINEL DE RESULTADOS BLINDADO (ScreenResults)
+       /* ==========================================================================
+           7. MÓDULO DA TELA 5: PAINEL DE RESULTADOS REAL COM SUPABASE (ScreenResults)
            ========================================================================== */
         const ScreenResults = {
             currentMode: 'geral',
             lastLoadedCategory: '',
             lastLoadedKey: '',
+            cachedVotes: [],
+            cachedCandidates: [],
 
-            hierarchicalData: {
-                president: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 42.0 }, { name: "Candidato Beta", percent: 36.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 11.0, color: "#334155" } ] } },
-                president_2t: { datasets: { "Geral do País": [ { name: "Candidato Alpha", percent: 48.0 }, { name: "Candidato Beta", percent: 45.0 }, { name: "Votos Brancos", percent: 3.0, color: "#64748b" }, { name: "Votos Nulos", percent: 2.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 2.0, color: "#334155" } ] } },
-                governor: { datasets: { "Geral Estado": [ { name: "Candidato Delta", percent: 48.0 }, { name: "Candidato Ômega", percent: 32.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 9.0, color: "#334155" } ] } },
-                governor_2t: { datasets: { "Geral Estado": [ { name: "Candidato Delta", percent: 52.0 }, { name: "Candidato Ômega", percent: 44.0 }, { name: "Votos Brancos", percent: 2.0, color: "#64748b" }, { name: "Votos Nulos", percent: 2.0, color: "#475569" } ] } },
-                senator: { datasets: { "Geral Estado": [ { name: "Candidato Um", percent: 34.0 }, { name: "Candidato Dois", percent: 28.0 }, { name: "Candidato Três", percent: 18.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 9.0, color: "#334155" } ] } },
-                mayor: { datasets: { "Geral do Município": [ { name: "Candidato X", percent: 46.0 }, { name: "Candidato Y", percent: 40.0 }, { name: "Votos Brancos", percent: 5.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos / Não Sabe", percent: 4.0, color: "#334155" } ] } },
-                mayor_2t: { datasets: { "Geral do Município": [ { name: "Candidato X", percent: 51.5 }, { name: "Candidato Y", percent: 45.5 }, { name: "Votos Brancos", percent: 1.5, color: "#64748b" }, { name: "Votos Nulos", percent: 1.5, color: "#475569" } ] } }
+            regionStates: {
+                'Região Norte': ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO'],
+                'Região Nordeste': ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE'],
+                'Região Centro-Oeste': ['DF', 'GO', 'MT', 'MS'],
+                'Região Sudeste': ['ES', 'MG', 'RJ', 'SP'],
+                'Região Sul': ['PR', 'RS', 'SC']
             },
 
             presidentFilters: [
@@ -1635,12 +1637,28 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                 "Região Sudeste", "Região Sul"
             ],
 
-            setupResultTabs() {
+            async syncCloudData() {
+                if (!supabaseClient) return;
+                try {
+                    const [votesRes, candRes] = await Promise.all([
+                        supabaseClient.from('pesquisas_votos').select('*').eq('turno', AppState.currentTurn),
+                        supabaseClient.from('candidatos').select('id, cargo, uf, municipio, nome, numero, partido, ativo').eq('ativo', true)
+                    ]);
+                    if (!votesRes.error && votesRes.data) this.cachedVotes = votesRes.data;
+                    if (!candRes.error && candRes.data) this.cachedCandidates = candRes.data;
+                } catch (e) {
+                    console.warn('Erro ao sincronizar dados do Supabase:', e);
+                }
+            },
+
+            async setupResultTabs() {
                 const tabsContainer = document.getElementById('result-tabs-container'); 
                 if (!tabsContainer) return;
                 tabsContainer.innerHTML = '';
-                const activeBallots = ScreenVoting.getActiveBallots();
 
+                await this.syncCloudData();
+
+                const activeBallots = ScreenVoting.getActiveBallots();
                 activeBallots.forEach((ballot, index) => {
                     const tabBtn = document.createElement('button'); 
                     tabBtn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
@@ -1695,13 +1713,9 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                     microContainer.style.display = 'none';
 
                     let activePresKey = this.presidentFilters[0];
-                    if (cityVal.length > 0) {
-                        activePresKey = cityVal;
-                    } else if (ufCode === 'ZZ') {
-                        activePresKey = "Exterior (Votação em Consulados)";
-                    } else if (stateVal.length > 0 && ufCode) {
-                        activePresKey = stateVal;
-                    }
+                    if (cityVal.length > 0) activePresKey = cityVal;
+                    else if (ufCode === 'ZZ') activePresKey = "Exterior (Votação em Consulados)";
+                    else if (stateVal.length > 0 && ufCode) activePresKey = stateVal;
 
                     const gridDiv = document.createElement('div');
                     gridDiv.style.display = 'grid';
@@ -1721,14 +1735,14 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                             if (ctElem) ctElem.value = '';
                             GeoDatabase.updateDestinationLabels('results', '');
                             this.lastLoadedKey = f; 
-                            this.renderSimulatedDataset(this.lastLoadedCategory, f); 
+                            this.renderRealDataset(this.lastLoadedCategory, f); 
                         };
                         gridDiv.appendChild(b);
                     });
                     macroContainer.appendChild(gridDiv);
 
                     this.lastLoadedKey = activePresKey; 
-                    this.renderSimulatedDataset(this.lastLoadedCategory, activePresKey);
+                    this.renderRealDataset(this.lastLoadedCategory, activePresKey);
 
                 } else if (this.lastLoadedCategory === 'mayor' || this.lastLoadedCategory === 'mayor_2t') {
                     macroLabel.style.display = 'block'; 
@@ -1745,7 +1759,7 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                         document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
                         e.currentTarget.classList.add('active');
                         this.lastLoadedKey = 'Geral do Município';
-                        this.renderSimulatedDataset(this.lastLoadedCategory, 'Geral do Município');
+                        this.renderRealDataset(this.lastLoadedCategory, 'Geral do Município');
                     };
                     stackDiv.appendChild(bGeral);
                     macroContainer.appendChild(stackDiv);
@@ -1767,13 +1781,13 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                             document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
                             e.currentTarget.classList.add('active'); 
                             this.lastLoadedKey = z; 
-                            this.renderSimulatedDataset(this.lastLoadedCategory, z);
+                            this.renderRealDataset(this.lastLoadedCategory, z);
                         };
                         microContainer.appendChild(b);
                     });
 
                     this.lastLoadedKey = 'Geral do Município'; 
-                    this.renderSimulatedDataset(this.lastLoadedCategory, 'Geral do Município');
+                    this.renderRealDataset(this.lastLoadedCategory, 'Geral do Município');
 
                 } else {
                     macroLabel.style.display = 'block'; 
@@ -1793,18 +1807,14 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                         }
                     }
 
-                    if (cityVal.length > 0) {
-                        dividerElem.innerText = `📍 ZONAS DE ${cityVal.toUpperCase()} (${effectiveUF})`;
-                    } else {
-                        dividerElem.innerText = `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${effectiveUF})`;
-                    }
+                    dividerElem.innerText = cityVal.length > 0
+                        ? `📍 ZONAS DE ${cityVal.toUpperCase()} (${effectiveUF})`
+                        : `📍 ZONAS DA CAPITAL (${capitalName.toUpperCase()} - ${effectiveUF})`;
 
                     const stackDiv = document.createElement('div');
                     stackDiv.className = 'stacked-filters';
 
-                    const macroOptions = ["Geral Estado", "Geral da Capital", "Geral do Interior"];
-
-                    macroOptions.forEach((f) => {
+                    ["Geral Estado", "Geral da Capital", "Geral do Interior"].forEach((f) => {
                         const b = document.createElement('button'); 
                         b.className = `stacked-filter-btn ${f === activeMacro ? 'active' : ''}`; 
                         b.innerText = f;
@@ -1822,7 +1832,7 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                             }
 
                             this.lastLoadedKey = f; 
-                            this.renderSimulatedDataset(this.lastLoadedCategory, f); 
+                            this.renderRealDataset(this.lastLoadedCategory, f); 
                         };
                         stackDiv.appendChild(b);
                     });
@@ -1837,13 +1847,13 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                             document.querySelectorAll('.grid-filter-btn').forEach(x=>x.classList.remove('active'));
                             e.currentTarget.classList.add('active'); 
                             this.lastLoadedKey = z; 
-                            this.renderSimulatedDataset(this.lastLoadedCategory, z);
+                            this.renderRealDataset(this.lastLoadedCategory, z);
                         };
                         microContainer.appendChild(b);
                     });
 
                     this.lastLoadedKey = activeMacro; 
-                    this.renderSimulatedDataset(this.lastLoadedCategory, activeMacro);
+                    this.renderRealDataset(this.lastLoadedCategory, activeMacro);
                 }
             },
 
@@ -1853,49 +1863,162 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                 const btnValidos = document.getElementById('btn-mode-validos');
                 if (btnGeral) btnGeral.classList.toggle('active', mode === 'geral');
                 if (btnValidos) btnValidos.classList.toggle('active', mode === 'validos');
-                this.renderSimulatedDataset(this.lastLoadedCategory, this.lastLoadedKey);
+                this.renderRealDataset(this.lastLoadedCategory, this.lastLoadedKey);
             },
 
-            renderSimulatedDataset(category, filterKey) {
+            computeTally(category, filterKey, stateVal, cityVal, extraDemo = null) {
+                const cargoBase = category.replace('_2t', '');
+                const ufCode = GeoDatabase.getUFCodeFromInput(stateVal);
+
+                let matchingVotes = this.cachedVotes.filter(row => {
+                    const rowUF = GeoDatabase.getUFCodeFromInput(row.estado || '');
+                    const rowCity = GeoDatabase.normalize(row.cidade || '');
+                    const rowZone = GeoDatabase.normalize(row.zona || '');
+
+                    if (cargoBase === 'president') {
+                        if (filterKey === 'Exterior (Votação em Consulados)' || ufCode === 'ZZ') {
+                            if (rowUF !== 'ZZ') return false;
+                        } else if (this.regionStates[filterKey]) {
+                            if (!this.regionStates[filterKey].includes(rowUF)) return false;
+                        } else if (ufCode) {
+                            if (rowUF !== ufCode) return false;
+                        }
+                        if (cityVal && rowCity !== GeoDatabase.normalize(cityVal)) return false;
+                    } else if (cargoBase === 'mayor') {
+                        if (ufCode && rowUF !== ufCode) return false;
+                        if (cityVal && rowCity !== GeoDatabase.normalize(cityVal)) return false;
+                        if (filterKey && filterKey !== 'Geral do Município' && rowZone !== GeoDatabase.normalize(filterKey)) return false;
+                    } else {
+                        if (ufCode && rowUF !== ufCode) return false;
+                        const cap = GeoDatabase.normalize(GeoDatabase.capitalsByState[ufCode || 'AM'] || '');
+                        if (filterKey === 'Geral da Capital' && rowCity !== cap) return false;
+                        if (filterKey === 'Geral do Interior' && rowCity === cap) return false;
+                        if (cityVal && rowCity !== GeoDatabase.normalize(cityVal)) return false;
+                        if (GeoDatabase.cityZonesAlphabetical.includes(filterKey) && rowZone !== GeoDatabase.normalize(filterKey)) return false;
+                    }
+
+                    if (extraDemo) {
+                        if (extraDemo.zona && extraDemo.zona !== 'Todas as Zonas' && rowZone !== GeoDatabase.normalize(extraDemo.zona)) return false;
+                        if (extraDemo.genero && extraDemo.genero !== 'Todos os Gêneros' && row.genero !== extraDemo.genero) return false;
+                        if (extraDemo.cor && extraDemo.cor !== 'Todas as Raças' && row.raca !== extraDemo.cor) return false;
+                    }
+                    return true;
+                });
+
+                let realCands = this.cachedCandidates.filter(c => {
+                    if (c.cargo !== cargoBase) return false;
+                    if (cargoBase === 'president') return c.uf === 'BR';
+                    if (cargoBase === 'mayor') {
+                        const targetUF = ufCode || 'AM';
+                        if (c.uf !== targetUF) return false;
+                        return !cityVal || GeoDatabase.normalize(c.municipio) === GeoDatabase.normalize(cityVal);
+                    }
+                    return c.uf === (ufCode || 'AM');
+                });
+
+                const counts = {};
+                realCands.forEach(c => { counts[c.nome] = 0; });
+
+                let totalBallotSelections = 0;
+                matchingVotes.forEach(row => {
+                    const votosObj = row.votos_computados || {};
+                    const escolhas = votosObj[category] || votosObj[cargoBase] || [];
+                    escolhas.forEach(nomeEscolha => {
+                        counts[nomeEscolha] = (counts[nomeEscolha] || 0) + 1;
+                        totalBallotSelections++;
+                    });
+                });
+
+                const specialKeys = ['Votos Brancos', 'Votos Nulos', 'Indecisos / Não Sabe'];
+                const candidateNames = Object.keys(counts).filter(k => !specialKeys.includes(k));
+
+                if (candidateNames.length === 0) {
+                    const ballotMeta = ScreenVoting.getActiveBallots().find(b => b.id === category || b.id === cargoBase);
+                    if (ballotMeta) {
+                        ballotMeta.candidates.forEach(c => { counts[c.name] = counts[c.name] || 0; });
+                    }
+                }
+
+                const items = [];
+                Object.keys(counts).forEach(name => {
+                    if (!specialKeys.includes(name)) {
+                        const cInfo = realCands.find(rc => rc.nome === name);
+                        const label = cInfo ? `${cInfo.nome} (${cInfo.partido} / Nº ${cInfo.numero})` : name;
+                        const pct = totalBallotSelections > 0 ? parseFloat(((counts[name] / totalBallotSelections) * 100).toFixed(1)) : 0;
+                        items.push({ name: label, rawName: name, count: counts[name], percent: pct, isSpecial: false });
+                    }
+                });
+
+                items.sort((a, b) => b.percent - a.percent);
+
+                const specialColors = { 'Votos Brancos': '#64748b', 'Votos Nulos': '#475569', 'Indecisos / Não Sabe': '#334155' };
+                specialKeys.forEach(sk => {
+                    const cnt = counts[sk] || 0;
+                    const pct = totalBallotSelections > 0 ? parseFloat(((cnt / totalBallotSelections) * 100).toFixed(1)) : 0;
+                    items.push({ name: sk, rawName: sk, count: cnt, percent: pct, color: specialColors[sk], isSpecial: true });
+                });
+
+                return { items, sampleCount: matchingVotes.length, totalSelections: totalBallotSelections };
+            },
+
+            renderRealDataset(category, filterKey) {
                 this.lastLoadedKey = filterKey;
-                let dataset = []; 
-                const config = this.hierarchicalData[category] || this.hierarchicalData['mayor'];
-                
-                if (config && config.datasets && config.datasets[filterKey]) dataset = JSON.parse(JSON.stringify(config.datasets[filterKey]));
-                else dataset = [ { name: `Candidato Principal`, percent: 45.0 }, { name: `Candidato Opositor`, percent: 35.0 }, { name: "Votos Brancos", percent: 6.0, color: "#64748b" }, { name: "Votos Nulos", percent: 5.0, color: "#475569" }, { name: "Indecisos", percent: 9.0, color: "#334155" } ];
-                
+                const stElem = document.getElementById('filter-state-select');
+                const ctElem = document.getElementById('filter-city-select');
+                const stateVal = stElem ? stElem.value.trim() : '';
+                const cityVal = ctElem ? ctElem.value.trim() : '';
+
+                const tally = this.computeTally(category, filterKey, stateVal, cityVal);
+                const statElem = document.getElementById('stat-total-votes');
+                if (statElem) statElem.innerText = tally.sampleCount.toLocaleString('pt-BR');
+
+                let dataset = tally.items;
                 if (this.currentMode === 'validos') {
-                    let validCandidates = dataset.filter(item => !item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso'));
-                    let somaValidos = validCandidates.reduce((acc, curr) => acc + curr.percent, 0);
-                    dataset = dataset.map(item => {
-                        if (!item.name.toLowerCase().includes('branco') && !item.name.toLowerCase().includes('nulo') && !item.name.toLowerCase().includes('indeciso')) {
-                            return { ...item, percent: parseFloat((somaValidos > 0 ? (item.percent / somaValidos) * 100 : 0).toFixed(1)) };
-                        } else return { ...item, percent: 0, hidden: true };
-                    }).filter(item => !item.hidden);
+                    const validOnly = dataset.filter(i => !i.isSpecial);
+                    const sumValid = validOnly.reduce((acc, cur) => acc + cur.percent, 0);
+                    dataset = validOnly.map(i => ({
+                        ...i,
+                        percent: sumValid > 0 ? parseFloat(((i.percent / sumValid) * 100).toFixed(1)) : 0
+                    }));
                 }
 
                 const container = document.getElementById('results-content-container'); 
                 if (!container) return;
                 container.innerHTML = '';
+
+                if (tally.sampleCount === 0) {
+                    const info = document.createElement('div');
+                    info.style.cssText = 'font-size:0.48rem; color:#facc15; text-align:center; margin-bottom:5px;';
+                    info.innerText = 'Nenhum voto computado neste recorte ainda (0% na amostra).';
+                    container.appendChild(info);
+                }
+
                 dataset.forEach(item => {
                     const barDiv = document.createElement('div'); 
                     barDiv.className = 'result-bar-container';
-                    barDiv.innerHTML = `<div class="result-meta"><span>${item.name}</span><strong>${item.percent}%</strong></div><div class="progress-bar"><div class="progress-fill" style="width: ${item.percent}%; ${item.color ? 'background-color:'+item.color : ''}"></div></div>`;
+                    barDiv.innerHTML = `<div class="result-meta"><span>${item.name}</span><strong>${item.percent}% (${item.count})</strong></div><div class="progress-bar"><div class="progress-fill" style="width: ${item.percent}%; ${item.color ? 'background-color:'+item.color : ''}"></div></div>`;
                     container.appendChild(barDiv);
                 });
             }
         };
 
         /* ==========================================================================
-           8. MÓDULO DA TELA 6: GERADOR DE RELATÓRIOS BLINDADO (ScreenReport)
+           8. MÓDULO DA TELA 6: GERADOR DE RELATÓRIOS REAL COM SUPABASE (ScreenReport)
            ========================================================================== */
         const ScreenReport = {
             activeCargo: 'Presidente',
 
-            openExportReport() {
+            cargoToId(cargo) {
+                const map = { 'Presidente': 'president', 'Governador': 'governor', 'Senador': 'senator', 'Prefeito': 'mayor' };
+                const base = map[cargo] || 'president';
+                return AppState.currentTurn === 2 && base !== 'senator' ? `${base}_2t` : base;
+            },
+
+            async openExportReport() {
                 GeoDatabase.closeDropdown();
                 document.getElementById('screen-results').classList.add('hidden');
                 document.getElementById('screen-export').classList.remove('hidden');
+                await ScreenResults.syncCloudData();
                 this.renderReportFilters(); 
             },
 
@@ -1907,7 +2030,8 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                 this.renderReportFilters();
             },
 
-            renderReportFilters() {
+            async renderReportFilters() {
+                if (ScreenResults.cachedCandidates.length === 0) await ScreenResults.syncCloudData();
                 const container = document.getElementById('report-dynamic-filters');
                 if (!container) return;
                 container.innerHTML = '';
@@ -2031,14 +2155,9 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                     } else if (nivel !== 'Geral (Brasil)') {
                         detalheSelect.style.display = 'block';
                         let options = [];
-                        
-                        if (nivel === 'Por Região') {
-                            options = ['Região Norte', 'Região Nordeste', 'Região Centro-Oeste', 'Região Sudeste', 'Região Sul'];
-                        } else if (nivel === 'Por Estado (UF)') {
-                            options = GeoDatabase.statesAndCountriesOption.filter(val => val !== "Outros Países");
-                        } else if (nivel === 'Exterior (Consulados)') {
-                            options = GeoDatabase.internationalCountryList;
-                        }
+                        if (nivel === 'Por Região') options = ['Região Norte', 'Região Nordeste', 'Região Centro-Oeste', 'Região Sudeste', 'Região Sul'];
+                        else if (nivel === 'Por Estado (UF)') options = GeoDatabase.statesAndCountriesOption.filter(val => val !== "Outros Países");
+                        else if (nivel === 'Exterior (Consulados)') options = GeoDatabase.internationalCountryList;
 
                         options.forEach(optVal => {
                             const opt = document.createElement('option');
@@ -2053,8 +2172,9 @@ async carregarCandidatosReais(cargo, uf, municipio) {
 
             generateDynamicReport() {
                 let filterDesc = "";
-                let candA = 48.5, candB = 41.2;
-                let candAName = "Candidato Alpha (PTX)", candBName = "Candidato Beta (PLZ)";
+                let stateVal = "";
+                let cityVal = "";
+                let filterKey = "Geral do País";
 
                 const idadeVal = document.getElementById('rep-idade') ? document.getElementById('rep-idade').value : 'Todas as Idades';
                 const zonaVal = document.getElementById('rep-zona-demo') ? document.getElementById('rep-zona-demo').value : 'Todas as Zonas';
@@ -2065,55 +2185,45 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                     const nivelElem = document.getElementById('rep-nivel');
                     const nivel = nivelElem ? nivelElem.value : 'Geral (Brasil)';
                     if (nivel === 'Por Município') {
-                        const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
-                        const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
+                        stateVal = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
+                        cityVal = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
                         filterDesc = `<li><strong>Abrangência:</strong> Município Específico</li>`;
-                        if (estado) filterDesc += `<li><strong>Estado / País:</strong> ${estado}</li>`;
-                        if (city) filterDesc += `<li><strong>Município / País:</strong> ${city}</li>`;
+                        if (stateVal) filterDesc += `<li><strong>Estado / País:</strong> ${stateVal}</li>`;
+                        if (cityVal) filterDesc += `<li><strong>Município / País:</strong> ${cityVal}</li>`;
                     } else {
                         const detalheSelect = document.getElementById('rep-detalhe-select');
                         const detalhe = (detalheSelect && detalheSelect.style.display !== 'none') ? detalheSelect.value : '';
                         filterDesc = `<li><strong>Abrangência:</strong> ${nivel} ${detalhe ? ' - ' + detalhe : ''}</li>`;
+                        if (nivel === 'Por Região' && detalhe) filterKey = detalhe;
+                        else if (nivel === 'Por Estado (UF)' && detalhe) stateVal = detalhe;
+                        else if (nivel === 'Exterior (Consulados)') filterKey = 'Exterior (Votação em Consulados)';
                     }
-                    candA = 48.5; candB = 41.2; 
-                    candAName = "Candidato Alpha (PTX)"; candBName = "Candidato Beta (PLZ)";
-                } else if (this.activeCargo === 'Governador') { 
-                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
-                    const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                    const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral';
-                    
-                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
-                    if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
+                } else if (this.activeCargo === 'Governador' || this.activeCargo === 'Senador') { 
+                    stateVal = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
+                    cityVal = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
+                    const nivel = document.getElementById('rep-nivel') ? document.getElementById('rep-nivel').value : 'Geral (Todo o Estado)';
+                    filterKey = nivel === 'Geral (Apenas o Município)' && cityVal ? cityVal : 'Geral Estado';
+                    filterDesc = `<li><strong>Estado (UF):</strong> ${stateVal || 'Geral do Estado'}</li>`;
+                    if (cityVal) filterDesc += `<li><strong>Município:</strong> ${cityVal}</li>`;
                     filterDesc += `<li><strong>Escopo:</strong> ${nivel}</li>`;
-                    
-                    candA = 51.0; candB = 38.0; 
-                    candAName = "Candidato Delta (PSB)"; candBName = "Candidato Ômega (PSD)";
-                } else if (this.activeCargo === 'Senador') { 
-                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Geral Brasil';
-                    const city = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
-                    
-                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado || 'Geral do Estado'}</li>`;
-                    if (city) filterDesc += `<li><strong>Município:</strong> ${city}</li>`;
-                    
-                    candA = 34.0; candB = 28.0; 
-                    candAName = "Candidato Um (MDB)"; candBName = "Candidato Dois (UNIÃO)";
                 } else if (this.activeCargo === 'Prefeito') { 
-                    const estado = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : 'Não Selecionado';
-                    const cityElem = document.getElementById('rep-city-report');
-                    const city = cityElem && cityElem.value ? cityElem.value : 'Não Selecionado';
-                    
-                    filterDesc = `<li><strong>Estado (UF):</strong> ${estado}</li><li><strong>Município:</strong> ${city}</li>`;
-                    
-                    candA = 46.0; candB = 40.0; 
-                    candAName = "Candidato X (UNIÃO)"; candBName = "Candidato Y (PSD)";
+                    stateVal = document.getElementById('rep-estado') ? document.getElementById('rep-estado').value : '';
+                    cityVal = document.getElementById('rep-city-report') ? document.getElementById('rep-city-report').value : '';
+                    filterKey = 'Geral do Município';
+                    filterDesc = `<li><strong>Estado (UF):</strong> ${stateVal || 'Não Selecionado'}</li><li><strong>Município:</strong> ${cityVal || 'Não Selecionado'}</li>`;
                 }
 
-                if (generoVal === 'Feminino') { candA += 1.2; candB -= 1.0; }
-                else if (generoVal === 'Masculino') { candA -= 0.8; candB += 1.5; }
-                if (idadeVal.includes('16 a 24')) { candA += 2.0; candB -= 2.0; }
-                else if (idadeVal.includes('60+')) { candA -= 1.5; candB += 2.2; }
+                const catId = this.cargoToId(this.activeCargo);
+                const tally = ScreenResults.computeTally(catId, filterKey, stateVal, cityVal, {
+                    zona: zonaVal,
+                    genero: generoVal,
+                    cor: corVal
+                });
 
-                const rest = (100 - candA - candB).toFixed(1);
+                const candidatesLinesHTML = tally.items.map(item => {
+                    const icon = item.isSpecial ? '⚪' : '🟢';
+                    return `<p style="margin: 2px 0;">• ${icon} ${item.name}: <strong>${item.percent.toFixed(1)}%</strong> (${item.count} voto${item.count === 1 ? '' : 's'})</p>`;
+                }).join('');
 
                 let mediaHeaderHTML = "";
                 if (AppState.activeMediaInfo) {
@@ -2147,16 +2257,14 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                     </ul>
                     
                     <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 6px; border-radius: 6px;">
-                        <p style="margin-top: 2px;">📺 <strong>Placar Telejornal / Intenção de Voto:</strong></p>
-                        <p>• 🟢 ${candAName}: <strong>${candA.toFixed(1)}%</strong></p>
-                        <p>• 🔵 ${candBName}: <strong>${candB.toFixed(1)}%</strong></p>
-                        <p style="margin-bottom: 2px;">• ⚪ Brancos / Nulos / Indecisos: <strong>${rest}%</strong></p>
+                        <p style="margin-top: 2px;">📺 <strong>Placar Consolidado (Amostra Real: ${tally.sampleCount}):</strong></p>
+                        ${candidatesLinesHTML}
                     </div>
 
                     <div style="margin-top: 6px; background-color: #f1f5f9; padding: 5px; border-radius: 4px; font-size: 0.46rem; color: #475569;">
                         <strong>Ficha Técnica & Cobertura TSE:</strong><br>
-                        • Período de Campo: 5 dias (Amostra Ponderada IBGE)<br>
-                        • Margem de Erro: ± 1.5% (Confiança 95%)
+                        • Amostra Real Apurada no Recorte: ${tally.sampleCount} participante(s)<br>
+                        • Margem de Erro Referencial: ± 1.5% (Confiança 95%)
                     </div>
                     
                     <p style="font-size: 0.44rem; color: #94a3b8; text-align: center; margin-top: 6px;">Amostra segmentada extraída oficialmente do sistema cego.</p>
@@ -2330,13 +2438,16 @@ async carregarCandidatosReais(cargo, uf, municipio) {
         };
 
         /* ==========================================================================
-           10. INICIALIZAÇÃO DO APLICATIVO E EVENTOS GLOBAIS
+           10. INICIALIZAÇÃO DO APLICATIVO, EVENTOS GLOBAIS E SERVICE WORKER PWA
            ========================================================================== */
         document.addEventListener('DOMContentLoaded', () => {
             ScreenAuth.initTouchEvents();
             GeoDatabase.initAllGeoInputs();
             NationalSchedule.init();
             AppState.updateTurnState();
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            }
         });
     </script>
 </body>
