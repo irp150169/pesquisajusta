@@ -1449,7 +1449,7 @@
                 return this.electionSchedules[AppState.currentYear][AppState.currentTurn] || this.electionSchedules[2026][1];
             },
 
-            renderBallot() {
+            async renderBallot() {
                 AppState.updateTurnState();
                 this.activeBallots = this.getActiveBallots();
                 const data = this.activeBallots[this.currentStep];
@@ -1460,21 +1460,31 @@
 
                 const container = document.getElementById('candidates-container');
                 if (!container) return;
-                container.innerHTML = '';
-                
-                data.candidates.forEach((cand) => {
-                    const card = document.createElement('div'); 
-                    card.className = 'candidate-card';
-                    card.innerHTML = `<img src="${cand.img}" class="candidate-img"><div class="candidate-info"><h4>${cand.name}</h4><p>${cand.party}</p></div>`;
-                    card.onclick = () => this.handleSelect(card, cand.name, data.type);
-                    container.appendChild(card);
-                });
-                
+                container.innerHTML = '<p style="text-align:center; font-size:0.55rem; color:var(--text-muted); padding:10px;">Carregando candidatos...</p>';
+
                 const btnNext = document.getElementById('btn-next-vote');
                 if (btnNext) btnNext.disabled = true;
                 this.currentSelections = [];
-            },
 
+                const cargoBase = data.id.replace('_2t', '');
+                const ufEleitor = GeoDatabase.getUFCodeFromInput(AppState.eleitorTemp.estado || '');
+                const municipioEleitor = AppState.eleitorTemp.cidade || '';
+
+                const candidatosReais = await this.carregarCandidatosReais(cargoBase, ufEleitor, municipioEleitor);
+                const listaFinal = (candidatosReais && candidatosReais.length > 0) ? candidatosReais : data.candidates;
+
+                container.innerHTML = '';
+                listaFinal.forEach((cand) => {
+                    const card = document.createElement('div');
+                    card.className = 'candidate-card';
+                    const fotoSrc = cand.photo || cand.img || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
+                    const infoPartido = cand.number ? `${cand.party} / Nº ${cand.number}` : cand.party;
+                    card.innerHTML = `<img src="${fotoSrc}" class="candidate-img"><div class="candidate-info"><h4>${cand.name}</h4><p>${infoPartido}</p></div>`;
+                    card.onclick = () => this.handleSelect(card, cand.name, data.type);
+                    container.appendChild(card);
+                });
+            },
+        
             handleSelect(cardElement, name, type) {
                 document.querySelectorAll('.special-vote-btn').forEach(b => b.classList.remove('selected'));
                 const btnNext = document.getElementById('btn-next-vote');
