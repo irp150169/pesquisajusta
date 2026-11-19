@@ -331,8 +331,8 @@
 
             <div class="screen-content">
                 
-                <!-- TELA 1: CADASTRO DEMOGRÁFICO (ScreenRegister) -->
-                <div id="screen-register" class="view">
+               <!-- TELA 1: CADASTRO DEMOGRÁFICO (ScreenRegister) -->
+                <div id="screen-register" class="view" style="justify-content: flex-start; min-height: 0;">
                     
                     <div class="demographic-header-box">
                         <h1 class="header-title">Perfil Demográfico</h1>
@@ -443,11 +443,13 @@
                         <label for="lgpd-check" style="color: var(--text-main); font-size: 0.48rem; cursor: pointer; text-align: left;">Autorizo o uso destes dados para fins estatísticos e anonimização conforme LGPD e TSE.</label>
                     </div>
 
-                    <button onclick="ScreenRegister.submit()">Prosseguir para Autenticação</button>
-                    
-                    <div style="display: flex; gap: 6px; margin-top: 5px;">
-                        <button onclick="ScreenAdmin.openLogin()" style="flex: 1; background-color: #090d16; border: 1px dashed var(--border); color: var(--text-muted); font-size: 0.50rem;">🔒 Acesso Gestor (ADM)</button>
-                        <button onclick="ScreenMedia.openLogin()" style="flex: 1; background-color: #090d16; border: 1px dashed #10b981; color: #10b981; font-size: 0.50rem;">📰 Acesso Mídia / Imprensa</button>
+                    <div id="register-actions-stack" style="display: flex; flex-direction: column; gap: 5px; margin-top: 4px; flex-shrink: 0;">
+                        <button onclick="ScreenRegister.submit()" style="margin-top: 0;">Prosseguir para Autenticação</button>
+                        
+                        <div style="display: flex; gap: 6px;">
+                            <button onclick="ScreenAdmin.openLogin()" style="flex: 1; margin-top: 0; background-color: #090d16; border: 1px dashed var(--border); color: var(--text-muted); font-size: 0.50rem;">🔒 Acesso Gestor (ADM)</button>
+                            <button onclick="ScreenMedia.openLogin()" style="flex: 1; margin-top: 0; background-color: #090d16; border: 1px dashed #10b981; color: #10b981; font-size: 0.50rem;">📰 Acesso Mídia / Imprensa</button>
+                        </div>
                     </div>
                 </div>
 
