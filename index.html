@@ -2514,5 +2514,27 @@ async carregarCandidatosReais(cargo, uf, municipio) {
             }
         });
     </script>
+   <script>
+(function () {
+  function atualizarCampo(el) {
+    var temValor = el.value && String(el.value).trim() !== "";
+    if (temValor) {
+      el.classList.add("campo-preenchido");
+    } else {
+      el.classList.remove("campo-preenchido");
+    }
+  }
+  document.addEventListener("input", function (e) {
+    if (e.target && e.target.matches("input, select, textarea")) {
+      atualizarCampo(e.target);
+    }
+  });
+  document.addEventListener("change", function (e) {
+    if (e.target && e.target.matches("input, select, textarea")) {
+      atualizarCampo(e.target);
+    }
+  });
+})();
+</script> 
 </body>
 </html>
