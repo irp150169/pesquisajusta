@@ -2514,27 +2514,27 @@ async carregarCandidatosReais(cargo, uf, municipio) {
             }
         });
     </script>
-   <script>
+  <script>
 (function () {
-  function atualizarCampo(el) {
-    var temValor = el.value && String(el.value).trim() !== "";
-    if (temValor) {
-      el.classList.add("campo-preenchido");
-    } else {
-      el.classList.remove("campo-preenchido");
+  function atualizarTodosOsCampos() {
+    var campos = document.querySelectorAll("input, select, textarea");
+    for (var i = 0; i < campos.length; i++) {
+      var el = campos[i];
+      var temValor = el.value && String(el.value).trim() !== "";
+      if (temValor) {
+        el.classList.add("campo-preenchido");
+      } else {
+        el.classList.remove("campo-preenchido");
+      }
     }
   }
-  document.addEventListener("input", function (e) {
-    if (e.target && e.target.matches("input, select, textarea")) {
-      atualizarCampo(e.target);
-    }
+  document.addEventListener("input", atualizarTodosOsCampos);
+  document.addEventListener("change", atualizarTodosOsCampos);
+  document.addEventListener("click", function () {
+    setTimeout(atualizarTodosOsCampos, 50);
   });
-  document.addEventListener("change", function (e) {
-    if (e.target && e.target.matches("input, select, textarea")) {
-      atualizarCampo(e.target);
-    }
-  });
+  document.addEventListener("blur", atualizarTodosOsCampos, true);
 })();
-</script> 
+</script>
 </body>
 </html>
