@@ -353,17 +353,15 @@
             #report-content-box, #report-content-box * { visibility: visible; font-size: 12pt !important; color: #000 !important; }
             #report-content-box { position: absolute; left: 0; top: 0; width: 100%; background-color: white !important; box-shadow: none !important; border: none !important; padding: 20px; }
         }
-        input,
-select,
-textarea {
+   input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input.campo-preenchido,
+select.campo-preenchido,
+textarea.campo-preenchido {
   background-color: #ffffff !important;
   color: #111827 !important;
-  font-weight: 600 !important;
-}
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
+  font-weight: 700 !important;
   -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
   -webkit-text-fill-color: #111827 !important;
   caret-color: #111827 !important;
