@@ -2514,8 +2514,21 @@ async carregarCandidatosReais(cargo, uf, municipio) {
             }
         });
     </script>
-  <script>
+ <script>
 (function () {
+  var whats = document.getElementById("whatsapp-input");
+  var estado = document.getElementById("state-input");
+  var cidade = document.getElementById("city-input");
+
+  if (whats && cidade && estado) {
+    whats.addEventListener("input", function () {
+      if (!estado.value || estado.value.trim() === "") {
+        cidade.value = "";
+        cidade.classList.remove("campo-preenchido");
+      }
+    });
+  }
+
   function atualizarTodosOsCampos() {
     var campos = document.querySelectorAll("input, select, textarea");
     for (var i = 0; i < campos.length; i++) {
@@ -2528,12 +2541,14 @@ async carregarCandidatosReais(cargo, uf, municipio) {
       }
     }
   }
+
   document.addEventListener("input", atualizarTodosOsCampos);
   document.addEventListener("change", atualizarTodosOsCampos);
   document.addEventListener("click", function () {
-    setTimeout(atualizarTodosOsCampos, 50);
+    setTimeout(atualizarTodosOsCampos, 60);
   });
   document.addEventListener("blur", atualizarTodosOsCampos, true);
+  setInterval(atualizarTodosOsCampos, 250);
 })();
 </script>
 </body>
