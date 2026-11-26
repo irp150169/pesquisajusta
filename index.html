@@ -353,10 +353,10 @@
             #report-content-box, #report-content-box * { visibility: visible; font-size: 12pt !important; color: #000 !important; }
             #report-content-box { position: absolute; left: 0; top: 0; width: 100%; background-color: white !important; box-shadow: none !important; border: none !important; padding: 20px; }
         }
-   input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input.campo-preenchido,
+  input:not([type="checkbox"]):-webkit-autofill,
+input:not([type="checkbox"]):-webkit-autofill:hover,
+input:not([type="checkbox"]):-webkit-autofill:focus,
+input:not([type="checkbox"]).campo-preenchido,
 select.campo-preenchido,
 textarea.campo-preenchido {
   background-color: #ffffff !important;
