@@ -1140,7 +1140,7 @@ textarea.campo-preenchido {
                 const openStateList = (filterByText) => {
                     const typed = filterByText ? this.normalize(stEl.value) : '';
                     const filtered = typed
-                        ? this.statesAndCountriesOption.filter(opt => this.normalize(opt).startsWith(typed))
+                        ? this.statesAndCountriesOption.filter(opt => this.normalize(opt).includes(typed))
                         : this.statesAndCountriesOption;
 
                     this.openVerticalDropdown(stEl, filtered, (selectedState) => {
@@ -1148,7 +1148,12 @@ textarea.campo-preenchido {
                         ctEl.value = '';
                         this.updateDestinationLabels(context, uf);
                         if (uf) this.fetchCitiesForUF(uf);
-
+                        if (uf === 'ZZ') {
+                                    setTimeout(() => {
+                                        ctEl.focus();
+                                        openCityList(false);
+                                    }, 50);
+                                }
                         if (context === 'results') {
                             ScreenResults.onStateFilterChange();
                         } else if (context === 'report') {
