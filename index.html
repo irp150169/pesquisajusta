@@ -708,7 +708,12 @@ textarea.campo-preenchido {
 
             </div>
 
-          
+          <div class="external-sponsor-banner" id="external-sponsor-container">
+  <span>Patrocínio Institucional / Comercial</span>
+  <div class="external-sponsor-media" id="sponsor-media-slot">
+    <p>🏢 Anúncio Comercial Genérico ou Apoio Tecnológico 2026</p>
+  </div>
+</div>
 
     <!-- SCRIPT DA APLICAÇÃO COM INTEGRAÇÃO SUPABASE E MOTOR IBGE VERTICAL -->
     <script>
@@ -2543,6 +2548,36 @@ async carregarCandidatosReais(cargo, uf, municipio) {
   document.addEventListener("blur", atualizarTodosOsCampos, true);
   setInterval(atualizarTodosOsCampos, 250);
 })();
+     (function controlarBannerPatrocinio() {
+  const telasSemBanner = [
+    'screen-results',
+    'screen-export',
+    'screen-admin-login',
+    'screen-media-login'
+  ];
+
+  function atualizarBanner() {
+    const banner = document.getElementById('external-sponsor-container');
+    if (!banner) return;
+
+    const algumaTelaInternaVisivel = telasSemBanner.some((id) => {
+      const el = document.getElementById(id);
+      return el && !el.classList.contains('hidden');
+    });
+
+    banner.classList.toggle('hidden', algumaTelaInternaVisivel);
+  }
+
+  const observer = new MutationObserver(atualizarBanner);
+  document.addEventListener('DOMContentLoaded', () => {
+    atualizarBanner();
+    observer.observe(document.body, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['class']
+    });
+  });
+})();     
 </script>
 </body>
 </html>
