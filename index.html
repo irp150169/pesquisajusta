@@ -1773,8 +1773,25 @@ textarea.campo-preenchido {
             }
         };
 
-        document.addEventListener('DOMContentLoaded', () => WhatsAppDDIHelper.bind());
-
+           document.addEventListener('DOMContentLoaded', () => WhatsAppDDIHelper.bind());
+          document.addEventListener('DOMContentLoaded', () => {
+            const birthEl = document.getElementById('birthdate-input');
+            if (birthEl) {
+                const formatBirth = () => {
+                    const digits = birthEl.value.replace(/\D/g, '').slice(0, 8);
+                    if (digits.length > 4) {
+                        birthEl.value = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+                    } else if (digits.length > 2) {
+                        birthEl.value = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+                    } else {
+                        birthEl.value = digits;
+                    }
+                };
+                birthEl.addEventListener('input', formatBirth);
+                birthEl.addEventListener('change', formatBirth);
+                formatBirth();
+            }
+        });
         /* ==========================================================================
            6. MÓDULO DA TELA 3 & 4: URNA CEGA & VOTAÇÃO BLINDADA COM SUPABASE (ScreenVoting)
            ========================================================================== */
