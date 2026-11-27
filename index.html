@@ -2161,7 +2161,7 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                             </div>
                             <div>
                                 <label style="font-size: 0.42rem;">📍 Por Zona Urb./Rural:</label>
-                                <select id="rep-zona-demo" onchange="ScreenReport.generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                <select id="rep-zona-demo" onchange="this.style.backgroundColor = this.value !== 'Todas as Zonas' ? '#fff' : '#131c31'; this.style.color = this.value !== 'Todas as Zonas' ? '#000' : '#fff'; this.style.fontWeight = this.value !== 'Todas as Zonas' ? '700' : '400'; ScreenReport.generateDynamicReport();" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
                                     <option value="Todas as Zonas" selected>Todas as Zonas</option>
                                     <option value="Zona Norte">Zona Norte</option>
                                     <option value="Zona Sul">Zona Sul</option>
@@ -2175,7 +2175,7 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                             </div>
                             <div>
                                 <label style="font-size: 0.42rem;">👥 Por Gênero:</label>
-                                <select id="rep-genero" onchange="ScreenReport.generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                <select id="rep-genero" onchange="this.style.backgroundColor = this.value !== 'Todos os Gêneros' ? '#fff' : '#131c31'; this.style.color = this.value !== 'Todos os Gêneros' ? '#000' : '#fff'; this.style.fontWeight = this.value !== 'Todos os Gêneros' ? '700' : '400'; ScreenReport.generateDynamicReport();" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
                                     <option value="Todos os Gêneros" selected>Todos os Gêneros</option>
                                     <option value="Masculino">Masculino</option>
                                     <option value="Feminino">Feminino</option>
@@ -2184,7 +2184,7 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                             </div>
                             <div>
                                 <label style="font-size: 0.42rem;">🎨 Por Cor / Raça (IBGE):</label>
-                                <select id="rep-cor" onchange="ScreenReport.generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                                <select id="rep-cor" onchange="this.style.backgroundColor = this.value !== 'Todas as Raças' ? '#fff' : '#131c31'; this.style.color = this.value !== 'Todas as Raças' ? '#000' : '#fff'; this.style.fontWeight = this.value !== 'Todas as Raças' ? '700' : '400'; ScreenReport.generateDynamicReport();" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
                                     <option value="Todas as Raças" selected>Todas as Raças</option>
                                     <option value="Branca">Branca</option>
                                     <option value="Preta">Preta</option>
