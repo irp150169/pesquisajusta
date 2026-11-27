@@ -1406,7 +1406,121 @@ textarea.campo-preenchido {
            ========================================================================== */
         const ScreenAuth = {
             selectedPattern: [],
+            pendingFirstPattern: null,
             isDrawingPattern: false,
+            mode: 'create', // 'create' | 'confirm' | 'login'
+            savedProfile: null,
+
+            getStorageKey(phone) {
+                const digits = String(phone || '').replace(/\D/g, '');
+                return digits ? `pj_eleitor_${digits}` : null;
+            },
+
+            loadSavedVoter(phone) {
+                const key = this.getStorageKey(phone);
+                if (!key) return null;
+                try {
+                    const raw = localStorage.getItem(key);
+                    return raw ? JSON.parse(raw) : null;
+                } catch (e) {
+                    return null;
+                }
+            },
+
+            saveVoterProfile(profile, patternArray) {
+                const key = this.getStorageKey(profile.whatsapp);
+                if (!key) return;
+                const record = {
+                    ...profile,
+                    pattern: patternArray.join('-'),
+                    updatedAt: new Date().toISOString()
+                };
+                try {
+                    localStorage.setItem(key, JSON.stringify(record));
+                } catch (e) {
+                    console.warn('Erro ao salvar perfil local:', e);
+                }
+            },
+
+            clearPattern(keepStatusMessage = false) {
+                this.selectedPattern = [];
+                this.isDrawingPattern = false;
+                document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
+                if (!keepStatusMessage) {
+                    const msg = document.getElementById('pattern-status-msg');
+                    if (msg) {
+                        msg.style.color = 'var(--text-muted)';
+                        msg.innerText = this.mode === 'confirm'
+                            ? 'Desenhe o mesmo padrão novamente para gravar.'
+                            : 'Desenhe ligando pelo menos 3 pontos.';
+                    }
+                }
+            },
+
+            prepareForCurrentVoter() {
+                this.pendingFirstPattern = null;
+                const existing = this.loadSavedVoter(AppState.eleitorTemp.whatsapp);
+                const titleEl = document.getElementById('auth-title');
+                const subEl = document.getElementById('auth-subtitle');
+                const barEl = document.getElementById('returning-voter-bar');
+                const sumEl = document.getElementById('returning-voter-summary');
+                const updBox = document.getElementById('domicile-update-box');
+
+                if (updBox) updBox.classList.add('hidden');
+
+                if (existing && existing.pattern) {
+                    this.mode = 'login';
+                    this.savedProfile = existing;
+                    AppState.eleitorTemp = { ...existing };
+                    if (titleEl) titleEl.innerText = 'Padrão de Acesso Salvo';
+                    if (subEl) subEl.innerText = 'Desenhe o padrão gravado no seu cadastro para entrar.';
+                    if (barEl) barEl.classList.remove('hidden');
+                    if (sumEl) {
+                        sumEl.innerHTML = `Cadastro salvo: <strong>${existing.cidade || ''}</strong> ${existing.estado ? '(' + existing.estado + ')' : ''} • ${existing.zona || ''}`;
+                    }
+                } else {
+                    this.mode = 'create';
+                    this.savedProfile = null;
+                    if (titleEl) titleEl.innerText = 'Criar Padrão de Segurança';
+                    if (subEl) subEl.innerText = '1º passo: desenhe seu padrão de 3 ou mais pontos.';
+                    if (barEl) barEl.classList.add('hidden');
+                }
+                this.clearPattern(false);
+            },
+
+            openDomicileUpdate() {
+                const box = document.getElementById('domicile-update-box');
+                if (!box) return;
+                box.classList.toggle('hidden');
+                const st = document.getElementById('auth-state-input');
+                const ct = document.getElementById('auth-city-input');
+                const zn = document.getElementById('auth-zone-input');
+                if (st) st.value = AppState.eleitorTemp.estado || '';
+                if (ct) ct.value = AppState.eleitorTemp.cidade || '';
+                if (zn) zn.value = AppState.eleitorTemp.zona || '';
+                GeoDatabase.bindStateAndCityInputs('auth-state-input', 'auth-city-input', 'register');
+            },
+
+            saveDomicileUpdate() {
+                const st = document.getElementById('auth-state-input') ? document.getElementById('auth-state-input').value.trim() : '';
+                const ct = document.getElementById('auth-city-input') ? document.getElementById('auth-city-input').value.trim() : '';
+                const zn = document.getElementById('auth-zone-input') ? document.getElementById('auth-zone-input').value : '';
+                if (!st || !ct || !zn) {
+                    AppState.showToast('⚠️ Preencha Estado, Município/País e Zona.', true);
+                    return;
+                }
+                AppState.eleitorTemp.estado = st;
+                AppState.eleitorTemp.cidade = ct;
+                AppState.eleitorTemp.zona = zn;
+                if (this.savedProfile && this.savedProfile.pattern) {
+                    this.saveVoterProfile(AppState.eleitorTemp, this.savedProfile.pattern.split('-'));
+                    this.savedProfile = { ...AppState.eleitorTemp };
+                }
+                const sumEl = document.getElementById('returning-voter-summary');
+                if (sumEl) sumEl.innerHTML = `Local atualizado: <strong>${ct}</strong> (${st}) • ${zn}`;
+                document.getElementById('domicile-update-box').classList.add('hidden');
+                AppState.showToast('✅ Novo domicílio eleitoral salvo!');
+            },
 
             initTouchEvents() {
                 const patternGrid = document.getElementById('pattern-grid');
@@ -1448,58 +1562,64 @@ textarea.campo-preenchido {
                 }
             },
 
-            async simulateBiometric() {
-                if (window.PublicKeyCredential) {
-                    try {
-                        AppState.showToast('⏳ Aguardando leitura biométrica do celular...', false);
-                        const publicKeyCredentialCreationOptions = {
-                            challenge: Uint8Array.from('pesquisajusta_sec_challenge_2026', c => c.charCodeAt(0)),
-                            rp: { name: "Pesquisa Justa" },
-                            user: {
-                                id: Uint8Array.from('user_id_eleitor_2026', c => c.charCodeAt(0)),
-                                name: "eleitor@pesquisajusta.com.br",
-                                displayName: "Eleitor Autenticado"
-                            },
-                            pubKeyCredParams: [
-                                { alg: -7, type: "public-key" },
-                                { alg: -257, type: "public-key" }
-                            ],
-                            authenticatorSelection: {
-                                authenticatorAttachment: "platform",
-                                userVerification: "required"
-                            },
-                            timeout: 60000
-                        };
-
-                        const credential = await navigator.credentials.create({
-                            publicKey: publicKeyCredentialCreationOptions
-                        });
-
-                        if (credential) {
-                            AppState.showToast('✅ Biometria confirmada com sucesso pelo aparelho!');
-                            setTimeout(() => this.startVoting(null), 800);
-                        }
-                    } catch (err) {
-                        console.error("Erro ou cancelamento de biometria:", err);
-                        if (err.name === 'NotAllowedError') {
-                            AppState.showToast('❌ Leitura biométrica cancelada ou não reconhecida.', true);
-                        } else {
-                            AppState.showToast('⚠️ Biometria confirmada (Modo de Compatibilidade)!');
-                            setTimeout(() => this.startVoting(null), 800);
-                        }
-                    }
-                } else {
-                    AppState.showToast('❌ Seu dispositivo não possui leitor biométrico compatível.', true);
-                }
-            },
-
             startVoting(event) {
-                if (event && event.currentTarget && event.currentTarget.innerText.includes('Padrão')) {
+                const isPatternBtn = !event || !event.currentTarget || event.currentTarget.innerText.includes('Padrão');
+                const msg = document.getElementById('pattern-status-msg');
+
+                if (isPatternBtn) {
                     if (this.selectedPattern.length < 3) {
-                        AppState.showToast('⚠️ Desenhe/Deslize por pelo menos 3 pontos no padrão.', true); 
+                        if (msg) {
+                            msg.style.color = '#ef4444';
+                            msg.innerText = 'Ligue pelo menos 3 pontos ou clique em Refazer Padrão.';
+                        }
+                        AppState.showToast('⚠️ Desenhe/Deslize por pelo menos 3 pontos no padrão.', true);
                         return;
                     }
+
+                    const drawnSeq = this.selectedPattern.join('-');
+
+                    if (this.mode === 'create') {
+                        this.pendingFirstPattern = drawnSeq;
+                        this.mode = 'confirm';
+                        this.clearPattern(true);
+                        if (msg) {
+                            msg.style.color = '#38bdf8';
+                            msg.innerText = '2º passo: repita o mesmo desenho para gravar seu padrão.';
+                        }
+                        AppState.showToast('🔁 Repita o padrão para confirmar e gravar.');
+                        return;
+                    }
+
+                    if (this.mode === 'confirm') {
+                        if (drawnSeq !== this.pendingFirstPattern) {
+                            this.pendingFirstPattern = null;
+                            this.mode = 'create';
+                            this.clearPattern(true);
+                            if (msg) {
+                                msg.style.color = '#ef4444';
+                                msg.innerText = 'Os dois desenhos não bateram. Desenhe o 1º passo novamente.';
+                            }
+                            AppState.showToast('❌ Padrões diferentes. Tente novamente.', true);
+                            return;
+                        }
+                        this.saveVoterProfile(AppState.eleitorTemp, this.selectedPattern);
+                        AppState.showToast('✅ Padrão e cadastro gravados!');
+                    }
+
+                    if (this.mode === 'login') {
+                        if (!this.savedProfile || drawnSeq !== this.savedProfile.pattern) {
+                            this.clearPattern(true);
+                            if (msg) {
+                                msg.style.color = '#ef4444';
+                                msg.innerText = 'Padrão incorreto! Clique em Refazer Padrão ou desenhe novamente.';
+                            }
+                            AppState.showToast('❌ Padrão incorreto. Redesenhe para tentar de novo.', true);
+                            return;
+                        }
+                        AppState.showToast('✅ Padrão confirmado! Carregando seu cadastro...');
+                    }
                 }
+
                 document.getElementById('screen-auth').classList.add('hidden');
                 document.getElementById('screen-voting').classList.remove('hidden');
                 ScreenVoting.currentStep = 0;
