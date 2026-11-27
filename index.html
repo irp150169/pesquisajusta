@@ -211,7 +211,7 @@
             color: #ffffff;
         }
         .pj-vertical-dropdown-item.pj-special-country-item {
-            border-top: 1px dashed #38bdf8;
+            border-bottom: 1px dashed #38bdf8;
             color: #38bdf8;
             font-weight: bold;
             background-color: #0d1526;
@@ -798,13 +798,13 @@ textarea.campo-preenchido {
            ========================================================================== */
         const GeoDatabase = {
             statesAndCountriesOption: [
-                "Acre - AC", "Alagoas - AL", "Amapá - AP", "Amazonas - AM", "Bahia - BA",
+                "🌍Outros Países", "Acre - AC", "Alagoas - AL", "Amapá - AP", "Amazonas - AM", "Bahia - BA",
                 "Ceará - CE", "Distrito Federal - DF", "Espírito Santo - ES", "Goiás - GO",
                 "Maranhão - MA", "Mato Grosso - MT", "Mato Grosso do Sul - MS", "Minas Gerais - MG",
                 "Pará - PA", "Paraíba - PB", "Paraná - PR", "Pernambuco - PE", "Piauí - PI",
                 "Rio de Janeiro - RJ", "Rio Grande do Norte - RN", "Rio Grande do Sul - RS",
                 "Rondônia - RO", "Roraima - RR", "Santa Catarina - SC", "São Paulo - SP",
-                "Sergipe - SE", "Tocantins - TO", "🌍Outros Países"
+                "Sergipe - SE", "Tocantins - TO",
             ],
 
             stateNameToCode: {
@@ -1029,7 +1029,7 @@ textarea.campo-preenchido {
                 items.forEach(item => {
                     const row = document.createElement('div');
                     row.className = 'pj-vertical-dropdown-item';
-                    if (item === 'Outros Países') {
+                    if (item.includes('Outros Países')) {
                         row.classList.add('pj-special-country-item');
                     }
                     row.textContent = item;
