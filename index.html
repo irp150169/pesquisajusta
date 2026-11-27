@@ -407,35 +407,40 @@ textarea.campo-preenchido {
                     </div>
                     
                     <div class="form-row">
-                        <div class="form-group" style="flex: 1.1;">
-                <label for="whatsapp-input">(DDI) WhatsApp</label>
-                <div style="display: flex; gap: 6px; align-items: center;">
-                    <select id="whatsapp-ddi" aria-label="Código do país (DDI)" style="width: 96px; flex-shrink: 0;">
-                        <option value="+55" selected>🇧🇷 +55</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+351">🇵🇹 +351</option>
-                        <option value="+54">🇦🇷 +54</option>
-                        <option value="+595">🇵🇾 +595</option>
-                        <option value="+598">🇺🇾 +598</option>
-                        <option value="+591">🇧🇴 +591</option>
-                        <option value="+57">🇨🇴 +57</option>
-                        <option value="+56">🇨🇱 +56</option>
-                        <option value="+51">🇵🇪 +51</option>
-                        <option value="+34">🇪🇸 +34</option>
-                        <option value="+39">🇮🇹 +39</option>
-                        <option value="+49">🇩🇪 +49</option>
-                        <option value="+33">🇫🇷 +33</option>
-                        <option value="+44">🇬🇧 +44</option>
-                        <option value="+81">🇯🇵 +81</option>
-                    </select>
-                    <input type="text" inputmode="numeric" id="whatsapp-input" name="pj_wa_number" autocomplete="off" placeholder="(92) 99999-9999" style="flex: 1; min-width: 0;">
+                        <div class="form-group" style="flex: 1.35; min-width: 0;">
+                <div style="display: flex; gap: 4px; align-items: flex-end;">
+                    <div style="width: 78px; flex-shrink: 0;">
+                        <label for="whatsapp-ddi" style="display: block; margin-bottom: 4px;">DDI</label>
+                        <select id="whatsapp-ddi" aria-label="Código do país (DDI)" style="width: 100%; padding-left: 4px; padding-right: 4px;">
+                            <option value="+55" selected>🇧🇷 +55</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+351">🇵🇹 +351</option>
+                            <option value="+54">🇦🇷 +54</option>
+                            <option value="+595">🇵🇾 +595</option>
+                            <option value="+598">🇺🇾 +598</option>
+                            <option value="+591">🇧🇴 +591</option>
+                            <option value="+57">🇨🇴 +57</option>
+                            <option value="+56">🇨🇱 +56</option>
+                            <option value="+51">🇵🇪 +51</option>
+                            <option value="+34">🇪🇸 +34</option>
+                            <option value="+39">🇮🇹 +39</option>
+                            <option value="+49">🇩🇪 +49</option>
+                            <option value="+33">🇫🇷 +33</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+81">🇯🇵 +81</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <label for="whatsapp-input" style="display: block; margin-bottom: 4px;">DDD / WhatsApp</label>
+                        <input type="text" inputmode="numeric" id="whatsapp-input" name="pj_wa_number" autocomplete="off" placeholder="(92) 99999-9999" style="width: 100%; min-width: 0; padding-left: 8px; padding-right: 6px;">
+                    </div>
                 </div>
             </div>
-                        <div class="form-group" style="flex: 0.9;">
-                            <label>Nascimento</label>
-                            <input type="tel" id="birthdate-input" placeholder="DD/MM/AAAA" maxlength="10" inputmode="numeric" value="" oninput="ScreenRegister.autoMaskDate(this)" onblur="ScreenRegister.autoMaskDate(this)">
-                        </div>
-                    </div>
+            <div class="form-group" style="flex: 0.65; min-width: 0;">
+                <label for="birthdate-input" style="display: block; margin-bottom: 4px;">Nascimento</label>
+                <input type="tel" id="birthdate-input" placeholder="DD/MM/AAAA" style="min-width: 0;">
+            </div>
+         </div>
 
                     <div class="form-row">
                         <div class="form-group" style="flex: 0.95;">
