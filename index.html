@@ -558,33 +558,75 @@ textarea.campo-preenchido {
                     <button onclick="ScreenMedia.backToRegister()" style="background-color: #334155; margin-top:6px;">Voltar ao Início</button>
                 </div>
 
-                <!-- TELA 2: AUTENTICAÇÃO (ScreenAuth) -->
-                <div id="screen-auth" class="view hidden" style="justify-content: flex-start; min-height: 0;">
-                    <div style="text-align: center;">
-                        <span class="badge">Segurança & Acesso</span>
-                        <h1 class="header-title">Validação por Padrão</h1>
-                        <p class="subtitle">Desenhe seu padrão de confirmação deslizando os dedos pelos pontos.</p>
-                    </div>
+               <!-- TELA 2: AUTENTICAÇÃO (ScreenAuth) -->
+<div id="screen-auth" class="view hidden" style="justify-content: flex-start; min-height: 0;">
+    <div style="text-align: center;">
+        <span class="badge">Segurança & Acesso</span>
+        <h1 class="header-title" id="auth-title">Validação por Padrão</h1>
+        <p class="subtitle" id="auth-subtitle">Desenhe seu padrão de confirmação deslizando os dedos pelos pontos.</p>
+    </div>
 
-                    <div class="pattern-lock-container" id="pattern-grid">
-                        <div class="pattern-dot" data-id="1"></div>
-                        <div class="pattern-dot" data-id="2"></div>
-                        <div class="pattern-dot" data-id="3"></div>
-                        <div class="pattern-dot" data-id="4"></div>
-                        <div class="pattern-dot" data-id="5"></div>
-                        <div class="pattern-dot" data-id="6"></div>
-                        <div class="pattern-dot" data-id="7"></div>
-                        <div class="pattern-dot" data-id="8"></div>
-                        <div class="pattern-dot" data-id="9"></div>
-                    </div>
+    <div id="returning-voter-bar" class="hidden" style="background-color: #090d16; border: 1px solid #38bdf8; border-radius: 6px; padding: 5px 7px; margin-bottom: 4px; font-size: 0.48rem; color: #e2e8f0; text-align: center;">
+        <div id="returning-voter-summary">Cadastro encontrado para este WhatsApp.</div>
+        <button type="button" id="btn-change-domicile" onclick="ScreenAuth.openDomicileUpdate()" style="margin-top: 4px; padding: 3px 6px; font-size: 0.46rem; background-color: #1e293b; border-color: #38bdf8; color: #38bdf8; width: auto; display: inline-block;">
+            📍 Mudei de cidade / Atualizar local
+        </button>
+    </div>
 
-                    <p style="text-align: center; font-size: 0.50rem; color: var(--text-muted); margin: 2px 0 6px 0;">Deslize ligando pelo menos 3 pontos para criar seu padrão.</p>
+    <div id="domicile-update-box" class="hidden" style="background-color: #090d16; border: 1px solid #10b981; border-radius: 6px; padding: 6px; margin-bottom: 4px;">
+        <div style="font-size: 0.48rem; font-weight: bold; color: #10b981; margin-bottom: 4px; text-align: center;">ATUALIZAR DOMICÍLIO ELEITORAL</div>
+        <div class="form-row" style="margin-bottom: 4px;">
+            <div class="form-group">
+                <label>Estado / UF / País</label>
+                <input type="text" id="auth-state-input" autocomplete="off" placeholder="Digite ou selecione...">
+            </div>
+            <div class="form-group">
+                <label>Município / País</label>
+                <input type="text" id="auth-city-input" autocomplete="off" placeholder="Digite a cidade...">
+            </div>
+        </div>
+        <div class="form-row" style="margin-bottom: 0;">
+            <div class="form-group">
+                <label>Zona / Região</label>
+                <select id="auth-zone-input">
+                    <option value="">Selecione...</option>
+                    <option value="Zona Norte">Zona Norte</option>
+                    <option value="Zona Sul">Zona Sul</option>
+                    <option value="Zona Leste">Zona Leste</option>
+                    <option value="Zona Oeste">Zona Oeste</option>
+                    <option value="Zona Centro-Oeste">Zona Centro-Oeste</option>
+                    <option value="Zona Centro-Sul">Zona Centro-Sul</option>
+                    <option value="Zona Central / Centro">Zona Central / Centro</option>
+                    <option value="Zona Urbana">Zona Urbana</option>
+                    <option value="Zona Rural / Distritos">Zona Rural / Distritos</option>
+                    <option value="Seção Consular / Exterior">Exterior</option>
+                </select>
+            </div>
+            <div class="form-group" style="display: flex; align-items: flex-end;">
+                <button type="button" onclick="ScreenAuth.saveDomicileUpdate()" style="margin-top: 0; padding: 5px; font-size: 0.48rem; background-color: #0f766e; border-color: #14b8a6;">Salvar Local</button>
+            </div>
+        </div>
+    </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px; flex-shrink: 0;">
-                        <button onclick="ScreenAuth.startVoting(event)" style="margin-top: 0; background-color: #0f766e; border-color: #14b8a6;">Confirmar Padrão e Acessar Urna</button>
-                
-                    </div>
-                </div>
+    <div class="pattern-lock-container" id="pattern-grid">
+        <div class="pattern-dot" data-id="1"></div>
+        <div class="pattern-dot" data-id="2"></div>
+        <div class="pattern-dot" data-id="3"></div>
+        <div class="pattern-dot" data-id="4"></div>
+        <div class="pattern-dot" data-id="5"></div>
+        <div class="pattern-dot" data-id="6"></div>
+        <div class="pattern-dot" data-id="7"></div>
+        <div class="pattern-dot" data-id="8"></div>
+        <div class="pattern-dot" data-id="9"></div>
+    </div>
+
+    <p id="pattern-status-msg" style="text-align: center; font-size: 0.50rem; color: var(--text-muted); margin: 2px 0 6px 0;">Deslize ligando pelo menos 3 pontos no padrão.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px; flex-shrink: 0;">
+        <button type="button" id="btn-clear-pattern" onclick="ScreenAuth.clearPattern()" style="margin-top: 0; background-color: #1e293b; border-color: #64748b; color: #f8fafc; padding: 6px; font-size: 0.56rem;">🔄 Refazer Padrão</button>
+        <button type="button" onclick="ScreenAuth.startVoting(event)" style="margin-top: 0; background-color: #0f766e; border-color: #14b8a6;">Confirmar Padrão e Acessar Urna</button>
+    </div>
+</div>
                 
                 <!-- TELA 3: CÉDULA DE VOTAÇÃO (ScreenVoting) -->
                 <div id="screen-voting" class="view hidden">
@@ -1294,8 +1336,7 @@ textarea.campo-preenchido {
                 AppState.activeMediaInfo = null;
                 document.getElementById('screen-register').classList.add('hidden');
                 document.getElementById('screen-auth').classList.remove('hidden');
-                ScreenAuth.selectedPattern = [];
-                document.querySelectorAll('.pattern-dot').forEach(d => d.classList.remove('active'));
+                ScreenAuth.prepareForCurrentVoter();
             }
         };
 
