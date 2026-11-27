@@ -1141,7 +1141,7 @@ textarea.campo-preenchido {
                     const typed = filterByText ? this.normalize(stEl.value) : '';
                     const filtered = typed
                         ? this.statesAndCountriesOption.filter(opt => this.normalize(opt).replace(/^[^a-z0-9]+/i, '').startsWith(typed))
-                        : this.statesAndCountriesOption;
+                        : (context === 'report' || context === 'register' || (context === 'results' && (ScreenResults.lastLoadedCategory === 'president' || ScreenResults.lastLoadedCategory === 'president_2t')) ? this.statesAndCountriesOption : this.statesAndCountriesOption.filter(opt => !opt.includes('Outros Países')));
 
                     this.openVerticalDropdown(stEl, filtered, (selectedState) => {
                         const uf = this.getUFCodeFromInput(selectedState);
