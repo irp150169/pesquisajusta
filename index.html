@@ -1140,7 +1140,7 @@ textarea.campo-preenchido {
                 const openStateList = (filterByText) => {
                     const typed = filterByText ? this.normalize(stEl.value) : '';
                     const filtered = typed
-                        ? this.statesAndCountriesOption.filter(opt => this.normalize(opt).includes(typed))
+                        ? this.statesAndCountriesOption.filter(opt => this.normalize(opt).replace(/^[^a-z0-9]+/i, '').startsWith(typed))
                         : this.statesAndCountriesOption;
 
                     this.openVerticalDropdown(stEl, filtered, (selectedState) => {
