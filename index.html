@@ -2197,7 +2197,7 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                     </div>
                 `;
 
-                container.innerHTML = geoInputsHTML + demoInputsHTML;
+                container.innerHTML = geoInputsHTML + demoInputsHTML; ['rep-idade:Todas as Idades', 'rep-zona-demo:Todas as Zonas', 'rep-genero:Todos os Gêneros', 'rep-cor:Todas as Raças'].forEach(pair => { const [id, defVal] = pair.split(':'); const el = document.getElementById(id); if (el) { const active = el.value !== defVal; el.style.setProperty('background-color', active ? '#fff' : '#131c31', 'important'); el.style.setProperty('color', active ? '#000' : '#fff', 'important'); el.style.setProperty('font-weight', active ? '700' : '400', 'important'); } });
                 GeoDatabase.bindStateAndCityInputs('rep-estado', 'rep-city-report', 'report');
                 this.updateReportSubfilters();
             },
