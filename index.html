@@ -2150,7 +2150,7 @@ async carregarCandidatosReais(cargo, uf, municipio) {
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;">
                             <div>
                                 <label style="font-size: 0.42rem;">🎂 Por Idade / Faixa:</label>
-                                <select id="rep-idade" onchange="ScreenReport.generateDynamicReport()" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
+                               <select id="rep-idade" onchange="this.style.backgroundColor = this.value !== 'Todas as Idades' ? '#fff' : '#131c31'; this.style.color = this.value !== 'Todas as Idades' ? '#000' : '#fff'; this.style.fontWeight = this.value !== 'Todas as Idades' ? '700' : '400'; ScreenReport.generateDynamicReport();" style="padding: 3px; font-size: 0.46rem; background-color: #131c31; border: 1px solid var(--border); color: #fff; border-radius: 4px;">
                                     <option value="Todas as Idades" selected>Todas as Idades</option>
                                     <option value="16 a 24 anos">16 a 24 anos</option>
                                     <option value="25 a 34 anos">25 a 34 anos</option>
