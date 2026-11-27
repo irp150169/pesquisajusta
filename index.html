@@ -408,9 +408,29 @@ textarea.campo-preenchido {
                     
                     <div class="form-row">
                         <div class="form-group" style="flex: 1.1;">
-                            <label>(DDD) WhatsApp</label>
-                            <input type="tel" id="whatsapp-input" autocomplete="tel" placeholder="(92) 99999-9999" maxlength="15" inputmode="numeric" value="" oninput="ScreenRegister.autoMaskPhone(this)" onblur="ScreenRegister.autoMaskPhone(this)">
-                        </div>
+                <label for="whatsapp-input">(DDI) WhatsApp</label>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <select id="whatsapp-ddi" aria-label="Código do país (DDI)" style="width: 96px; flex-shrink: 0;">
+                        <option value="+55" selected>🇧🇷 +55</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+351">🇵🇹 +351</option>
+                        <option value="+54">🇦🇷 +54</option>
+                        <option value="+595">🇵🇾 +595</option>
+                        <option value="+598">🇺🇾 +598</option>
+                        <option value="+591">🇧🇴 +591</option>
+                        <option value="+57">🇨🇴 +57</option>
+                        <option value="+56">🇨🇱 +56</option>
+                        <option value="+51">🇵🇪 +51</option>
+                        <option value="+34">🇪🇸 +34</option>
+                        <option value="+39">🇮🇹 +39</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+81">🇯🇵 +81</option>
+                    </select>
+                    <input type="text" inputmode="numeric" id="whatsapp-input" name="pj_wa_number" autocomplete="off" placeholder="(92) 99999-9999" style="flex: 1; min-width: 0;">
+                </div>
+            </div>
                         <div class="form-group" style="flex: 0.9;">
                             <label>Nascimento</label>
                             <input type="tel" id="birthdate-input" placeholder="DD/MM/AAAA" maxlength="10" inputmode="numeric" value="" oninput="ScreenRegister.autoMaskDate(this)" onblur="ScreenRegister.autoMaskDate(this)">
@@ -1322,7 +1342,7 @@ textarea.campo-preenchido {
                 GeoDatabase.closeDropdown();
 
                 AppState.eleitorTemp = {
-                    whatsapp: phone,
+                   whatsapp: (window.WhatsAppDDIHelper && WhatsAppDDIHelper.getFullWhatsApp()) || phone,
                     nascimento: birth,
                     estado: state,
                     cidade: city,
@@ -1626,6 +1646,129 @@ textarea.campo-preenchido {
                 ScreenVoting.renderBallot();
             }
         };
+        const WhatsAppDDIHelper = {
+            countryToDdi: {
+                'BRASIL': '+55',
+                'ESTADOS UNIDOS': '+1',
+                'CANADÁ': '+1',
+                'CANADA': '+1',
+                'PORTUGAL': '+351',
+                'ARGENTINA': '+54',
+                'PARAGUAI': '+595',
+                'URUGUAI': '+598',
+                'BOLÍVIA': '+591',
+                'BOLIVIA': '+591',
+                'COLÔMBIA': '+57',
+                'COLOMBIA': '+57',
+                'CHILE': '+56',
+                'PERU': '+51',
+                'ESPANHA': '+34',
+                'ITÁLIA': '+39',
+                'ITALIA': '+39',
+                'ALEMANHA': '+49',
+                'FRANÇA': '+33',
+                'FRANCA': '+33',
+                'REINO UNIDO': '+44',
+                'JAPÃO': '+81',
+                'JAPAO': '+81'
+            },
+
+            normalizeText(val) {
+                return String(val || '')
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .trim()
+                    .toUpperCase();
+            },
+
+            syncFromLocation() {
+                const ddiSelect = document.getElementById('whatsapp-ddi');
+                if (!ddiSelect) return;
+
+                const stateEl = document.getElementById('state-input') || document.querySelector('[id*="state"]');
+                const cityEl = document.getElementById('city-input') || document.querySelector('[id*="city"]');
+                const stateVal = this.normalizeText(stateEl ? stateEl.value : '');
+                const cityVal = this.normalizeText(cityEl ? cityEl.value : '');
+
+                if (!stateVal || stateVal.indexOf('OUTROS') === -1) {
+                    ddiSelect.value = '+55';
+                    return;
+                }
+
+                for (const countryName in this.countryToDdi) {
+                    if (cityVal.indexOf(countryName) !== -1) {
+                        const targetDdi = this.countryToDdi[countryName];
+                        const exists = Array.from(ddiSelect.options).some(opt => opt.value === targetDdi);
+                        if (exists) {
+                            ddiSelect.value = targetDdi;
+                        }
+                        break;
+                    }
+                }
+            },
+
+            formatNationalInput(inputEl) {
+                if (!inputEl) return;
+                const ddiSelect = document.getElementById('whatsapp-ddi');
+                const currentDdiDigits = ddiSelect ? ddiSelect.value.replace(/\D/g, '') : '55';
+                let digits = inputEl.value.replace(/\D/g, '');
+
+                if (currentDdiDigits === '55' && digits.length > 11 && digits.startsWith('55')) {
+                    digits = digits.slice(2);
+                }
+
+                if (currentDdiDigits === '55') {
+                    digits = digits.slice(0, 11);
+                    if (digits.length > 6) {
+                        inputEl.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+                    } else if (digits.length > 2) {
+                        inputEl.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                    } else if (digits.length > 0) {
+                        inputEl.value = `(${digits}`;
+                    } else {
+                        inputEl.value = '';
+                    }
+                } else {
+                    digits = digits.slice(0, 15);
+                    inputEl.value = digits.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+                }
+            },
+
+            getFullWhatsApp() {
+                const ddiSelect = document.getElementById('whatsapp-ddi');
+                const inputEl = document.getElementById('whatsapp-input');
+                const ddi = ddiSelect ? ddiSelect.value : '+55';
+                const ddiDigits = ddi.replace(/\D/g, '');
+                let localDigits = inputEl ? inputEl.value.replace(/\D/g, '') : '';
+
+                if (localDigits.startsWith(ddiDigits) && localDigits.length > 11) {
+                    localDigits = localDigits.slice(ddiDigits.length);
+                }
+                return localDigits ? `${ddi} ${localDigits}` : '';
+            },
+
+            bind() {
+                const inputEl = document.getElementById('whatsapp-input');
+                const stateEl = document.getElementById('state-input') || document.querySelector('[id*="state"]');
+                const cityEl = document.getElementById('city-input') || document.querySelector('[id*="city"]');
+
+                if (inputEl) {
+                    inputEl.addEventListener('input', () => this.formatNationalInput(inputEl));
+                    inputEl.addEventListener('change', () => this.formatNationalInput(inputEl));
+                }
+                if (stateEl) {
+                    stateEl.addEventListener('change', () => this.syncFromLocation());
+                    stateEl.addEventListener('input', () => this.syncFromLocation());
+                }
+                if (cityEl) {
+                    cityEl.addEventListener('change', () => this.syncFromLocation());
+                    cityEl.addEventListener('input', () => this.syncFromLocation());
+                }
+                this.syncFromLocation();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => WhatsAppDDIHelper.bind());
 
         /* ==========================================================================
            6. MÓDULO DA TELA 3 & 4: URNA CEGA & VOTAÇÃO BLINDADA COM SUPABASE (ScreenVoting)
